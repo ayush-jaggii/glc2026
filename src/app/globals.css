@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-canvas: #FFFFFF;
+  --color-canvas-subtle: #F8FAFC;
+  --color-brand-orange: #F58232;
+  --color-brand-pink: #F45197;
+  --color-editorial-dark: #0F172A;
+  --font-serif: "Sabon LT Std", "Sabon", "EB Garamond", Georgia, serif;
+  --font-sans: "Helvetica Now", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+}
+
+h1, h2, .font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Custom Light Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F58232;
+}
+
+/* Selection */
+::selection {
+  background: rgba(244, 81, 151, 0.2);
+  color: #0F172A;
+}
+
+/* Subtle Light Grid & Noise Overlay */
+.bg-grid-overlay {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+}
+
+.bg-dot-overlay {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.text-gradient-orange {
+  background: linear-gradient(135deg, #F58232 0%, #F45197 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background: linear-gradient(135deg, #0F172A 30%, #F58232 70%, #F45197 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-subtle {
+  border-color: rgba(15, 23, 42, 0.08);
+}
