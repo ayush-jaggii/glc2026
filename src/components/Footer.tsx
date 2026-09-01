@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { EVENT_DETAILS } from '@/data/eventData'
-import { TapmiLogo, BottomTapmiLogo, AccredationsLogo } from './Logos'
+import { BottomTapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function Footer() {
@@ -10,11 +10,14 @@ export default function Footer() {
     <footer className="w-full bg-slate-100 border-t border-slate-200 text-slate-600 text-xs py-16 px-4 md:px-8 relative z-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 pb-12 border-b border-slate-200">
         
-        {/* Left Brand Summary & SVG Logos */}
+        {/* Left Brand Summary & Bottom TAPMI SVG Logo Only */}
         <div className="md:col-span-5 flex flex-col gap-6">
           <div className="flex flex-col gap-4">
-            <TapmiLogo className="h-12 w-auto self-start" />
-            <AccredationsLogo className="h-8 w-auto self-start" />
+            <BottomTapmiLogo className="h-12 w-auto self-start" />
+            <div className="flex flex-wrap items-center gap-4">
+              <MaheLogo className="h-10 w-auto" />
+              <AccredationsLogo className="h-7 w-auto" />
+            </div>
           </div>
 
           <p className="text-xs text-slate-600 max-w-sm leading-relaxed font-sans">
@@ -58,10 +61,6 @@ export default function Footer() {
               <span className="text-slate-600">{EVENT_DETAILS.venue.address}</span>
               <span className="text-brand-orange font-bold pt-1">{EVENT_DETAILS.venue.coordinates}</span>
             </div>
-          </div>
-
-          <div className="pt-4">
-            <BottomTapmiLogo className="h-10 w-auto" />
           </div>
         </div>
 

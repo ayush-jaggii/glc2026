@@ -38,7 +38,7 @@ export const EVENT_DETAILS = {
   targetDateIso: "2026-10-10T09:30:00+05:30",
   revealTargetIso: "2026-09-15T00:00:00+05:30",
   venue: {
-    name: "TAPMI Auditorium",
+    name: "Dr. Ramdas M. Pai Auditorium",
     institution: "Manipal Academy of Higher Education (MAHE)",
     campus: "Bengaluru Campus",
     address: "Thanisandra Main Rd, Chokkanahalli, Bengaluru, Karnataka 560064",

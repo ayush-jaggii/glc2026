@@ -35,6 +35,22 @@ export function MaheLogo({ className = "h-12 w-auto" }: { className?: string }) 
 }
 
 /**
+ * Official TAPMI PACE Committee Emblem Logo
+ */
+export function PaceLogo({ className = "h-10 w-auto" }: { className?: string }) {
+  return (
+    <img
+      src="/pace-logo.jpg"
+      alt="TAPMI PACE Committee Logo"
+      width={60}
+      height={60}
+      className={`object-contain block max-w-full rounded-md ${className}`}
+      style={{ minHeight: '32px', minWidth: '32px' }}
+    />
+  )
+}
+
+/**
  * TAPMI Bottom / Main Horizontal Brand Logo (Dark Filled)
  */
 export function BottomTapmiLogo({ className = "h-10 w-auto" }: { className?: string }) {

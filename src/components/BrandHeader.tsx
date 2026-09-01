@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { TapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
+import { TapmiLogo, MaheLogo, AccredationsLogo, PaceLogo } from './Logos'
 
 export default function BrandHeader() {
   return (
@@ -15,13 +15,16 @@ export default function BrandHeader() {
           <MaheLogo className="h-11 md:h-12 w-auto" />
         </div>
 
-        {/* Right: Accreditations Logo Bar & Committee Tag */}
-        <div className="flex flex-wrap items-center gap-6">
+        {/* Right: Accreditations Logo Bar & Official TAPMI PACE Committee Logo */}
+        <div className="flex flex-wrap items-center gap-6 md:gap-8">
           <AccredationsLogo className="h-7 md:h-8 w-auto" />
-          <span className="hidden lg:inline text-slate-300">|</span>
-          <span className="hidden lg:inline text-[10px] font-mono text-slate-700 font-bold bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-            TAPMI PACE COMMITTEE
-          </span>
+          <div className="h-8 w-[1px] bg-slate-200 hidden sm:block" />
+          <div className="flex items-center gap-2.5">
+            <PaceLogo className="h-10 md:h-11 w-auto" />
+            <span className="hidden xl:inline text-[11px] font-mono text-slate-700 font-bold uppercase tracking-wider">
+              PACE COMMITTEE
+            </span>
+          </div>
         </div>
 
       </div>

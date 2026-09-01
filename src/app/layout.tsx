@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import BrandHeader from '@/components/BrandHeader'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
@@ -30,7 +29,6 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-white text-slate-900 min-h-screen flex flex-col antialiased selection:bg-brand-orange/20 selection:text-slate-900 font-sans">
-        <BrandHeader />
         <Navigation />
         <main className="flex-1 w-full relative z-10">
           {children}
