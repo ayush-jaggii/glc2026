@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { EVENT_DETAILS } from '@/data/eventData'
-import { CheckCircle2, ArrowUpRight } from 'lucide-react'
+import { CheckCircle2, ArrowUpRight, Loader2 } from 'lucide-react'
 import { LiquidButton } from '@/components/ui/liquid-glass-button'
 
 export default function RegistrationSection() {
@@ -11,18 +11,45 @@ export default function RegistrationSection() {
   const [email, setEmail] = useState('')
   const [organization, setOrganization] = useState('')
   const [designation, setDesignation] = useState('')
+  const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  setErrorMsg: useState<string>('')
   const [errorMsg, setErrorMsg] = useState('')
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!fullName.trim() || !email.trim() || !organization.trim()) {
       setErrorMsg('Please complete all required fields.')
       return
     }
     setErrorMsg('')
-    setSubmitted(true)
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName,
+          email,
+          organization,
+          designation,
+          passType
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit registration')
+      }
+
+      setSubmitted(true)
+    } catch (err: any) {
+      console.error('Registration submission error:', err)
+      setErrorMsg(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const passDetails = {
@@ -95,7 +122,7 @@ export default function RegistrationSection() {
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 font-serif mb-2">REGISTRATION CONFIRMED</h3>
                 <p className="text-xs text-slate-600 max-w-md mb-6 font-sans">
-                  Thank you, <span className="font-bold text-slate-900">{fullName}</span>. Your delegate reservation request for <span className="font-bold text-brand-orange">{selectedPass.name}</span> has been received.
+                  Thank you, <span className="font-bold text-slate-900">{fullName}</span>. Your delegate reservation request for <span className="font-bold text-brand-orange">{selectedPass.name}</span> has been recorded.
                 </p>
                 <div className="p-4 rounded-xl bg-white border border-slate-200 w-full text-left font-mono text-xs text-slate-700 space-y-2 mb-6">
                   <div><span className="text-slate-400 font-bold uppercase">ORGANIZATION:</span> {organization}</div>
@@ -174,9 +201,18 @@ export default function RegistrationSection() {
                 </div>
 
                 <div className="pt-4">
-                  <LiquidButton size="xl" className="w-full bg-brand-orange text-white font-mono font-bold text-xs uppercase tracking-wider">
-                    <span>CONFIRM DELEGATE RESERVATION</span>
-                    <ArrowUpRight className="w-4 h-4" />
+                  <LiquidButton size="xl" disabled={loading} className="w-full bg-brand-orange text-white font-mono font-bold text-xs uppercase tracking-wider">
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>RECORDING RESERVATION...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>CONFIRM DELEGATE RESERVATION</span>
+                        <ArrowUpRight className="w-4 h-4" />
+                      </>
+                    )}
                   </LiquidButton>
                 </div>
               </form>
