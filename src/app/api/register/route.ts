@@ -18,12 +18,13 @@ export async function POST(request: Request) {
       organization,
       designation: designation || 'N/A',
       passType: passType || 'Executive',
-      submittedAt: new Date().toISOString(),
+      submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       source: 'GLC 2026 Website Registration'
     }
 
-    // Check if Excel / SharePoint Power Automate Webhook URL is configured
-    const webhookUrl = process.env.EXCEL_WEBHOOK_URL || process.env.NEXT_PUBLIC_EXCEL_WEBHOOK_URL
+    // Google Sheets Webhook / Apps Script URL
+    const googleSheetsUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL
+    const webhookUrl = googleSheetsUrl || process.env.EXCEL_WEBHOOK_URL
 
     if (webhookUrl) {
       const response = await fetch(webhookUrl, {
@@ -33,15 +34,16 @@ export async function POST(request: Request) {
       })
 
       if (!response.ok) {
-        console.error('Failed to append to Excel webhook:', await response.text())
+        console.error('Failed to append to Google Sheets webhook:', await response.text())
       }
     } else {
-      console.log('Registration received (Mock Mode):', payload)
+      console.log('Registration received for Google Sheet (1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0):', payload)
     }
 
     return NextResponse.json({
       success: true,
       message: 'Delegate registration recorded successfully',
+      sheetId: '1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0',
       data: payload
     })
 
