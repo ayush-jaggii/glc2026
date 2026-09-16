@@ -1,9 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { TapmiLogo, MaheLogo, AccredationsLogo, PaceLogo } from './Logos'
+import { TapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
-import { LiquidButton } from '@/components/ui/liquid-glass-button'
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -11,121 +10,109 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
+      setIsScrolled(window.scrollY > 30)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const navLinks = [
-    { label: 'Theme', href: '#theme' },
-    { label: 'Reveals', href: '#reveals' },
+    { label: 'Panels & Tracks', href: '#panels' },
+    { label: 'Speakers', href: '#speakers' },
     { label: 'Archive', href: '#archive' },
-    { label: 'Advantage', href: '#advantage' },
+    { label: 'Delegate Advantage', href: '#advantage' },
+    { label: 'Venue', href: '#venue' },
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-xs transition-all duration-300">
-      
-      {/* Upper Institutional Brand Bar (collapses smoothly when scrolled for maximum content focus) */}
-      <div className={`w-full border-b border-slate-100 transition-all duration-300 overflow-hidden ${
-        isScrolled ? 'max-h-0 py-0 opacity-0' : 'max-h-24 py-3 opacity-100'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-wine-950/95 backdrop-blur-md border-b border-wine-800/80 shadow-2xl py-3'
+          : 'bg-gradient-to-b from-wine-950/90 via-wine-950/40 to-transparent py-4'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-6">
           
-          {/* Left: Official TAPMI & MAHE Vector Logos */}
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
-            <TapmiLogo className="h-9 md:h-10 w-auto" />
-            <div className="h-8 w-[1px] bg-slate-200 hidden sm:block" />
-            <MaheLogo className="h-9 md:h-10 w-auto" />
-          </div>
-
-          {/* Right: Accreditations & TAPMI PACE Committee Emblem */}
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
-            <AccredationsLogo className="h-6 md:h-7 w-auto hidden sm:block" />
-            <div className="h-7 w-[1px] bg-slate-200 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <PaceLogo className="h-8 md:h-9 w-auto" />
-              <span className="hidden xl:inline text-[10px] font-mono text-slate-700 font-bold uppercase tracking-wider">
-                PACE COMMITTEE
-              </span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-        
-        {/* Left Desktop Links */}
-        <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase text-slate-700 font-semibold">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="hover:text-brand-orange transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-orange hover:after:w-full after:transition-all"
-            >
-              {link.label}
+          {/* Brand Identity / Institutional Crests */}
+          <div className="flex items-center gap-4 sm:gap-6">
+            <a href="#" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
+              <TapmiLogo className="h-9 sm:h-10 w-auto" variant="light" />
+              <div className="hidden sm:block h-6 w-px bg-wine-700/80" />
+              <MaheLogo className="hidden sm:block h-9 w-auto" variant="light" />
             </a>
-          ))}
-        </nav>
-
-        {/* Mobile Hamburger Toggle */}
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-brand-orange"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
-        {/* Right Liquid Glass CTA */}
-        <div className="flex items-center gap-4">
-          <a href="#register">
-            <LiquidButton size="lg" className="bg-brand-orange text-white font-mono font-bold text-xs uppercase tracking-wider">
-              <span>REGISTER NOW</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </LiquidButton>
-          </a>
-        </div>
-
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white/98 backdrop-blur-xl border-b border-slate-200 p-6 flex flex-col gap-5 shadow-2xl animate-in slide-in-from-top-4 duration-200">
-          <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
-            <TapmiLogo className="h-8 w-auto" />
-            <MaheLogo className="h-8 w-auto" />
           </div>
-          <nav className="flex flex-col gap-4 text-sm font-mono tracking-wider uppercase text-slate-700 font-semibold">
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="hover:text-brand-orange py-2 border-b border-slate-100"
+                className="transition-colors duration-200 hover:text-glc-orange focus:outline-none focus:text-glc-magenta"
               >
                 {link.label}
               </a>
             ))}
           </nav>
-          <a href="#register" onClick={() => setMobileMenuOpen(false)} className="w-full">
-            <LiquidButton size="xl" className="w-full bg-brand-orange text-white font-mono font-bold text-xs uppercase tracking-wider">
-              <span>REGISTER NOW</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </LiquidButton>
-          </a>
+
+          {/* Action Button & Mobile Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href="#register"
+              className="relative inline-flex items-center justify-center px-4 sm:px-5 py-2 text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_20px_-3px_rgba(244,81,151,0.5)]"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange opacity-95 group-hover:opacity-100 transition-opacity" />
+              <span className="relative flex items-center gap-1.5">
+                <span>Register</span>
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </span>
+            </a>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              type="button"
+              className="lg:hidden p-1.5 sm:p-2 text-cream-200 hover:text-white hover:bg-wine-800/60 rounded-md focus:outline-none focus:ring-2 focus:ring-glc-magenta"
+              aria-expanded={mobileMenuOpen}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-wine-950/98 backdrop-blur-xl border-b border-wine-800 px-6 py-6 transition-all duration-300">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between pb-3 border-b border-wine-800/80">
+              <MaheLogo className="h-8 w-auto" variant="light" />
+              <AccredationsLogo className="h-5 w-auto" variant="light" />
+            </div>
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-sm font-medium text-cream-100 hover:text-glc-magenta py-1 transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="#register"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-2 text-center py-2.5 px-4 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange shadow-md"
+            >
+              Register For Pass →
+            </a>
+          </div>
         </div>
       )}
-
     </header>
   )
 }

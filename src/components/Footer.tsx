@@ -2,81 +2,134 @@
 
 import React from 'react'
 import { EVENT_DETAILS } from '@/data/eventData'
-import { BottomTapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { TapmiLogo, MaheLogo, AccredationsLogo, NexoraLogo } from './Logos'
+import { MapPin, Mail, Phone, ArrowUp } from 'lucide-react'
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <footer className="w-full bg-slate-100 border-t border-slate-200 text-slate-600 text-xs py-16 px-4 md:px-8 relative z-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 pb-12 border-b border-slate-200">
+    <footer className="relative bg-wine-950 text-cream-200 border-t border-wine-800/80 pt-16 pb-12 overflow-hidden">
+      
+      {/* Dissolving bottom flow gradient */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-glc-magenta/50 to-transparent pointer-events-none" />
+      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-3/4 h-48 bg-wine-900/30 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Left Brand Summary & Bottom TAPMI SVG Logo Only */}
-        <div className="md:col-span-5 flex flex-col gap-6">
-          <div className="flex flex-col gap-4">
-            <BottomTapmiLogo className="h-12 w-auto self-start" />
-            <div className="flex flex-wrap items-center gap-4">
-              <MaheLogo className="h-10 w-auto" />
-              <AccredationsLogo className="h-7 w-auto" />
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-wine-900">
+          
+          {/* Col 1: Institutional Leadership & Brand */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="flex items-center gap-4 mb-2">
+              <TapmiLogo className="h-10 w-auto" variant="light" />
+              <div className="h-6 w-px bg-wine-800" />
+              <MaheLogo className="h-10 w-auto" variant="light" />
             </div>
-          </div>
 
-          <p className="text-xs text-slate-600 max-w-sm leading-relaxed font-sans">
-            The 4th annual Global Leadership Conference hosted by T. A. Pai Management Institute (TAPMI), Bengaluru — A constituent unit of Manipal Academy of Higher Education (MAHE, Manipal).
-          </p>
-
-          <div className="flex flex-col gap-2 pt-1 text-[11px] font-mono text-slate-700">
-            <div className="flex items-center gap-2">
-              <Mail className="w-3.5 h-3.5 text-brand-orange" />
-              <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="hover:text-brand-orange transition-colors font-bold">
-                {EVENT_DETAILS.contacts.email}
-              </a>
-            </div>
-            {EVENT_DETAILS.contacts.leads.map((lead, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-slate-600">
-                <Phone className="w-3 h-3 text-slate-400" />
-                <span>{lead.name} ({lead.role}): <span className="font-semibold">{lead.phone}</span></span>
+            <div>
+              <div className="text-xs font-mono uppercase tracking-widest text-glc-magenta font-semibold mb-1">
+                GLC 2026 Colloquium
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="font-tektype text-2xl text-[#ffc5b6] font-bold tracking-tight">
+                BUSINESS BEYOND BORDERS
+              </div>
+            </div>
 
-        {/* Quick Navigation Links */}
-        <div className="md:col-span-3 flex flex-col gap-3 font-mono text-[11px] uppercase tracking-wider">
-          <span className="text-slate-900 font-bold mb-1">NAVIGATION</span>
-          <a href="#theme" className="hover:text-brand-orange transition-colors">THEME OVERVIEW</a>
-          <a href="#reveals" className="hover:text-brand-orange transition-colors">SPEAKERS & PANELS</a>
-          <a href="#archive" className="hover:text-brand-orange transition-colors">PAST EDITIONS</a>
-          <a href="#advantage" className="hover:text-brand-orange transition-colors">DELEGATE ADVANTAGE</a>
-          <a href="#register" className="hover:text-brand-orange transition-colors">REGISTRATION</a>
-        </div>
+            <p className="text-xs text-cream-400 max-w-sm leading-relaxed">
+              Global Leadership Conference 4.0 organized by the TAPMI PACE Committee, T. A. Pai Management Institute Bengaluru, a constituent unit of Manipal Academy of Higher Education (Institution of Eminence).
+            </p>
 
-        {/* Venue & Location Details */}
-        <div className="md:col-span-4 flex flex-col gap-4 font-mono text-[11px]">
-          <span className="text-slate-900 font-bold uppercase tracking-wider">CONFERENCE VENUE</span>
-          <div className="flex items-start gap-2">
-            <MapPin className="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-1">
-              <span className="text-slate-900 font-bold">{EVENT_DETAILS.venue.name}</span>
-              <span className="text-slate-700">{EVENT_DETAILS.venue.institution}</span>
-              <span className="text-slate-600">{EVENT_DETAILS.venue.address}</span>
-              <span className="text-brand-orange font-bold pt-1">{EVENT_DETAILS.venue.coordinates}</span>
+            <div className="pt-2">
+              <AccredationsLogo className="h-6 w-auto" variant="light" />
             </div>
           </div>
+
+          {/* Col 2: Fast Quick Links */}
+          <div className="lg:col-span-3 space-y-3">
+            <div className="text-xs font-mono uppercase tracking-widest text-glc-magenta font-semibold mb-3">
+              Navigation
+            </div>
+            <ul className="space-y-2 text-xs text-cream-300">
+              <li>
+                <a href="#speakers" className="hover:text-glc-orange transition-colors">Speakers & Timeline</a>
+              </li>
+              <li>
+                <a href="#panels" className="hover:text-glc-orange transition-colors">The 5 Symposia Verticals</a>
+              </li>
+              <li>
+                <a href="#archive" className="hover:text-glc-orange transition-colors">GLC Historical Archive</a>
+              </li>
+              <li>
+                <a href="#advantage" className="hover:text-glc-orange transition-colors">Executive Delegate Advantage</a>
+              </li>
+              <li>
+                <a href="#venue" className="hover:text-glc-orange transition-colors">Event Venue & Google Maps</a>
+              </li>
+              <li>
+                <a href="#register" className="hover:text-glc-orange transition-colors">Register for Pass</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Secretariat & Contact */}
+          <div className="lg:col-span-4 space-y-3">
+            <div className="text-xs font-mono uppercase tracking-widest text-glc-orange font-semibold mb-3">
+              Conference Secretariat
+            </div>
+            <div className="space-y-2.5 text-xs text-cream-300">
+              <div className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-glc-magenta shrink-0 mt-0.5" />
+                <span className="text-cream-400">
+                  {EVENT_DETAILS.venue.institution}, Thanisandra Main Rd, Chokkanahalli, Bengaluru, Karnataka 560064
+                </span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Mail className="w-4 h-4 text-glc-pink shrink-0" />
+                <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="text-cream-200 hover:text-white transition-colors">
+                  {EVENT_DETAILS.contacts.email}
+                </a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Phone className="w-4 h-4 text-glc-orange shrink-0" />
+                <span className="text-cream-400">
+                  {EVENT_DETAILS.contacts.leads[0].name}: {EVENT_DETAILS.contacts.leads[0].phone}
+                </span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-      </div>
+        {/* Bottom Baseline Bar */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-cream-400">
+          <div>
+            © {new Date().getFullYear()} TAPMI Bengaluru · MAHE Manipal. All rights reserved.
+          </div>
 
-      {/* Bottom Copyright & Credit */}
-      <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10px] text-slate-500 font-medium">
-        <div>
-          © {new Date().getFullYear()} TAPMI Bengaluru, MAHE Manipal. All rights reserved.
+          {/* Subtle Approved IT Team Credit */}
+          <div className="flex items-center gap-2 text-cream-400">
+            <span>Designed & Engineered by</span>
+            <span className="text-cream-200 font-semibold flex items-center gap-1.5">
+              <span>NEXORA IT CLUB</span>
+            </span>
+          </div>
+
+          {/* Back to Top */}
+          <button
+            onClick={scrollToTop}
+            type="button"
+            className="flex items-center gap-1.5 text-cream-300 hover:text-glc-magenta transition-colors p-1"
+            aria-label="Scroll back to top"
+          >
+            <span>Back to top</span>
+            <ArrowUp className="w-3.5 h-3.5" />
+          </button>
         </div>
-        
-        <div className="flex items-center gap-4">
-          <span>PRIVACY POLICY</span>
-          <span>•</span>
-          <span>TERMS OF DELEGATE ACCESS</span>
-        </div>
+
       </div>
     </footer>
   )

@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -9,47 +9,62 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: {
-          DEFAULT: '#FFFFFF',
-          subtle: '#F8FAFC',
-          card: '#FFFFFF',
-          border: '#E2E8F0',
-          highlight: '#F1F5F9',
-          dark: '#0F172A',
+        wine: {
+          950: '#0B0207',
+          900: '#14040F',
+          850: '#1B0615',
+          800: '#24081C',
+          700: '#340C29',
+          600: '#4D123D',
         },
-        brand: {
+        glc: {
+          magenta: '#F45197',
+          pink: '#FF2D8D',
+          rose: '#E6007E',
           orange: '#F58232',
-          'orange-light': '#FF9E53',
-          'orange-dark': '#D66A1E',
-          pink: '#F45197',
+          amber: '#FF7A00',
+          burgundy: '#5B0C38',
         },
-        geo: {
-          cyan: '#0284C7',
-          emerald: '#059669',
-          gold: '#D97706',
-          line: 'rgba(2, 132, 199, 0.15)',
+        cream: {
+          50: '#FDFBF9',
+          100: '#F7EFE8',
+          200: '#EBDCD0',
+          300: '#C7B2A2',
+          400: '#9E8878',
         },
-        editorial: {
-          dark: '#0F172A',
-          subtle: '#1E293B',
-          muted: '#475569',
-          dim: '#64748B',
-          white: '#FFFFFF',
-        }
+        peach: {
+          300: '#ffc5b6',
+          DEFAULT: '#ffc5b6',
+        },
       },
       fontFamily: {
-        // Strict TAPMI Guidelines Typography: Helvetica Now & Sabon LT Std
-        sans: ['"Helvetica Now"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
-        serif: ['"Sabon LT Std"', '"Sabon"', '"EB Garamond"', 'Georgia', 'serif'],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        tektype: ['var(--font-tektype)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-tektype)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-sabon)', 'Georgia', 'serif'],
       },
-      backgroundImage: {
-        'grid-pattern': "linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px)",
-        'dot-pattern': "radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px)",
+      keyframes: {
+        'flow-drift': {
+          '0%, 100%': { transform: 'scale(1) translate(0px, 0px)' },
+          '50%': { transform: 'scale(1.03) translate(-8px, -4px)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.6', filter: 'brightness(1)' },
+          '50%': { opacity: '0.9', filter: 'brightness(1.2)' },
+        },
+        'shimmer': {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+      },
+      animation: {
+        'flow-drift': 'flow-drift 14s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 6s ease-in-out infinite',
+        'shimmer': 'shimmer 4s linear infinite',
       },
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

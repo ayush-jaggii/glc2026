@@ -2,82 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Tektype';
+  src: url('/fonts/Tektype-Regular.ttf') format('truetype');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --color-canvas: #FFFFFF;
-  --color-canvas-subtle: #F8FAFC;
-  --color-brand-orange: #F58232;
-  --color-brand-pink: #F45197;
-  --color-editorial-dark: #0F172A;
-  --font-serif: "Sabon LT Std", "Sabon", "EB Garamond", Georgia, serif;
-  --font-sans: "Helvetica Now", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --background: #0B0207;
+  --foreground: #FDFBF9;
+  --font-tektype: 'Tektype', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --color-wine-deep: #0B0207;
+  --color-wine-card: #160511;
+  --color-wine-border: #2C0B23;
+  --color-glc-magenta: #F45197;
+  --color-glc-orange: #F58232;
+  --color-glc-pink: #FF2D8D;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
-  background-color: #FFFFFF;
-  color: #0F172A;
+  background-color: #0B0207;
+  color: #FDFBF9;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #0F172A;
+  background-color: #0B0207;
+  color: #FDFBF9;
   overflow-x: hidden;
-  font-family: var(--font-sans);
+  selection-background-color: #F45197;
+  selection-color: #FFFFFF;
 }
 
-h1, h2, .font-serif {
-  font-family: var(--font-serif);
+::selection {
+  background: #F45197;
+  color: #FFFFFF;
 }
 
-/* Custom Light Scrollbar */
+/* Custom scrollbar matching deep wine palette */
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #F8FAFC;
+  background: #0B0207;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #2D0A22;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #F58232;
+  background: #F45197;
 }
 
-/* Selection */
-::selection {
-  background: rgba(244, 81, 151, 0.2);
-  color: #0F172A;
+/* Typography styles */
+.font-tektype {
+  font-family: var(--font-tektype);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-/* Subtle Light Grid & Noise Overlay */
-.bg-grid-overlay {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+/* Institutional Architecture & Panel Surfaces */
+.wine-glass {
+  background: #13030F;
+  border: 1px solid rgba(52, 12, 41, 0.9);
 }
 
-.bg-dot-overlay {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
+.wine-glass-hover:hover {
+  background: #180413;
+  border-color: rgba(77, 18, 61, 0.9);
 }
 
-.text-gradient-orange {
-  background: linear-gradient(135deg, #F58232 0%, #F45197 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-brand {
-  background: linear-gradient(135deg, #0F172A 30%, #F58232 70%, #F45197 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.border-subtle {
-  border-color: rgba(15, 23, 42, 0.08);
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

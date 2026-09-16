@@ -14,15 +14,17 @@ export interface PanelSchema {
   number: string;
   title: string;
   category: string;
+  subtitle: string;
   description: string;
   keyQuestions: string[];
   isRevealed: boolean;
 }
 
-export interface ArchiveItem {
+export interface ArchiveEdition {
   edition: string;
   year: string;
   theme: string;
+  tagline: string;
   summary: string;
   stats: { label: string; value: string }[];
   highlights: string[];
@@ -31,197 +33,185 @@ export interface ArchiveItem {
 export const EVENT_DETAILS = {
   title: "GLC 2026",
   fullTitle: "Global Leadership Conference 4.0",
+  colloquiumTitle: "A GLOBAL LEADERSHIP COLLOQUIUM",
   theme: "BUSINESS BEYOND BORDERS",
-  tagline: "Navigating Enterprise Strategy & Capital Across Geopolitical Fault Lines",
+  tagline: "Different Perspectives. A Brighter Tomorrow.",
+  subtext: "Navigating Enterprise Strategy, Geopolitics & Capital Convergence",
   date: "OCTOBER 10, 2026",
   day: "Saturday",
-  targetDateIso: "2026-10-10T09:30:00+05:30",
-  revealTargetIso: "2026-09-15T00:00:00+05:30",
+  time: "9:00 AM ONWARDS",
+  targetDateIso: "2026-10-10T09:00:00+05:30",
+  speakerRevealDateIso: "2026-09-20T00:00:00+05:30",
   venue: {
     name: "Dr. Ramdas M. Pai Auditorium",
     institution: "Manipal Academy of Higher Education (MAHE)",
     campus: "Bengaluru Campus",
     address: "Thanisandra Main Rd, Chokkanahalli, Bengaluru, Karnataka 560064",
     city: "Bengaluru, India",
-    coordinates: "12.9716° N, 77.5946° E"
   },
   organizer: {
-    name: "T. A. PAI MANAGEMENT INSTITUTE (TAPMI)",
+    institution: "T. A. PAI MANAGEMENT INSTITUTE (TAPMI)",
+    campus: "Bengaluru Campus",
     committee: "TAPMI - PACE Committee",
-    university: "MAHE, Manipal (An Institution of Eminence)",
+    parentUniversity: "Manipal Academy of Higher Education (MAHE)",
+    accreditations: ["AACSB Accredited", "AMBA Accredited", "NBA Accredited", "Institution of Eminence"],
   },
   contacts: {
     email: "engage.tapmiblr@manipal.edu",
     leads: [
       { name: "Abhishek Singh", phone: "+91 917 955 5441", role: "PACE Committee Lead" },
-      { name: "Johnson P", phone: "+91 960 601 3114", role: "Corporate Relations Lead" }
-    ]
+      { name: "Johnson P", phone: "+91 960 601 3114", role: "Corporate Relations Lead" },
+    ],
   },
-  registrationUrl: "https://tapmi.edu.in/glc2026/register",
+  registrationSheetId: "1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0",
+  youtubeVideoId: "sGkYVVQqLQQ", // Official GLC Recap Video
 };
 
-export const THEME_PILLARS = [
-  {
-    code: "01",
-    title: "Geopolitical Friction & Corporate Strategy",
-    subtitle: "Sanctions, Tech Decoupling & Supply Networks",
-    description: "How multinational enterprises restructure cross-border operations when trade corridors are redefined by sovereign statecraft.",
-    icon: "Globe2"
-  },
-  {
-    code: "02",
-    title: "Capital Flows Without Borders",
-    subtitle: "Global Financial Infrastructure & BFSI Resilience",
-    description: "Navigating cross-border capital allocation, currency volatility, sovereign fund moves, and regulatory fragmentation.",
-    icon: "TrendingUp"
-  },
-  {
-    code: "03",
-    title: "GCCs & The Distributed Enterprise",
-    subtitle: "Global Capability Centres Driving Core Innovation",
-    description: "Transforming regional GCC hubs from cost efficiency nodes into global strategic decision epicenters.",
-    icon: "Cpu"
-  },
-  {
-    code: "04",
-    title: "Energy Transitions & Automotive EV Shifts",
-    subtitle: "Critical Minerals, EV Chains & Geopolitics",
-    description: "Managing supply security for battery minerals, rare earths, and clean-tech manufacturing across shifting trade blocs.",
-    icon: "Zap"
-  }
-];
-
-export const PANELS_PREVIEW: PanelSchema[] = [
+export const PANELS_LIST: PanelSchema[] = [
   {
     id: "panel-1",
     number: "01",
     title: "Ctrl + Alt + Global",
     category: "Information Technology & GCCs",
-    description: "The restructuring of global IT hubs, cloud sovereignty, cross-border data governance, and AI capability centers.",
+    subtitle: "Enterprise Tech Decoupling & The Future of Capability Centers",
+    description: "The restructuring of global IT hubs, data localization protocols, sovereign cloud boundaries, and the ascendance of Indian GCCs as global architectural nerve centers.",
     keyQuestions: [
-      "How do enterprise tech leaders navigate data localization laws across jurisdictions?",
-      "What is the future role of Indian GCCs in global architectural decision-making?"
+      "How do multinational enterprises navigate data localization and cross-border AI governance?",
+      "From cost efficiency to core architecture: How GCCs drive enterprise-wide innovation."
     ],
-    isRevealed: false
+    isRevealed: false,
   },
   {
     id: "panel-2",
     number: "02",
     title: "Aisle Be There",
     category: "FMCG & Consumer Goods",
-    description: "Cross-border consumer supply chains, regional sourcing agility, and brand positioning amidst economic nationalism.",
+    subtitle: "Global Supply Networks & Borderless Consumer Resonance",
+    description: "Cross-border consumer supply chains, regional sourcing agility, and brand positioning amidst economic nationalism and changing retail landscapes.",
     keyQuestions: [
-      "How are global FMCG giants re-engineering supply routes for raw materials?",
-      "Local vs. global brand narratives in volatile international markets."
+      "How are global FMCG leaders re-engineering sourcing to withstand localized disruptions?",
+      "Maintaining universal brand authenticity while adapting to hyper-local cultural nuances."
     ],
-    isRevealed: false
+    isRevealed: false,
   },
   {
     id: "panel-3",
     number: "03",
     title: "Capital Without Borders",
     category: "BFSI & Investment Banking",
-    description: "Managing international liquidity, sovereign wealth shifts, regulatory fragmentation, and cross-border M&A.",
+    subtitle: "Global Liquidity, Sovereign Wealth & International Settlement",
+    description: "Managing international liquidity, cross-border M&A, digital currency protocols, and shifting institutional capital across emerging market corridors.",
     keyQuestions: [
-      "Where is global capital moving in response to geopolitical realignments?",
-      "The impact of digital currency protocols on international settlement."
+      "Where is institutional capital allocating in response to geopolitical realignments?",
+      "The role of next-generation digital settlement rails in bypassing legacy frictions."
     ],
-    isRevealed: false
+    isRevealed: false,
   },
   {
     id: "panel-4",
     number: "04",
     title: "Shifting Gears",
     category: "Automotive & Electric Mobility",
-    description: "EV battery supply chains, rare-earth mineral geopolitics, and global automotive manufacturing alliances.",
+    subtitle: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs",
+    description: "EV battery supply chains, rare-earth mineral geopolitics, regulatory mandates, and global automotive manufacturing alliances.",
     keyQuestions: [
-      "How auto OEMs are mitigating battery mineral supply chain choke points.",
-      "Trade tariffs and global market penetration strategies for next-gen mobility."
+      "Mitigating critical mineral bottlenecks and battery recycling corridors.",
+      "Navigating cross-border tariffs and localized manufacturing incentives in EV adoption."
     ],
-    isRevealed: false
+    isRevealed: false,
   },
   {
     id: "panel-5",
     number: "05",
     title: "Going Viral, Staying Local",
     category: "Media, Marketing & Global Brands",
-    description: "Cultural resonance vs. international scale: navigating brand reputation across hyper-sensitive global platforms.",
+    subtitle: "Cultural Resonance vs. International Scale",
+    description: "Balancing universal brand narratives with hyper-localized nuances across fragmented media channels and culturally sensitive global audiences.",
     keyQuestions: [
-      "How global marketing teams balance universal messaging with localized cultural context.",
-      "Managing cross-border crisis communications during geopolitical friction."
+      "How enterprise marketing teams maintain global brand trust during geopolitical friction.",
+      "Leveraging generative media without eroding regional consumer empathy."
     ],
-    isRevealed: false
-  }
+    isRevealed: false,
+  },
 ];
 
-export const ARCHIVE_EDITIONS: ArchiveItem[] = [
+export const ARCHIVE_EDITIONS: ArchiveEdition[] = [
   {
     edition: "GLC 3.0",
     year: "2025",
     theme: "LeadXAI — Strategic Intelligence & Transformation",
-    summary: "Explored the strategic integration of artificial intelligence across corporate boardrooms, financial architecture, and workforce design.",
+    tagline: "Reimagining Global Value from India",
+    summary: "Explored the transformative integration of enterprise AI across corporate boardrooms, algorithmic finance, and future workforce capabilities.",
     stats: [
       { label: "C-Suite Keynotes", value: "35+" },
       { label: "Executive Delegates", value: "850+" },
-      { label: "GCC Leadership Hubs", value: "20+" }
+      { label: "Participating MNCs", value: "65+" },
     ],
     highlights: [
-      "Keynotes from Fortune 500 AI Vice Presidents",
-      "Executive roundtables on Enterprise AI Governance",
-      "TAPMI Business Excellence Awards 2025"
-    ]
+      "Executive address on Agentic AI as a Strategic Catalyst in Global GCCs",
+      "Roundtables on Enterprise AI Ethics, Cloud Sovereignty & IP Protection",
+      "TAPMI Business Excellence Awards honoring trailblazing corporate initiatives"
+    ],
   },
   {
     edition: "GLC 2.0",
     year: "2024",
     theme: "Lead AI — Shaping the Future Workforce",
-    summary: "Gathered global industry leaders to chart organizational agility, human-AI synergy, and emerging digital workforce competencies.",
+    tagline: "Human-Centric Digital Agility",
+    summary: "Conducted deep discourse on organizational agility, cognitive automation, and enterprise capability building amidst rapid disruption.",
     stats: [
       { label: "Global Speakers", value: "28" },
-      { label: "Participating Companies", value: "60+" },
-      { label: "Delegate Satisfaction", value: "98%" }
+      { label: "Industry Partners", value: "50+" },
+      { label: "Delegate Satisfaction", value: "98%" },
     ],
     highlights: [
-      "CHRO Symposia on Talent Reskilling",
-      "Industry-wide GCC capability benchmarks",
-      "Networking summits across Tech & BFSI sectors"
-    ]
+      "Symposia on executive talent reskilling and leadership succession",
+      "High-level benchmarking across BFSI and Healthcare delivery hubs",
+      "Student and corporate research colloquiums"
+    ],
   },
   {
     edition: "GLC 1.0",
     year: "2023",
     theme: "Resilient Leadership in Unpredictable Economies",
-    summary: "The inaugural flagship conference establishing TAPMI Bengaluru as a premier nexus for high-level business discourse.",
+    tagline: "The Inaugural Leadership Summit",
+    summary: "The flagship conference that inaugurated TAPMI Bengaluru as a premier national nexus for high-level business leadership.",
     stats: [
-      { label: "Industry Partners", value: "25+" },
-      { label: "Delegates & Leaders", value: "600+" }
+      { label: "Corporate Partners", value: "25+" },
+      { label: "Delegates & Leaders", value: "600+" },
+      { label: "Focus Tracks", value: "4" },
     ],
     highlights: [
-      "Inaugural address by TAPMI Academic Senate & Industry Deans",
-      "Strategic Panels on Supply Chain Resilience"
-    ]
-  }
+      "Inaugural address by TAPMI Academic Senate & Industry Advisory Board",
+      "Actionable frameworks for post-pandemic supply chain diversification",
+      "Establishment of the annual PACE Executive Dialogue Series"
+    ],
+  },
 ];
 
 export const DELEGATE_ADVANTAGES = [
   {
-    num: "01",
+    step: "01",
     title: "C-Suite & Geopolitical Intelligence",
-    description: "Direct engagement with global enterprise leaders, GCC heads, and international strategists sharing high-stakes operational frameworks."
+    description: "Direct, off-the-record discussions with multinational CEOs, GCC managing directors, and global strategists navigating volatile border dynamics.",
+    metric: "40+ CXO Speakers",
   },
   {
-    num: "02",
-    title: "Cross-Industry Synthesis",
-    description: "Insights spanning IT/GCCs, BFSI, FMCG, Automotive/EV, and Media & Marketing — breaking operational silos."
+    step: "02",
+    title: "Cross-Industry Synthesis Across 5 Sectors",
+    description: "Gain cross-cutting perspectives spanning IT/GCCs, BFSI, FMCG, Electric Mobility, and Media — breaking through traditional industry echo chambers.",
+    metric: "5 High-Impact Tracks",
   },
   {
-    num: "03",
-    title: "Institutional Credibility",
-    description: "Hosted by TAPMI Bengaluru (MAHE, Manipal) — an Institution of Eminence renowned for academic rigor and industry partnerships."
+    step: "03",
+    title: "MAHE / TAPMI Institutional Credibility",
+    description: "Backed by an Institution of Eminence with AACSB and AMBA double accreditation, ensuring scholarly depth, rigorous research, and verified standards.",
+    metric: "Top 1% Global B-Schools",
   },
   {
-    num: "04",
-    title: "Executive Networking Nexus",
-    description: "Connect with over 1,000+ senior leaders, CXOs, academic fellows, and high-impact management delegates."
-  }
+    step: "04",
+    title: "Curated Executive Networking Nexus",
+    description: "Connect with over 1,000+ senior corporate leaders, academic fellows, innovators, and high-caliber management delegates in an exclusive setting.",
+    metric: "1,000+ Decision Makers",
+  },
 ];

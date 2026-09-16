@@ -1,40 +1,76 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import type { Metadata } from "next";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
+import "./globals.css";
+
+const tektype = localFont({
+  src: "../../public/fonts/Tektype-Regular.ttf",
+  variable: "--font-tektype",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: 'GLC 2026 — Business Beyond Borders | TAPMI Bengaluru',
-  description: 'Global Leadership Conference 4.0 hosted by TAPMI Bengaluru (MAHE, Manipal). Navigating enterprise strategy, global capital, and trade networks across geopolitical fault lines.',
-  keywords: ['GLC 2026', 'TAPMI Bengaluru', 'Global Leadership Conference', 'Business Beyond Borders', 'Geopolitics', 'MAHE Manipal', 'GCC Leadership'],
+  metadataBase: new URL("https://glc.tapmi.edu.in"),
+  title: "GLC 2026 | BUSINESS BEYOND BORDERS — Global Leadership Colloquium",
+  description: "Global Leadership Conference 4.0 hosted by TAPMI Bengaluru (MAHE, Manipal). Navigating enterprise strategy, global capability centers, geopolitics, and capital convergence across international borders.",
+  keywords: [
+    "GLC 2026",
+    "Global Leadership Conference",
+    "Business Beyond Borders",
+    "TAPMI Bengaluru",
+    "MAHE Manipal",
+    "Leadership Colloquium",
+    "GCCs",
+    "BFSI",
+    "Global Trade"
+  ],
+  authors: [{ name: "TAPMI - PACE Committee & MAHE Bengaluru" }],
   openGraph: {
-    title: 'GLC 2026 — Business Beyond Borders',
-    description: 'The 4th annual Global Leadership Conference hosted by TAPMI Bengaluru.',
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'GLC 2026 — TAPMI Bengaluru',
+    title: "GLC 2026 — BUSINESS BEYOND BORDERS",
+    description: "TAPMI Bengaluru Flagship Global Leadership Colloquium · 10 October 2026",
+    url: "https://glc.tapmi.edu.in",
+    siteName: "GLC 2026",
+    images: [
+      {
+        url: "/images/ribbons/hero-ribbon-confluence.jpg",
+        width: 2087,
+        height: 753,
+        alt: "GLC 2026 Business Beyond Borders Visual Identity",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
   },
-}
+  twitter: {
+    card: "summary_large_image",
+    title: "GLC 2026 — BUSINESS BEYOND BORDERS",
+    description: "TAPMI Bengaluru Flagship Global Leadership Colloquium · 10 October 2026",
+    images: ["/images/ribbons/hero-ribbon-confluence.jpg"],
+  },
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="bg-white text-slate-900 min-h-screen flex flex-col antialiased selection:bg-brand-orange/20 selection:text-slate-900 font-sans">
-        <Navigation />
-        <main className="flex-1 w-full relative z-10">
-          {children}
-        </main>
-        <Footer />
+    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${tektype.variable}`}>
+      <body className="bg-wine-950 text-cream-50 font-sans antialiased min-h-screen selection:bg-glc-magenta selection:text-white">
+        {children}
       </body>
     </html>
-  )
+  );
 }

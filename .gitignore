@@ -26,5 +26,14 @@ yarn-error.log*
 .env*.local
 .env
 
+# Root asset dumps
+/image.png
+/venue-bg-2.png
+/*.svg
+/*.ttf
+/*.pdf
+/*.jpeg
+/*.jpg
+
 # Vercel
 .vercel
