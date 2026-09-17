@@ -34,6 +34,7 @@ yarn-error.log*
 /*.pdf
 /*.jpeg
 /*.jpg
+/Photos.zip
 
 # Vercel
 .vercel
