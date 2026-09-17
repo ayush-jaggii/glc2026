@@ -21,21 +21,23 @@ export default function RibbonFlowCanvas() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let animationFrameId: number
+    let animationFrameId = 0
     let isVisible = true
-    let width = (canvas.width = window.innerWidth)
-    let height = (canvas.height = window.innerHeight)
+    let width = (canvas.width = canvas.parentElement?.clientWidth || window.innerWidth)
+    let height = (canvas.height = canvas.parentElement?.clientHeight || window.innerHeight)
 
     const handleResize = () => {
       if (!canvas) return
-      width = canvas.width = window.innerWidth
-      height = canvas.height = window.innerHeight
+      const rect = canvas.parentElement ? canvas.parentElement.getBoundingClientRect() : canvas.getBoundingClientRect()
+      width = canvas.width = Math.floor(rect.width)
+      height = canvas.height = Math.floor(rect.height)
     }
     window.addEventListener('resize', handleResize)
+    handleResize()
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current.targetX = e.clientX / width
-      mouseRef.current.targetY = e.clientY / height
+      mouseRef.current.targetX = e.clientX / Math.max(width, 1)
+      mouseRef.current.targetY = e.clientY / Math.max(height, 1)
     }
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
@@ -64,20 +66,24 @@ export default function RibbonFlowCanvas() {
 
     let time = 0
 
-    // IntersectionObserver to pause when off-screen
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting
-        if (isVisible && !animationFrameId) {
-          render()
-        }
-      },
-      { threshold: 0.05 }
-    )
-    observer.observe(canvas)
+    const stopLoop = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = 0
+      }
+    }
+
+    const startLoop = () => {
+      if (!animationFrameId && isVisible && !prefersReducedMotion) {
+        animationFrameId = requestAnimationFrame(render)
+      }
+    }
 
     const render = () => {
-      if (!isVisible) return
+      if (!isVisible) {
+        animationFrameId = 0
+        return
+      }
       time += 0.015
 
       // Smooth mouse interpolation
@@ -86,27 +92,44 @@ export default function RibbonFlowCanvas() {
 
       ctx.clearRect(0, 0, width, height)
 
-      // Dynamic nexus focal point aligned with ribbon intersection
-      const nexusX = width * 0.72 + (mouseRef.current.x - 0.5) * 25
-      const nexusY = height * 0.58 + (mouseRef.current.y - 0.5) * 18
+      // Screen & texture aspect ratios
+      const screenAspect = width / Math.max(height, 1)
+      const texAspect = 1674 / 940
+      const isMobile = screenAspect < 1.0
+
+      // Dynamic nexus focal point aligned with ribbon intersection in both mobile cover and desktop
+      let nexusX: number
+      let nexusY: number
+
+      if (screenAspect < texAspect) {
+        // Match FlowingRibbonCanvas mobile cover projection
+        const scale = screenAspect / texAspect
+        const focusX = 0.5 + (0.63 - 0.5) * Math.min(Math.max((1.0 - screenAspect) * 1.4, 0), 1)
+        const stX = (0.7312 - focusX) / scale + 0.5
+        nexusX = Math.min(Math.max(stX, 0.15), 0.94) * width + (mouseRef.current.x - 0.5) * 20
+        nexusY = height * 0.59 + (mouseRef.current.y - 0.5) * 15
+      } else {
+        nexusX = width * 0.72 + (mouseRef.current.x - 0.5) * 25
+        nexusY = height * 0.58 + (mouseRef.current.y - 0.5) * 18
+      }
 
       // Render flowing light impulse particles
       for (const p of particles) {
         p.t += p.speed
         if (p.t > 1) {
           p.t = 0
-          p.offsetY = (Math.random() - 0.5) * 45
+          p.offsetY = (Math.random() - 0.5) * (isMobile ? 30 : 45)
         }
 
         let px = 0
         let py = 0
 
         if (p.stream === 'magenta') {
-          // Magenta stream enters from left curves to nexus
+          // Magenta stream enters from left, sweeping smoothly into the nexus
           const startX = 0
-          const startY = height * 0.32 + p.offsetY
-          const cpX = width * 0.35
-          const cpY = height * 0.58 + Math.sin(time * 0.6 + p.offsetY) * 15 + p.offsetY
+          const startY = height * (isMobile ? 0.35 : 0.32) + p.offsetY
+          const cpX = nexusX * 0.44
+          const cpY = height * (isMobile ? 0.50 : 0.58) + Math.sin(time * 0.6 + p.offsetY) * 14 + p.offsetY
 
           // Quadratic Bezier interpolation
           const u = 1 - p.t
@@ -121,9 +144,9 @@ export default function RibbonFlowCanvas() {
         } else {
           // Orange stream leaves nexus and sweeps toward right edge
           const endX = width
-          const endY = height * 0.68 + p.offsetY
-          const cpX = width * 0.85
-          const cpY = height * 0.52 + Math.cos(time * 0.6 + p.offsetY) * 15 + p.offsetY
+          const endY = height * (isMobile ? 0.72 : 0.68) + p.offsetY
+          const cpX = nexusX + (width - nexusX) * 0.52
+          const cpY = height * (isMobile ? 0.60 : 0.52) + Math.cos(time * 0.6 + p.offsetY) * 14 + p.offsetY
 
           const u = 1 - p.t
           const tt = p.t * p.t
@@ -146,11 +169,35 @@ export default function RibbonFlowCanvas() {
       animationFrameId = requestAnimationFrame(render)
     }
 
-    render()
+    // IntersectionObserver to pause when off-screen and reliably resume when scrolled back into view
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting
+        if (isVisible) {
+          startLoop()
+        } else {
+          stopLoop()
+        }
+      },
+      { threshold: 0.0 }
+    )
+    observer.observe(canvas)
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopLoop()
+      } else if (isVisible) {
+        startLoop()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    startLoop()
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      stopLoop()
       observer.disconnect()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
     }

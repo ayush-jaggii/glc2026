@@ -13,23 +13,28 @@ export default function FlowingRibbonCanvas() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    // Try WebGL context
-    const gl = (canvas.getContext('webgl', {
+    // Try WebGL context with preserveDrawingBuffer to prevent clearing on scroll/compositor pass
+    const contextOptions: WebGLContextAttributes = {
       alpha: true,
       antialias: true,
       powerPreference: 'high-performance',
       premultipliedAlpha: false,
-    }) ||
-      canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
+      preserveDrawingBuffer: true,
+    }
+
+    const gl = (canvas.getContext('webgl', contextOptions) ||
+      canvas.getContext('experimental-webgl', contextOptions)) as WebGLRenderingContext | null
 
     if (!gl) {
       setWebglSupported(false)
       return
     }
 
-    let animationFrameId: number
+    let animationFrameId = 0
     let isVisible = true
     let startTime = performance.now()
+    let textureLoaded = false
+    let texture: WebGLTexture | null = null
 
     // Shaders
     const vsSource = `
@@ -50,18 +55,41 @@ export default function FlowingRibbonCanvas() {
       uniform vec2 u_resolution;
 
       void main() {
-        vec2 uv = v_uv;
-        // Invert Y for image texture orientation
-        uv.y = 1.0 - uv.y;
+        // Screen space coordinates [0, 1]
+        vec2 st = v_uv;
+        st.y = 1.0 - st.y; // Invert Y so (0,0) is top-left, matching image coordinates
+
+        // Texture aspect ratio (1674 / 940 = 1.78085)
+        float texAspect = 1674.0 / 940.0;
+        float screenAspect = u_resolution.x / max(u_resolution.y, 1.0);
+
+        // Aspect-ratio cover mapping: completely eliminates horizontal squeezing on mobile!
+        vec2 uv = st;
+        vec2 nexusPos = vec2(0.7312, 0.5936);
+        vec2 stNexus = nexusPos;
+
+        if (screenAspect < texAspect) {
+          // Mobile / Portrait: Screen is narrower than the texture
+          // Scale X to preserve exact 1:1 physical aspect ratio
+          float scale = screenAspect / texAspect;
+          // Smoothly bias focus toward the focal nexus (0.62) on mobile screens
+          float focusX = mix(0.5, 0.62, clamp((1.0 - screenAspect) * 1.4, 0.0, 1.0));
+          uv.x = (st.x - 0.5) * scale + focusX;
+          stNexus.x = (nexusPos.x - focusX) / scale + 0.5;
+        } else {
+          // Desktop / Ultrawide: Screen is wider than the texture
+          float scale = texAspect / screenAspect;
+          uv.y = (st.y - 0.5) * scale + 0.5;
+          stNexus.y = (nexusPos.y - 0.5) / scale + 0.5;
+        }
 
         float t = u_time * 0.38;
 
         // Smooth interactive parallax tilt from cursor
         vec2 m = (u_mouse - 0.5) * 0.025;
 
-        // Fluid ribbon traveling wave displacement
-        // Clean margin dampener near canvas edges so borders never stretch
-        float edgeMargin = smoothstep(0.0, 0.08, uv.y) * smoothstep(1.0, 0.92, uv.y);
+        // Clean margin dampener near screen top/bottom borders
+        float edgeMargin = smoothstep(0.0, 0.06, st.y) * smoothstep(1.0, 0.94, st.y);
 
         // Layered harmonic traveling waves flowing gracefully from left to right
         float w1 = sin(uv.x * 4.5 - t * 2.0 + uv.y * 1.6) * 0.012;
@@ -72,11 +100,11 @@ export default function FlowingRibbonCanvas() {
         float swell = sin(t * 1.1 + uv.x * 2.8) * 0.007;
 
         vec2 warpedUV = uv;
-        warpedUV.y += (w1 + w2 + w3 + swell) * edgeMargin + m.y * (1.0 - uv.x);
-        warpedUV.x += cos(uv.y * 3.5 - t * 0.9) * 0.005 * edgeMargin + m.x * uv.y;
+        warpedUV.y += (w1 + w2 + w3 + swell) * edgeMargin + m.y * (1.0 - st.x);
+        warpedUV.x += cos(uv.y * 3.5 - t * 0.9) * 0.005 * edgeMargin + m.x * st.y;
 
-        // Clamp coordinates cleanly
-        warpedUV = clamp(warpedUV, 0.001, 0.999);
+        // Clamp coordinates cleanly to avoid texture border bleeding
+        warpedUV = clamp(warpedUV, 0.002, 0.998);
 
         // Sample texture with subtle chromatic dispersion for optical luxury sheen
         float r = texture2D(u_texture, warpedUV + vec2(0.001 * sin(t * 1.5), 0.0)).r;
@@ -94,22 +122,22 @@ export default function FlowingRibbonCanvas() {
         vec3 pulseColor = mix(vec3(1.0, 0.35, 0.75), vec3(1.0, 0.75, 0.25), smoothstep(0.4, 0.8, uv.x));
         texCol.rgb += pulseColor * pulse * 0.28;
 
-        // Nexus focal point anamorphic bloom (aligned precisely with pinch at x=0.7312, y=0.5936)
-        vec2 nexusPos = vec2(0.7312, 0.5936);
-        float nexusDist = length((uv - nexusPos) * vec2(1.2, 2.2));
+        // Nexus focal point bloom in true screen space (avoids mobile distortion)
+        vec2 screenDelta = (st - stNexus) * vec2(screenAspect, 1.0);
+        float nexusDist = length(screenDelta);
         float breath = 0.5 + 0.5 * sin(t * 2.2);
         
-        // Anamorphic horizontal streak centered right through the nexus pinch
-        float streak = exp(-pow((uv.y - nexusPos.y) * 45.0, 2.0)) * exp(-pow((uv.x - nexusPos.x) * 4.5, 2.0));
+        // Anamorphic horizontal streak centered right through the nexus
+        float streak = exp(-pow((st.y - stNexus.y) * 40.0, 2.0)) * exp(-pow(screenDelta.x * 4.0, 2.0));
         vec3 streakCol = mix(vec3(1.0, 0.98, 1.0), vec3(1.0, 0.55, 0.85), 0.35);
-        texCol.rgb += streakCol * streak * 0.4 * (0.8 + 0.2 * breath);
+        texCol.rgb += streakCol * streak * 0.35 * (0.8 + 0.2 * breath);
 
         // Soft radial glow at nexus
-        float radialGlow = exp(-nexusDist * 7.0) * 0.25 * (0.75 + 0.25 * breath);
+        float radialGlow = exp(-nexusDist * 6.0) * 0.22 * (0.75 + 0.25 * breath);
         texCol.rgb += vec3(1.0, 0.75, 0.88) * radialGlow;
 
-        // Edge vignetting to keep deep contrast
-        float vig = 1.0 - smoothstep(0.75, 1.5, length(uv - 0.5));
+        // Edge vignetting in screen space to maintain deep contrast
+        float vig = 1.0 - smoothstep(0.75, 1.5, length(st - 0.5));
         texCol.rgb *= vig;
 
         gl_FragColor = texCol;
@@ -178,68 +206,6 @@ export default function FlowingRibbonCanvas() {
     const mouseLoc = gl.getUniformLocation(program, 'u_mouse')
     const texLoc = gl.getUniformLocation(program, 'u_texture')
 
-    // Handle Resize
-    const handleResize = () => {
-      if (!canvas || !containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = Math.floor(rect.width * dpr)
-      canvas.height = Math.floor(rect.height * dpr)
-      gl.viewport(0, 0, canvas.width, canvas.height)
-    }
-
-    window.addEventListener('resize', handleResize)
-    handleResize()
-
-    // Smooth Mouse Handler
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      mouseRef.current.targetX = (e.clientX - rect.left) / rect.width
-      mouseRef.current.targetY = (e.clientY - rect.top) / rect.height
-    }
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-
-    // Check reduced motion preference
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    // IntersectionObserver to pause when off-screen
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting
-        if (isVisible && !animationFrameId && !prefersReducedMotion) {
-          render()
-        }
-      },
-      { threshold: 0.05 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-
-    // Load texture
-    const texture = gl.createTexture()
-    const img = new window.Image()
-    img.crossOrigin = 'anonymous'
-    img.src = '/images/ribbons/brand-ribbon-flow.png'
-
-    img.onload = () => {
-      gl.bindTexture(gl.TEXTURE_2D, texture)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
-
-      if (prefersReducedMotion) {
-        drawFrame(0)
-      } else {
-        render()
-      }
-    }
-
-    img.onerror = () => {
-      setWebglSupported(false)
-    }
-
     function drawFrame(nowSec: number) {
       if (!canvas || !gl || !texture) return
       // Mouse spring interpolation
@@ -258,17 +224,124 @@ export default function FlowingRibbonCanvas() {
     }
 
     function render() {
-      if (!isVisible) return
+      if (!isVisible) {
+        animationFrameId = 0
+        return
+      }
       const now = (performance.now() - startTime) * 0.001
       drawFrame(now)
       animationFrameId = requestAnimationFrame(render)
     }
 
+    function startAnimation() {
+      if (!animationFrameId && isVisible && !prefersReducedMotion && textureLoaded) {
+        animationFrameId = requestAnimationFrame(render)
+      }
+    }
+
+    function stopAnimation() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = 0
+      }
+    }
+
+    // Handle Resize
+    const handleResize = () => {
+      if (!canvas || !containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const newWidth = Math.floor(rect.width * dpr)
+      const newHeight = Math.floor(rect.height * dpr)
+      if (canvas.width !== newWidth || canvas.height !== newHeight) {
+        canvas.width = newWidth
+        canvas.height = newHeight
+        gl.viewport(0, 0, canvas.width, canvas.height)
+      }
+      if (textureLoaded) {
+        const now = (performance.now() - startTime) * 0.001
+        drawFrame(now)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    // Smooth Mouse Handler
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      mouseRef.current.targetX = (e.clientX - rect.left) / rect.width
+      mouseRef.current.targetY = (e.clientY - rect.top) / rect.height
+    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+
+    // Check reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    // IntersectionObserver to pause when off-screen and reliably resume when scrolled back into view
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting
+        if (isVisible) {
+          if (textureLoaded) {
+            const now = (performance.now() - startTime) * 0.001
+            drawFrame(now)
+            startAnimation()
+          }
+        } else {
+          stopAnimation()
+        }
+      },
+      { threshold: 0.0 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+
+    // Handle Tab/Page Visibility (e.g. switching tabs or waking up on mobile)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAnimation()
+      } else if (isVisible && textureLoaded) {
+        const now = (performance.now() - startTime) * 0.001
+        drawFrame(now)
+        startAnimation()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    // Load texture
+    texture = gl.createTexture()
+    const img = new window.Image()
+    img.crossOrigin = 'anonymous'
+    img.src = '/images/ribbons/brand-ribbon-flow.png'
+
+    img.onload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+      textureLoaded = true
+
+      handleResize()
+      if (prefersReducedMotion) {
+        drawFrame(0)
+      } else if (isVisible) {
+        startAnimation()
+      }
+    }
+
+    img.onerror = () => {
+      setWebglSupported(false)
+    }
+
     return () => {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       observer.disconnect()
-      if (animationFrameId) cancelAnimationFrame(animationFrameId)
+      stopAnimation()
     }
   }, [])
 
@@ -280,7 +353,7 @@ export default function FlowingRibbonCanvas() {
           alt="Business Beyond Borders Ribbon Flow"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-[62%_50%]"
           sizes="100vw"
         />
       </div>

@@ -23,7 +23,8 @@ export default function HeroSection() {
 
       {/* 3. Vignette Overlays for deep contrast and high typography legibility */}
       <div className="absolute inset-0 bg-gradient-to-t from-wine-950 via-transparent to-wine-950/70 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-wine-950/85 via-transparent to-wine-950/85 pointer-events-none" />
+      <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-wine-950/85 via-transparent to-wine-950/85 pointer-events-none" />
+      <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-wine-950/50 via-transparent to-wine-950/70 pointer-events-none" />
 
       {/* 4. Main Hero Editorial Content */}
       <div className="relative z-20 max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full my-auto py-4 sm:py-6">
