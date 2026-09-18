@@ -18,6 +18,7 @@ export interface PanelTrack {
   badgeBg: string
   badgeBorder: string
   badgeText: string
+  accentGradient: string
 }
 
 export const PANEL_TRACKS: PanelTrack[] = [
@@ -26,54 +27,60 @@ export const PANEL_TRACKS: PanelTrack[] = [
     name: 'IT & Digital Acceleration',
     shortTitle: 'IT & GCC',
     color: '#3B82F6',
-    badgeBg: 'bg-blue-950/70',
-    badgeBorder: 'border-blue-700/60',
+    badgeBg: 'bg-blue-950/80',
+    badgeBorder: 'border-blue-700/70',
     badgeText: 'text-blue-300',
+    accentGradient: 'from-blue-600 via-indigo-600 to-cyan-500',
   },
   {
     code: 'FMCG',
     name: 'FMCG & Consumer Dynamics',
     shortTitle: 'FMCG & Supply Chain',
     color: '#10B981',
-    badgeBg: 'bg-emerald-950/70',
-    badgeBorder: 'border-emerald-700/60',
+    badgeBg: 'bg-emerald-950/80',
+    badgeBorder: 'border-emerald-700/70',
     badgeText: 'text-emerald-300',
+    accentGradient: 'from-emerald-600 via-teal-600 to-green-500',
   },
   {
     code: 'Auto',
     name: 'Automobile & EV Mobility',
     shortTitle: 'Automobile & EV',
     color: '#F58232',
-    badgeBg: 'bg-orange-950/70',
-    badgeBorder: 'border-orange-700/60',
+    badgeBg: 'bg-orange-950/80',
+    badgeBorder: 'border-orange-700/70',
     badgeText: 'text-orange-300',
+    accentGradient: 'from-orange-600 via-amber-600 to-yellow-500',
   },
   {
     code: 'BFSI',
     name: 'BFSI & Fintech Architecture',
     shortTitle: 'BFSI & Fintech',
     color: '#8B5CF6',
-    badgeBg: 'bg-purple-950/70',
-    badgeBorder: 'border-purple-700/60',
+    badgeBg: 'bg-purple-950/80',
+    badgeBorder: 'border-purple-700/70',
     badgeText: 'text-purple-300',
+    accentGradient: 'from-purple-600 via-violet-600 to-fuchsia-500',
   },
   {
     code: 'Media',
     name: 'Media, Content & Brand Strategy',
     shortTitle: 'Media & Branding',
     color: '#F45197',
-    badgeBg: 'bg-pink-950/70',
-    badgeBorder: 'border-pink-700/60',
+    badgeBg: 'bg-pink-950/80',
+    badgeBorder: 'border-pink-700/70',
     badgeText: 'text-pink-300',
+    accentGradient: 'from-pink-600 via-rose-600 to-glc-magenta',
   },
   {
     code: 'CGD',
     name: 'Closed Group Discussion',
     shortTitle: 'Executive Roundtable',
     color: '#FFB800',
-    badgeBg: 'bg-amber-950/70',
-    badgeBorder: 'border-amber-700/60',
+    badgeBg: 'bg-amber-950/80',
+    badgeBorder: 'border-amber-700/70',
     badgeText: 'text-amber-300',
+    accentGradient: 'from-amber-600 via-yellow-600 to-orange-500',
   },
 ]
 
@@ -122,6 +129,17 @@ export const PANELISTS_DATA: Panelist[] = [
     trackName: 'IT & Digital Acceleration',
     photo: '/images/panelists/IT/ViveksagarSareen_IT.jpeg',
     tags: ['Enterprise Software', 'Supply Chain ERP', 'Global Delivery'],
+  },
+  {
+    id: 'it-5',
+    name: 'Divya Kumari',
+    company: 'Decathlon',
+    designation: 'Board Member & Global Executive',
+    linkedin: 'https://www.linkedin.com/in/divyakum',
+    trackCode: 'IT',
+    trackName: 'IT & Digital Acceleration',
+    photo: '',
+    tags: ['Global Strategy', 'Retail Leadership', 'Board Governance'],
   },
 
   // FMCG Panel
@@ -296,6 +314,17 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/Media/AnindyaKhare_Media.jpeg',
     tags: ['Broadcast Strategy', 'Audience Growth', 'Digital Media'],
   },
+  {
+    id: 'media-4',
+    name: 'Dr. Jagdish Chandra',
+    company: 'Bharat 24',
+    designation: 'CEO & Chief Editor',
+    linkedin: '',
+    trackCode: 'Media',
+    trackName: 'Media, Content & Brand Strategy',
+    photo: '',
+    tags: ['Broadcast Journalism', 'Media Leadership', 'Editorial Vision'],
+  },
 
   // Closed Group Discussion (CGD) Panel
   {
@@ -374,6 +403,17 @@ export const PANELISTS_DATA: Panelist[] = [
     trackName: 'Closed Group Discussion',
     photo: '/images/panelists/CGD/SidhuBiswal_CGD.jpeg',
     tags: ['AI Growth', 'Venture Creation', 'Product Leadership'],
+  },
+  {
+    id: 'cgd-8',
+    name: 'Jayaprada K',
+    company: 'Hewlett Packard Enterprise',
+    designation: 'Chief of Sustainability - APAC Region',
+    linkedin: 'https://www.linkedin.com/in/jayaprada-k-a6674715/',
+    trackCode: 'CGD',
+    trackName: 'Closed Group Discussion',
+    photo: '',
+    tags: ['APAC Sustainability', 'ESG Frameworks', 'Enterprise Tech'],
   },
 ]
 

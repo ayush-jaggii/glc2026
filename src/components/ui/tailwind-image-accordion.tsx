@@ -107,7 +107,7 @@ export function TailwindImageAccordion({
 
             <div className="relative h-72 md:h-[460px] w-full bg-wine-950 overflow-hidden">
               <Image
-                className="object-cover object-top h-full w-full transition-transform duration-500 group-hover/article:scale-105"
+                className="object-cover object-top h-full w-full filter grayscale contrast-[1.18] brightness-[0.88] group-hover/article:grayscale-0 group-hover/article:contrast-[1.05] group-hover/article:brightness-105 group-hover/article:scale-105 transition-all duration-500 ease-out"
                 src={item?.url}
                 width={960}
                 height={480}
