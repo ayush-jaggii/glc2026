@@ -84,16 +84,16 @@ export default function HeroSection() {
             </a>
 
             <a
-              href="#panels"
+              href="#symposia"
               className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-[#ffc5b6] hover:text-white rounded-full border border-wine-700 hover:border-glc-magenta/60 bg-wine-900/60 transition-all duration-200"
             >
-              <span>Explore Symposia Tracks</span>
+              <span>Explore Symposia</span>
             </a>
           </div>
 
           {/* Institutional Standing Accreditations */}
           <div className="mt-8 pt-5 border-t border-wine-800/60 flex flex-wrap items-center gap-4 sm:gap-6">
-            <span className="text-[10px] uppercase tracking-wider text-cream-400 font-mono">
+            <span className="text-[10px] uppercase tracking-wider text-cream-400 font-medium">
               Institutional Accreditation:
             </span>
             <AccredationsLogo className="h-5 sm:h-6 w-auto" variant="light" />

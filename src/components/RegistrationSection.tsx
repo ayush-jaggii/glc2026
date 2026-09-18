@@ -56,7 +56,7 @@ export default function RegistrationSection() {
   }
 
   return (
-    <section id="register" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/80">
+    <section id="register" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/80 scroll-mt-24">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
@@ -66,15 +66,15 @@ export default function RegistrationSection() {
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700 mb-4">
-                <span>Direct Allocation Portal</span>
+                <span>Registration</span>
               </div>
 
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-                SECURE YOUR DELEGATE PASS
+                Delegate Registration
               </h2>
 
               <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed mb-8">
-                Attendance at GLC 2026 is curated to maintain an optimal balance of enterprise leadership, GCC architects, government liaisons, and postgraduate scholars.
+                Join senior leaders, decision-makers, and researchers at TAPMI Bengaluru for the flagship 4th Global Leadership Conference.
               </p>
 
               {/* Protocol Highlights */}
@@ -85,7 +85,7 @@ export default function RegistrationSection() {
                   </div>
                   <div>
                     <span className="text-xs font-semibold text-cream-100 block">Priority Confirmation</span>
-                    <span className="text-xs text-cream-400">Applications are reviewed and acknowledged within 48 business hours.</span>
+                    <span className="text-xs text-cream-400">Applications are reviewed and acknowledged promptly.</span>
                   </div>
                 </div>
 
@@ -94,8 +94,8 @@ export default function RegistrationSection() {
                     <span className="w-2 h-2 rounded-full bg-glc-orange" />
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-cream-100 block">Full Colloquium Access</span>
-                    <span className="text-xs text-cream-400">Includes all 5 thematic symposia, executive luncheon, and networking reception.</span>
+                    <span className="text-xs font-semibold text-cream-100 block">Full Conference Access</span>
+                    <span className="text-xs text-cream-400">Access to all 5 thematic symposia, networking luncheon, and plenary tracks.</span>
                   </div>
                 </div>
 
@@ -124,7 +124,7 @@ export default function RegistrationSection() {
             </div>
           </div>
 
-          {/* Right Column: Registration Card / Google Sheets Form Integration */}
+          {/* Right Column: Registration Card */}
           <div className="lg:col-span-7">
             <div className="bg-[#13030F] rounded-xl p-8 sm:p-10 border border-wine-800 shadow-2xl relative">
               
@@ -134,18 +134,18 @@ export default function RegistrationSection() {
                   <div className="w-16 h-16 rounded-full bg-glc-magenta/20 border border-glc-magenta flex items-center justify-center text-glc-magenta mb-6 animate-pulse">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-glc-orange mb-2">
+                  <span className="text-xs uppercase tracking-widest text-glc-orange mb-2 font-semibold">
                     Registration Confirmed
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-cream-50 uppercase mb-3">
-                    PASS APPLICATION RECORDED
+                    Registration Received
                   </h3>
                   <p className="text-xs sm:text-sm text-cream-300 max-w-md mx-auto mb-6">
-                    Thank you, <strong className="text-cream-100">{fullName}</strong>. Your delegate pass application has been synced to the TAPMI registry.
+                    Thank you, <strong className="text-cream-100">{fullName}</strong>. Your delegate registration has been recorded.
                   </p>
                   
-                  <div className="p-4 rounded-xl bg-wine-950 border border-wine-800 font-mono text-xs text-cream-300 mb-8 inline-block">
-                    Reference ID: <span className="text-glc-magenta font-bold">{regId}</span>
+                  <div className="p-4 rounded-xl bg-wine-950 border border-wine-800 text-xs text-cream-300 mb-8 inline-block font-semibold">
+                    Reference ID: <span className="text-glc-magenta">{regId}</span>
                   </div>
 
                   <button
@@ -164,13 +164,13 @@ export default function RegistrationSection() {
                   </button>
                 </div>
               ) : (
-                /* Interactive Registration Form */
+                /* Registration Form */
                 <form onSubmit={handleRegister} className="space-y-6">
                   
                   {/* Pass Tier Selection */}
                   <div>
-                    <label className="block text-xs font-mono uppercase tracking-wider text-cream-300 mb-2.5">
-                      Select Delegate Classification *
+                    <label className="block text-xs uppercase tracking-wider text-cream-300 mb-2.5 font-semibold">
+                      Select Delegate Type *
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                       {(
@@ -209,7 +209,7 @@ export default function RegistrationSection() {
                     
                     {/* Full Name */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-cream-300 mb-1.5">
+                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
                         Full Name *
                       </label>
                       <div className="relative">
@@ -227,7 +227,7 @@ export default function RegistrationSection() {
 
                     {/* Official Email */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-cream-300 mb-1.5">
+                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
                         Official / Corporate Email *
                       </label>
                       <div className="relative">
@@ -245,7 +245,7 @@ export default function RegistrationSection() {
 
                     {/* Organization */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-cream-300 mb-1.5">
+                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
                         Organization / Institution *
                       </label>
                       <div className="relative">
@@ -263,7 +263,7 @@ export default function RegistrationSection() {
 
                     {/* Designation */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-cream-300 mb-1.5">
+                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
                         Designation / Role
                       </label>
                       <div className="relative">
@@ -282,7 +282,7 @@ export default function RegistrationSection() {
 
                   {/* Contact Number */}
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-wider text-cream-300 mb-1.5">
+                    <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
                       Contact Phone / WhatsApp
                     </label>
                     <div className="relative">
@@ -306,19 +306,19 @@ export default function RegistrationSection() {
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Synchronizing Registration...</span>
+                        <span>Submitting Registration...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Registration Application</span>
+                        <span>Submit Registration</span>
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </>
                     )}
                   </button>
 
-                  <div className="flex items-center justify-center gap-2 text-[10px] text-cream-400 font-mono">
+                  <div className="flex items-center justify-center gap-2 text-[10px] text-cream-400">
                     <ShieldCheck className="w-3.5 h-3.5 text-glc-orange" />
-                    <span>Direct encrypted submission to TAPMI Bengaluru Academic Registry</span>
+                    <span>Official registration portal of TAPMI Bengaluru, MAHE Manipal</span>
                   </div>
 
                 </form>

@@ -11,24 +11,12 @@ export default function RevealSection() {
       {/* Visual Ambient Stream Line connecting sections */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-glc-magenta/40 to-transparent pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Top Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-mono uppercase tracking-widest text-glc-magenta mb-2 block">
-            Phase 01 Disclosure
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
-            THE DIALOGUE ARCHITECTURE
-          </h2>
-        </div>
-
-        {/* 1. Speakers Locked Reveal State with Integrated Countdown */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-24">
+        {/* 1. Speakers Section */}
         <SpeakerReveal />
 
-        {/* 2. The 5 Confirmed Thematic Panels */}
+        {/* 2. Symposia Section */}
         <PanelReveal />
-
       </div>
 
     </section>

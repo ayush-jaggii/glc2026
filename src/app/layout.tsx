@@ -1,23 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
 const tektype = localFont({
   src: "../../public/fonts/Tektype-Regular.ttf",
   variable: "--font-tektype",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
   display: "swap",
 });
 
@@ -67,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${plusJakarta.variable} ${tektype.variable}`}>
+    <html lang="en" className={tektype.variable}>
       <body className="bg-wine-950 text-cream-50 font-sans antialiased min-h-screen selection:bg-glc-magenta selection:text-white">
         {children}
       </body>

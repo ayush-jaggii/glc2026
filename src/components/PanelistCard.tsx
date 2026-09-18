@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { Panelist, PANEL_TRACKS } from '@/data/panelistsData'
-import { Linkedin, ExternalLink, Award } from 'lucide-react'
+import { Linkedin, ExternalLink } from 'lucide-react'
 
 interface PanelistCardProps {
   panelist: Panelist
@@ -35,7 +35,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
           : 'h-[390px] sm:h-[420px] w-full'
       }`}
     >
-      {/* 1. Background Image or Monogram Avatar */}
+      {/* 1. Background Image or Clean Monogram Avatar */}
       <div className="absolute inset-0 bg-wine-950 overflow-hidden">
         {panelist.photo ? (
           <Image
@@ -48,7 +48,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-wine-900/60 via-wine-950 to-black">
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold font-mono tracking-wider border shadow-2xl mb-3 group-hover:scale-110 transition-transform duration-300"
+              className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold tracking-wider border shadow-2xl mb-2 group-hover:scale-110 transition-transform duration-300"
               style={{
                 backgroundColor: `${trackColor}15`,
                 borderColor: `${trackColor}50`,
@@ -57,9 +57,6 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
             >
               {initials}
             </div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-cream-400/80">
-              Official Headshot Pending
-            </span>
           </div>
         )}
       </div>
@@ -67,7 +64,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
       {/* 2. Top-Left Track Tag Pill */}
       <div className="absolute top-3.5 left-3.5 z-20">
         <span
-          className={`inline-block text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeBg} ${badgeBorder} ${badgeText} border shadow-lg backdrop-blur-md`}
+          className={`inline-block text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-md ${badgeBg} ${badgeBorder} ${badgeText} border shadow-lg backdrop-blur-md`}
         >
           {shortTitle}
         </span>
@@ -76,7 +73,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
       {/* 3. Deep Cinematic Bottom Vignette Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#090106] via-[#090106]/65 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300 pointer-events-none z-10" />
 
-      {/* 4. Executive Details Overlay */}
+      {/* 4. Speaker Details Overlay */}
       <div className="relative z-20 p-4 sm:p-5 flex flex-col justify-end">
         {/* Name & Quick LinkedIn Icon */}
         <div className="flex items-start justify-between gap-2">
@@ -98,7 +95,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
         </div>
 
         {/* Company Organization */}
-        <div className="text-xs font-mono font-semibold text-glc-orange mt-1 truncate tracking-wide">
+        <div className="text-xs font-semibold text-glc-orange mt-1 truncate">
           {panelist.company}
         </div>
 
@@ -107,29 +104,24 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
           {panelist.designation}
         </div>
 
-        {/* Hover-Revealed Action Bar (Slide-Up) */}
-        <div className="mt-3 pt-3 border-t border-wine-800/80 flex items-center justify-between gap-2 opacity-95 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0 transition-all duration-300">
-          <span className="text-[10px] font-mono text-cream-400/90 truncate max-w-[140px]">
+        {/* Action Bar */}
+        <div className="mt-3 pt-3 border-t border-wine-800/80 flex items-center justify-between gap-2 opacity-95 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-1 sm:group-hover:translate-y-0 transition-all duration-300">
+          <span className="text-[11px] text-cream-400/90 truncate max-w-[140px]">
             {panelist.trackName}
           </span>
 
-          {panelist.linkedin ? (
+          {panelist.linkedin && (
             <a
               href={panelist.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0077B5] hover:bg-[#005E93] text-white text-[11px] font-medium transition-all duration-200 shadow-md hover:shadow-[0_0_14px_rgba(0,119,181,0.5)] shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0077B5] hover:bg-[#005E93] text-white text-[11px] font-medium transition-all duration-200 shadow-md shrink-0"
             >
               <Linkedin className="w-3 h-3" />
               <span>LinkedIn</span>
               <ExternalLink className="w-2.5 h-2.5 opacity-80" />
             </a>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] text-cream-400 font-mono">
-              <Award className="w-3 h-3 text-glc-magenta" />
-              <span>Confirmed</span>
-            </span>
           )}
         </div>
       </div>

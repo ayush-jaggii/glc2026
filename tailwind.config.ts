@@ -38,10 +38,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        tektype: ['var(--font-tektype)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-tektype)', 'system-ui', 'sans-serif'],
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-sabon)', 'Georgia', 'serif'],
+        tektype: ['var(--font-tektype)', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
       },
       keyframes: {
         'flow-drift': {

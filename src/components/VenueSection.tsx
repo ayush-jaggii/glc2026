@@ -19,9 +19,9 @@ export default function VenueSection() {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-[11px] font-mono tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-[11px] font-semibold tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700 mb-3">
             <MapPin className="w-3.5 h-3.5 text-glc-orange" />
-            <span>Event Location & Venue</span>
+            <span>Venue</span>
           </div>
           
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
@@ -58,7 +58,7 @@ export default function VenueSection() {
               {/* Exact Address */}
               <div className="space-y-4 mb-8">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-glc-orange mb-1">
+                  <div className="text-[10px] uppercase tracking-widest text-glc-orange mb-1 font-semibold">
                     Campus Address
                   </div>
                   <p className="text-xs sm:text-sm text-cream-200 leading-relaxed">

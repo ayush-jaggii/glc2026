@@ -71,7 +71,7 @@ export function TailwindImageAccordion({
             >
               {/* Optional Panel Track Pill */}
               {item?.track && (
-                <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-glc-magenta/80 text-white w-fit mb-2 md:opacity-0 group-hover/article:opacity-100 group-focus-within/article:opacity-100 transition-opacity duration-200">
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-glc-magenta/80 text-white w-fit mb-2 md:opacity-0 group-hover/article:opacity-100 group-focus-within/article:opacity-100 transition-opacity duration-200">
                   {item.track}
                 </span>
               )}
@@ -91,7 +91,7 @@ export function TailwindImageAccordion({
 
               {/* Company line if separate */}
               {item?.company && item?.company !== item?.description && (
-                <span className="text-[11px] font-mono text-glc-orange/90 mt-1 md:whitespace-nowrap md:truncate md:opacity-0 group-hover/article:opacity-100 group-focus-within/article:opacity-100 transition-opacity duration-200 delay-500">
+                <span className="text-[11px] text-glc-orange/90 mt-1 md:whitespace-nowrap md:truncate md:opacity-0 group-hover/article:opacity-100 group-focus-within/article:opacity-100 transition-opacity duration-200 delay-500 font-medium">
                   {item.company}
                 </span>
               )}

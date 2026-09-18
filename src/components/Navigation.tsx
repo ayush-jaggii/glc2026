@@ -17,10 +17,10 @@ export default function Navigation() {
   }, [])
 
   const navLinks = [
-    { label: 'Panels & Tracks', href: '#panels' },
     { label: 'Speakers', href: '#speakers' },
-    { label: 'Archive', href: '#archive' },
-    { label: 'Delegate Advantage', href: '#advantage' },
+    { label: 'Symposia', href: '#symposia' },
+    { label: 'Previous Editions', href: '#previous-editions' },
+    { label: 'Delegate Benefits', href: '#delegate-benefits' },
     { label: 'Venue', href: '#venue' },
   ]
 

@@ -13,7 +13,8 @@
 :root {
   --background: #0B0207;
   --foreground: #FDFBF9;
-  --font-tektype: 'Tektype', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-tektype: 'Tektype', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --color-wine-deep: #0B0207;
   --color-wine-card: #160511;
   --color-wine-border: #2C0B23;
@@ -30,10 +31,10 @@ html {
   scroll-behavior: smooth;
   background-color: #0B0207;
   color: #FDFBF9;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 body {
+  font-family: var(--font-sans);
   background-color: #0B0207;
   color: #FDFBF9;
   overflow-x: hidden;

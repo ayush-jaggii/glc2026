@@ -3,13 +3,15 @@
 import React, { useState } from 'react'
 import { ARCHIVE_EDITIONS } from '@/data/eventData'
 import VideoShowcase from './VideoShowcase'
-import { Award, History, CheckCircle, ChevronRight } from 'lucide-react'
+import { History, CheckCircle } from 'lucide-react'
 
 export default function ArchiveGallery() {
   const [selectedEdition, setSelectedEdition] = useState(ARCHIVE_EDITIONS[0])
 
   return (
-    <section id="archive" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/60">
+    <section id="previous-editions" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/60 scroll-mt-24">
+      {/* Hidden anchor for backwards compatibility */}
+      <span id="archive" className="absolute -top-24 pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
@@ -17,20 +19,20 @@ export default function ArchiveGallery() {
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-pink border border-wine-700 mb-4">
             <History className="w-3.5 h-3.5" />
-            <span>Legacy of Leadership</span>
+            <span>Conference History</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-            INSTITUTIONAL PEDIGREE
+            Previous Editions
           </h2>
           <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed">
-            GLC is TAPMI Bengaluru&apos;s annual flagship leadership convergence. Across four editions, the conference has convened Fortune 500 decision-makers, unicorn founders, and academic fellows to address decisive economic inflection points.
+            GLC is TAPMI Bengaluru&apos;s annual flagship leadership conference. Across past editions, the conference has convened Fortune 500 decision-makers, startup founders, and academic leaders to address key strategic challenges.
           </p>
         </div>
 
-        {/* Cinematic Video Showcase Component */}
+        {/* Video Showcase Component */}
         <VideoShowcase />
 
-        {/* Asymmetric Edition Chronology */}
+        {/* Edition Chronology */}
         <div className="mt-16">
           
           {/* Edition Selector Tabs */}
@@ -42,7 +44,7 @@ export default function ArchiveGallery() {
                   key={ed.edition}
                   onClick={() => setSelectedEdition(ed)}
                   type="button"
-                  className={`px-6 py-3 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shrink-0 border ${
+                  className={`px-6 py-3 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 shrink-0 border ${
                     isCurrent
                       ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white border-transparent shadow-lg shadow-glc-magenta/20 scale-102'
                       : 'bg-wine-900/60 text-cream-300 border-wine-800 hover:text-white hover:bg-wine-800'
@@ -55,14 +57,14 @@ export default function ArchiveGallery() {
             })}
           </div>
 
-          {/* Active Edition Deep Dive Card */}
+          {/* Active Edition Card */}
           <div className="bg-[#13030F] rounded-xl p-8 sm:p-12 border border-wine-800 shadow-2xl relative overflow-hidden">
             
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
               {/* Left Column: Edition Metadata & Highlights */}
               <div className="lg:col-span-7">
-                <div className="text-xs font-mono uppercase tracking-widest text-glc-orange mb-2">
+                <div className="text-xs uppercase tracking-widest text-glc-orange mb-2 font-semibold">
                   Edition {selectedEdition.edition} · {selectedEdition.year}
                 </div>
                 <h3 className="text-2xl sm:text-4xl font-bold text-cream-50 mb-3">
@@ -79,7 +81,7 @@ export default function ArchiveGallery() {
                 {/* Highlights list */}
                 <div className="space-y-3">
                   <div className="text-xs font-semibold uppercase tracking-wider text-cream-300">
-                    Key Historical Outcomes
+                    Key Outcomes
                   </div>
                   {selectedEdition.highlights.map((h, i) => (
                     <div key={i} className="flex items-start gap-3 text-xs text-cream-200">
@@ -90,10 +92,10 @@ export default function ArchiveGallery() {
                 </div>
               </div>
 
-              {/* Right Column: Verified Statistical Proof */}
+              {/* Right Column: Statistics */}
               <div className="lg:col-span-5 flex flex-col justify-center gap-4">
-                <div className="text-xs font-mono uppercase tracking-widest text-cream-400 mb-1">
-                  Validated Impact Metrics
+                <div className="text-xs uppercase tracking-widest text-cream-400 mb-1 font-semibold">
+                  Edition Metrics
                 </div>
                 
                 {selectedEdition.stats.map((st, sIdx) => (
@@ -104,7 +106,7 @@ export default function ArchiveGallery() {
                     <div>
                       <div className="text-xs text-cream-300">{st.label}</div>
                     </div>
-                    <div className="font-mono text-3xl sm:text-4xl text-[#ffc5b6] font-bold">
+                    <div className="text-3xl sm:text-4xl text-[#ffc5b6] font-bold">
                       {st.value}
                     </div>
                   </div>

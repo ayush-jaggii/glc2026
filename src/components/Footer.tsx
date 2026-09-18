@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { EVENT_DETAILS } from '@/data/eventData'
-import { TapmiLogo, MaheLogo, AccredationsLogo, NexoraLogo } from './Logos'
+import { TapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
 import { MapPin, Mail, Phone, ArrowUp } from 'lucide-react'
 
 export default function Footer() {
@@ -31,8 +31,8 @@ export default function Footer() {
             </div>
 
             <div>
-              <div className="text-xs font-mono uppercase tracking-widest text-glc-magenta font-semibold mb-1">
-                GLC 2026 Colloquium
+              <div className="text-xs uppercase tracking-widest text-glc-magenta font-semibold mb-1">
+                GLC 2026
               </div>
               <div className="font-tektype text-2xl text-[#ffc5b6] font-bold tracking-tight">
                 BUSINESS BEYOND BORDERS
@@ -48,37 +48,37 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Fast Quick Links */}
+          {/* Col 2: Navigation Links */}
           <div className="lg:col-span-3 space-y-3">
-            <div className="text-xs font-mono uppercase tracking-widest text-glc-magenta font-semibold mb-3">
+            <div className="text-xs uppercase tracking-widest text-glc-magenta font-semibold mb-3">
               Navigation
             </div>
             <ul className="space-y-2 text-xs text-cream-300">
               <li>
-                <a href="#speakers" className="hover:text-glc-orange transition-colors">Speakers & Timeline</a>
+                <a href="#speakers" className="hover:text-glc-orange transition-colors">Speakers</a>
               </li>
               <li>
-                <a href="#panels" className="hover:text-glc-orange transition-colors">The 5 Symposia Verticals</a>
+                <a href="#symposia" className="hover:text-glc-orange transition-colors">Symposia</a>
               </li>
               <li>
-                <a href="#archive" className="hover:text-glc-orange transition-colors">GLC Historical Archive</a>
+                <a href="#previous-editions" className="hover:text-glc-orange transition-colors">Previous Editions</a>
               </li>
               <li>
-                <a href="#advantage" className="hover:text-glc-orange transition-colors">Executive Delegate Advantage</a>
+                <a href="#delegate-benefits" className="hover:text-glc-orange transition-colors">Delegate Benefits</a>
               </li>
               <li>
-                <a href="#venue" className="hover:text-glc-orange transition-colors">Event Venue & Google Maps</a>
+                <a href="#venue" className="hover:text-glc-orange transition-colors">Venue</a>
               </li>
               <li>
-                <a href="#register" className="hover:text-glc-orange transition-colors">Register for Pass</a>
+                <a href="#register" className="hover:text-glc-orange transition-colors">Register</a>
               </li>
             </ul>
           </div>
 
           {/* Col 3: Secretariat & Contact */}
           <div className="lg:col-span-4 space-y-3">
-            <div className="text-xs font-mono uppercase tracking-widest text-glc-orange font-semibold mb-3">
-              Conference Secretariat
+            <div className="text-xs uppercase tracking-widest text-glc-orange font-semibold mb-3">
+              Contact
             </div>
             <div className="space-y-2.5 text-xs text-cream-300">
               <div className="flex items-start gap-2.5">
@@ -105,12 +105,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom Baseline Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-cream-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-cream-400">
           <div>
             © {new Date().getFullYear()} TAPMI Bengaluru · MAHE Manipal. All rights reserved.
           </div>
 
-          {/* Subtle Approved IT Team Credit */}
+          {/* IT Team Credit */}
           <div className="flex items-center gap-2 text-cream-400">
             <span>Designed & Engineered by</span>
             <span className="text-cream-200 font-semibold flex items-center gap-1.5">

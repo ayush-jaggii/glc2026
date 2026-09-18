@@ -1,27 +1,25 @@
 'use client'
 
 import React, { useState } from 'react'
-import { PANELS_LIST, PanelSchema } from '@/data/eventData'
-import { Layers, ChevronRight, HelpCircle, Lock } from 'lucide-react'
+import { PANELS_LIST } from '@/data/eventData'
+import { ChevronRight, HelpCircle } from 'lucide-react'
 
 export default function PanelReveal() {
   const [activePanelId, setActivePanelId] = useState<string>(PANELS_LIST[0].id)
   const activePanel = PANELS_LIST.find((p) => p.id === activePanelId) || PANELS_LIST[0]
 
   return (
-    <div id="panels" className="relative mt-20 pt-16 border-t border-wine-900/60">
+    <div id="symposia" className="relative mt-20 pt-16 border-t border-wine-900/60 scroll-mt-24">
+      {/* Hidden anchor target for backwards compatibility */}
+      <span id="panels" className="absolute -top-24 pointer-events-none" />
       
       {/* Section Header */}
       <div className="max-w-3xl mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-orange border border-wine-700 mb-4">
-          <Layers className="w-3.5 h-3.5" />
-          <span>Curated Symposia</span>
-        </div>
         <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-          THE 5 STRATEGIC VERTICALS
+          Symposia
         </h3>
         <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed">
-          Five focused panel symposia interrogating how multinational enterprise networks, capital, and leadership models withstand geopolitical fracturing.
+          Five focused panel symposia exploring multinational enterprise strategies, global capability centers, capital convergence, and economic resilience across borders.
         </p>
       </div>
 
@@ -44,13 +42,13 @@ export default function PanelReveal() {
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <span className={`font-mono text-xs font-bold px-2 py-1 rounded-sm ${
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-sm ${
                     isSelected ? 'bg-glc-magenta text-white' : 'bg-wine-800 text-cream-400'
                   }`}>
                     {panel.number}
                   </span>
                   <div>
-                    <div className="text-xs font-mono uppercase tracking-wider text-glc-orange mb-0.5">
+                    <div className="text-xs uppercase tracking-wider text-glc-orange mb-0.5 font-medium">
                       {panel.category}
                     </div>
                     <div className="text-sm sm:text-base font-bold text-cream-100 group-hover:text-white">
@@ -66,19 +64,18 @@ export default function PanelReveal() {
           })}
         </div>
 
-        {/* Right Column: Deep Strategic Details of Selected Track */}
+        {/* Right Column: Details of Selected Track */}
         <div className="lg:col-span-7">
           <div className="bg-[#13030F] rounded-xl p-7 sm:p-9 border border-wine-800 shadow-2xl relative">
             
             <div className="flex items-center justify-between gap-4 mb-5 pb-5 border-b border-wine-800/80">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-glc-magenta">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-glc-magenta font-semibold">
                 <span>Symposium {activePanel.number}</span>
                 <span>·</span>
-                <span className="text-cream-300">{activePanel.category}</span>
+                <span className="text-cream-300 font-normal">{activePanel.category}</span>
               </div>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-glc-orange bg-wine-900 px-3 py-1 rounded-sm border border-wine-700">
-                <Lock className="w-3 h-3" />
-                <span>Panelists Locked</span>
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-cream-300 bg-wine-900 px-3 py-1 rounded-sm border border-wine-700">
+                <span>Confirmed Theme</span>
               </span>
             </div>
 
@@ -93,35 +90,35 @@ export default function PanelReveal() {
               {activePanel.description}
             </p>
 
-            {/* Strategic Interrogation Questions */}
+            {/* Discussion Themes */}
             <div className="rounded-2xl p-5 bg-wine-950/80 border border-wine-800/80 mb-6">
               <div className="text-xs font-semibold uppercase tracking-wider text-cream-300 mb-3 flex items-center gap-2">
                 <HelpCircle className="w-3.5 h-3.5 text-glc-pink" />
-                <span>Core Strategic Interrogations</span>
+                <span>Key Discussion Themes</span>
               </div>
               <ul className="space-y-2.5">
                 {activePanel.keyQuestions.map((q, qIdx) => (
                   <li key={qIdx} className="text-xs text-cream-300 flex items-start gap-2.5">
-                    <span className="text-glc-magenta font-mono font-bold">Q{qIdx + 1}.</span>
+                    <span className="text-glc-magenta font-bold">Q{qIdx + 1}.</span>
                     <span className="leading-relaxed">{q}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Panel Metadata Strip */}
+            {/* Panel Information */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-4 border-t border-wine-800/80 text-cream-300">
               <div>
-                <span className="block text-[10px] uppercase font-mono text-cream-400">Format</span>
-                <span className="font-semibold text-cream-100">45-Min Colloquium</span>
+                <span className="block text-[10px] uppercase font-semibold tracking-wider text-cream-400 mb-0.5">Format</span>
+                <span className="font-semibold text-cream-100">45-Minute Session</span>
               </div>
               <div>
-                <span className="block text-[10px] uppercase font-mono text-cream-400">Roster</span>
-                <span className="font-semibold text-cream-100">4 CXOs + 1 Chair</span>
+                <span className="block text-[10px] uppercase font-semibold tracking-wider text-cream-400 mb-0.5">Panel</span>
+                <span className="font-semibold text-cream-100">Industry Leaders & Chair</span>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <span className="block text-[10px] uppercase font-mono text-cream-400">Q&A Audience</span>
-                <span className="font-semibold text-cream-100">Open Delegate Floor</span>
+                <span className="block text-[10px] uppercase font-semibold tracking-wider text-cream-400 mb-0.5">Audience</span>
+                <span className="font-semibold text-cream-100">Open Delegate Floor Q&A</span>
               </div>
             </div>
 
