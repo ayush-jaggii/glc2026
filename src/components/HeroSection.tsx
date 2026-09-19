@@ -78,66 +78,39 @@ export default function HeroSection() {
 
           </div>
 
-          {/* Right Column: Summit Briefing Card with Big Date, Venue & Colloquium Scale */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl bg-wine-950/75 backdrop-blur-md border border-wine-800/80 p-6 sm:p-8 shadow-2xl overflow-hidden">
+          {/* Right Column: Clean Floating Date & Venue - Zero background box, completely open to the ribbon canvas */}
+          <div className="lg:col-span-5 flex flex-col justify-center lg:items-end lg:text-right pt-6 lg:pt-0">
+            <div className="max-w-md space-y-6 sm:space-y-8">
               
-              {/* Top Accent Gradient Bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange" />
-
               {/* Date Block */}
-              <div className="mb-6">
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-glc-magenta/90 block mb-1.5">
-                  Colloquium Date & Schedule
+              <div>
+                <span className="text-[11px] sm:text-xs tracking-widest uppercase font-semibold text-glc-magenta block mb-1.5">
+                  Colloquium Date
                 </span>
-                <div className="text-2xl sm:text-3xl xl:text-4xl font-bold text-glc-orange tracking-wide uppercase">
+                <div className="text-3xl sm:text-4xl xl:text-5xl font-bold text-glc-orange tracking-wide uppercase drop-shadow-md">
                   10 OCTOBER 2026
                 </div>
-                <div className="text-xs sm:text-sm text-cream-200/90 mt-1 font-medium">
-                  Saturday · 9:00 AM – 6:30 PM IST
+                <div className="text-sm sm:text-base text-cream-200/90 font-medium mt-1">
+                  Saturday · 9:00 AM Onwards
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="h-px bg-wine-800/80 my-5" />
+              {/* Subtle accent divider */}
+              <div className="h-px w-24 bg-gradient-to-r from-glc-magenta/70 to-transparent lg:ml-auto" />
 
               {/* Venue Block */}
-              <div className="mb-6">
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-cream-300/80 block mb-1.5">
+              <div>
+                <span className="text-[11px] sm:text-xs tracking-widest uppercase font-semibold text-cream-300 block mb-1.5">
                   Host Venue
                 </span>
-                <div className="text-base sm:text-lg font-bold text-cream-100 leading-snug">
+                <div className="text-lg sm:text-xl xl:text-2xl font-bold text-cream-100 leading-snug drop-shadow-sm">
                   Dr. Ramdas M. Pai Auditorium
                 </div>
-                <div className="text-xs sm:text-sm text-cream-200/90 mt-1">
+                <div className="text-sm sm:text-base text-cream-200/90 mt-1">
                   TAPMI Bengaluru Campus · MAHE Manipal
                 </div>
-                <div className="text-[11px] text-cream-300/80 mt-0.5">
+                <div className="text-xs text-cream-300/80 mt-0.5">
                   Yelahanka, Bengaluru, Karnataka, India
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="h-px bg-wine-800/80 my-5" />
-
-              {/* Colloquium Scale Highlights */}
-              <div>
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-cream-300/80 block mb-3">
-                  Edition Scale
-                </span>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-wine-900/50 border border-wine-800/60 rounded-xl p-2.5">
-                    <div className="text-xl sm:text-2xl font-bold text-[#ffc5b6]">27+</div>
-                    <div className="text-[10px] uppercase tracking-wider text-cream-300 mt-0.5">Speakers</div>
-                  </div>
-                  <div className="bg-wine-900/50 border border-wine-800/60 rounded-xl p-2.5">
-                    <div className="text-xl sm:text-2xl font-bold text-[#ffc5b6]">5</div>
-                    <div className="text-[10px] uppercase tracking-wider text-cream-300 mt-0.5">Panels</div>
-                  </div>
-                  <div className="bg-wine-900/50 border border-wine-800/60 rounded-xl p-2.5">
-                    <div className="text-xl sm:text-2xl font-bold text-[#ffc5b6]">600+</div>
-                    <div className="text-[10px] uppercase tracking-wider text-cream-300 mt-0.5">Delegates</div>
-                  </div>
                 </div>
               </div>
 

@@ -19,7 +19,7 @@ export default function Navigation() {
   const navLinks = [
     { label: 'Speakers', href: '#speakers' },
     { label: 'Panels', href: '#panels' },
-    { label: 'Previous Editions', href: '#previous-editions' },
+    { label: 'Past Editions', href: '#previous-editions' },
     { label: 'Delegate Benefits', href: '#delegate-benefits' },
     { label: 'Venue', href: '#venue' },
   ]
@@ -32,11 +32,11 @@ export default function Navigation() {
           : 'bg-gradient-to-b from-wine-950/90 via-wine-950/40 to-transparent py-4'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4 sm:gap-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="flex items-center justify-between gap-4 lg:gap-8">
           
           {/* Left: TAPMI Logo + LEADXAI in Tektype */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
             <a href="#" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
               <TapmiLogo className="h-8 sm:h-9 w-auto" variant="light" />
               <div className="h-5 w-px bg-wine-700/80" />
@@ -44,13 +44,13 @@ export default function Navigation() {
             </a>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
+          {/* Desktop Navigation Links - Single line, perfectly aligned, no wrapping */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="transition-colors duration-200 hover:text-glc-orange focus:outline-none focus:text-glc-magenta"
+                className="whitespace-nowrap transition-colors duration-200 hover:text-glc-orange focus:outline-none focus:text-glc-magenta"
               >
                 {link.label}
               </a>
@@ -58,7 +58,7 @@ export default function Navigation() {
           </nav>
 
           {/* Right: Institutional Accreditation Logos & Register Button */}
-          <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center gap-4 xl:gap-6 flex-shrink-0">
             <div className="hidden md:flex items-center">
               <AccredationsLogo className="h-5 sm:h-6 w-auto" variant="light" />
             </div>
