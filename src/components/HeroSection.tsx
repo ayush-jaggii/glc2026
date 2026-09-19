@@ -76,9 +76,9 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* 6. Executive Baseline Logistics Strip (Date, Venue & Host) */}
+      {/* 6. Executive Baseline Logistics Strip (Date & Venue) */}
       <div className="relative z-20 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full pt-4 pb-2 sm:pb-4 mt-auto">
-        <div className="border-t border-wine-800/80 pt-5 sm:pt-6 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8 items-start">
+        <div className="border-t border-wine-800/80 pt-5 sm:pt-6 flex flex-wrap items-start gap-8 sm:gap-14">
           
           {/* Date & Schedule */}
           <div>
@@ -93,6 +93,9 @@ export default function HeroSection() {
             </div>
           </div>
 
+          {/* Subtle vertical divider on desktop */}
+          <div className="hidden sm:block h-10 w-px bg-wine-800/80 my-auto" />
+
           {/* Venue */}
           <div>
             <span className="text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase text-cream-300/80 block mb-1">
@@ -102,20 +105,7 @@ export default function HeroSection() {
               Dr. Ramdas M. Pai Auditorium
             </div>
             <div className="text-xs sm:text-sm text-cream-200/80 mt-0.5">
-              MAHE Bengaluru Campus · Yelahanka
-            </div>
-          </div>
-
-          {/* Host Institution */}
-          <div>
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase text-cream-300/80 block mb-1">
-              Colloquium Host
-            </span>
-            <div className="text-base sm:text-lg font-bold text-cream-100">
-              TAPMI Bengaluru
-            </div>
-            <div className="text-xs sm:text-sm text-cream-200/80 mt-0.5">
-              Institution of Eminence · MAHE Manipal
+              TAPMI Bengaluru Campus · MAHE Manipal
             </div>
           </div>
 
