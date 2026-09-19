@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { TapmiLogo, AccredationsLogo } from './Logos'
+import { TapmiLogo, AccredationsLogo, LeadxaiLogo } from './Logos'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 
 export default function Navigation() {
@@ -40,9 +40,7 @@ export default function Navigation() {
             <a href="#" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
               <TapmiLogo className="h-8 sm:h-9 w-auto" variant="light" />
               <div className="h-5 w-px bg-wine-700/80" />
-              <span className="font-tektype text-base sm:text-lg text-[#ffc5b6] tracking-wider font-bold">
-                LEADXAI
-              </span>
+              <LeadxaiLogo className="h-5 sm:h-6 w-auto" />
             </a>
           </div>
 
@@ -96,11 +94,10 @@ export default function Navigation() {
         <div className="lg:hidden bg-wine-950/98 backdrop-blur-xl border-b border-wine-800 px-6 py-6 transition-all duration-300">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between pb-3 border-b border-wine-800/80">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <TapmiLogo className="h-7 w-auto" variant="light" />
-                <span className="font-tektype text-sm text-[#ffc5b6] tracking-wider font-bold">
-                  LEADXAI
-                </span>
+                <div className="h-4 w-px bg-wine-700/80" />
+                <LeadxaiLogo className="h-4 sm:h-5 w-auto" />
               </div>
               <AccredationsLogo className="h-5 w-auto" variant="light" />
             </div>
