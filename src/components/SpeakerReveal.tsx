@@ -25,9 +25,9 @@ export default function SpeakerReveal() {
       </div>
 
       {/* Smooth Continuous Scrolling Carousel with Masked Edges */}
-      <div className="relative overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 py-4">
+      <div className="relative overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 py-6 group">
         <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
-          <div className="animate-marquee flex gap-5 py-3">
+          <div className="animate-marquee flex gap-6 py-4 group-hover:[animation-play-state:paused] hover:[animation-play-state:paused]">
             {PANELISTS_DATA.map((panelist, idx) => (
               <PanelistCard
                 key={`marquee-1-${panelist.id}-${idx}`}

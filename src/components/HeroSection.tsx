@@ -27,16 +27,6 @@ export default function HeroSection() {
       {/* 5. Main Hero Editorial Content */}
       <div className="relative z-20 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full my-auto pt-6 sm:pt-10 pb-4">
         <div className="max-w-3xl flex flex-col">
-          
-          {/* Metadata Monogram */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5">
-            <span className="inline-flex items-center px-3 py-1 rounded-sm text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700">
-              A Global Leadership Colloquium
-            </span>
-            <span className="text-[11px] sm:text-xs tracking-wider uppercase text-cream-300 font-medium">
-              4th Edition · 2026
-            </span>
-          </div>
 
           {/* Main Campaign Title in Tektype font */}
           <h1 className="font-tektype text-4xl sm:text-6xl md:text-7xl lg:text-[4.8rem] xl:text-[5.6rem] font-bold text-[#ffc5b6] leading-[0.92] tracking-tight mb-2 drop-shadow-2xl">
@@ -82,9 +72,6 @@ export default function HeroSection() {
           
           {/* Date & Schedule */}
           <div>
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase text-glc-magenta block mb-1">
-              Colloquium Date
-            </span>
             <div className="text-xl sm:text-2xl font-bold text-glc-orange tracking-wide uppercase">
               10 OCTOBER 2026
             </div>
@@ -98,9 +85,6 @@ export default function HeroSection() {
 
           {/* Venue */}
           <div>
-            <span className="text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase text-cream-300/80 block mb-1">
-              Host Venue
-            </span>
             <div className="text-base sm:text-lg font-bold text-cream-100">
               Dr. Ramdas M. Pai Auditorium
             </div>
