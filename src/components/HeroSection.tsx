@@ -105,7 +105,7 @@ export default function HeroSection() {
               Dr. Ramdas M. Pai Auditorium
             </div>
             <div className="text-xs sm:text-sm text-cream-200/80 mt-0.5">
-              TAPMI Bengaluru Campus · MAHE Manipal
+              MAHE Bengaluru
             </div>
           </div>
 

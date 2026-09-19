@@ -4,6 +4,14 @@ import React, { useState } from 'react'
 import { ARCHIVE_EDITIONS } from '@/data/eventData'
 import VideoShowcase from './VideoShowcase'
 import { History, CheckCircle } from 'lucide-react'
+import { CountingNumber } from '@/components/ui/counting-number'
+
+const CUMULATIVE_PAST_STATS = [
+  { target: 3, suffix: "", label: "Landmark Editions" },
+  { target: 91, suffix: "+", label: "C-Suite Speakers" },
+  { target: 2050, suffix: "+", label: "Delegates Convened" },
+  { target: 140, suffix: "+", label: "Participating MNCs" },
+]
 
 export default function ArchiveGallery() {
   const [selectedEdition, setSelectedEdition] = useState(ARCHIVE_EDITIONS[0])
@@ -16,17 +24,32 @@ export default function ArchiveGallery() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="max-w-3xl mb-16">
+        <div className="max-w-3xl mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-pink border border-wine-700 mb-4">
             <History className="w-3.5 h-3.5" />
             <span>Conference History</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-            Previous Editions
+            Past Editions
           </h2>
           <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed">
-            GLC is TAPMI Bengaluru&apos;s annual flagship leadership conference. Across past editions, the conference has convened Fortune 500 decision-makers, startup founders, and academic leaders to address key strategic challenges.
+            GLC is the annual flagship leadership conference hosted at MAHE Bengaluru. Across past editions, the conference has convened Fortune 500 decision-makers, startup founders, and academic leaders to address key strategic challenges.
           </p>
+        </div>
+
+        {/* High-Impact Cumulative Stats Banner with CountingNumber */}
+        <div className="mb-14 p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#180514]/90 via-[#10020D]/90 to-[#0A0108]/90 border border-wine-800/80 shadow-2xl">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+            {CUMULATIVE_PAST_STATS.map((stat, idx) => (
+              <div key={stat.label} className={`text-center ${idx > 0 ? 'sm:border-l sm:border-wine-800/60' : ''}`}>
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#ffc5b6]">
+                  <CountingNumber target={stat.target} />
+                  <span className="text-glc-orange">{stat.suffix}</span>
+                </div>
+                <p className="mt-2 text-xs sm:text-sm font-medium text-cream-300 uppercase tracking-wider">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Video Showcase Component */}
@@ -58,7 +81,7 @@ export default function ArchiveGallery() {
           </div>
 
           {/* Active Edition Card */}
-          <div className="bg-[#13030F] rounded-xl p-8 sm:p-12 border border-wine-800 shadow-2xl relative overflow-hidden">
+          <div className="bg-[#13030F] rounded-2xl p-8 sm:p-12 border border-wine-800 shadow-2xl relative overflow-hidden">
             
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
@@ -98,19 +121,26 @@ export default function ArchiveGallery() {
                   Edition Metrics
                 </div>
                 
-                {selectedEdition.stats.map((st, sIdx) => (
-                  <div
-                    key={sIdx}
-                    className="p-5 rounded-lg bg-[#0E020C] border border-wine-800 flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="text-xs text-cream-300">{st.label}</div>
+                {selectedEdition.stats.map((st, sIdx) => {
+                  const numMatch = st.value.match(/(\d+)/)
+                  const target = numMatch ? parseInt(numMatch[1], 10) : 0
+                  const suffix = st.value.replace(/[\d,]/g, '')
+
+                  return (
+                    <div
+                      key={`${selectedEdition.edition}-${sIdx}`}
+                      className="p-5 rounded-xl bg-[#0E020C] border border-wine-800/80 flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="text-xs text-cream-300">{st.label}</div>
+                      </div>
+                      <div className="text-3xl sm:text-4xl text-[#ffc5b6] font-bold">
+                        <CountingNumber target={target} />
+                        <span className="text-glc-orange">{suffix}</span>
+                      </div>
                     </div>
-                    <div className="text-3xl sm:text-4xl text-[#ffc5b6] font-bold">
-                      {st.value}
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
             </div>

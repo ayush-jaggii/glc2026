@@ -95,7 +95,7 @@ export default function RegistrationSection() {
                   </div>
                   <div>
                     <span className="text-xs font-semibold text-cream-100 block">Full Conference Access</span>
-                    <span className="text-xs text-cream-400">Access to all 5 thematic symposia, networking luncheon, and plenary tracks.</span>
+                    <span className="text-xs text-cream-400">Access to all 5 thematic panels, networking luncheon, and plenary tracks.</span>
                   </div>
                 </div>
 
@@ -105,7 +105,7 @@ export default function RegistrationSection() {
                   </div>
                   <div>
                     <span className="text-xs font-semibold text-cream-100 block">Institutional Certification</span>
-                    <span className="text-xs text-cream-400">Official certificate of participation endorsed by TAPMI Bengaluru (MAHE Manipal).</span>
+                    <span className="text-xs text-cream-400">Official certificate of participation endorsed by TAPMI, MAHE Bengaluru.</span>
                   </div>
                 </div>
               </div>

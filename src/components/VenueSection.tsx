@@ -29,7 +29,7 @@ export default function VenueSection() {
           </h2>
           
           <p className="text-sm sm:text-base text-cream-300 leading-relaxed">
-            Hosted at the state-of-the-art convention facilities of T. A. Pai Management Institute, Bengaluru Campus.
+            Hosted at the state-of-the-art convention facilities of MAHE Bengaluru.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default function VenueSection() {
                     Dr. Ramdas M. Pai Convention Centre
                   </h3>
                   <p className="text-xs text-cream-400">
-                    TAPMI Bengaluru Campus · MAHE Manipal
+                    MAHE Bengaluru
                   </p>
                 </div>
               </div>
