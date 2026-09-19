@@ -37,11 +37,11 @@ export default function SpeakerReveal() {
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-            Speakers
+            MEET OUR SPEAKERS
           </h2>
 
           <p className="text-sm sm:text-base text-cream-200/90 max-w-2xl mx-auto leading-relaxed mb-8">
-            Distinguished industry chairs, managing directors, and senior leaders addressing global business transformation across 6 core industry symposia.
+            Distinguished industry chairs, managing directors, and senior leaders addressing global business transformation across 6 core industry panels.
           </p>
 
           {/* Clean Countdown Ribbon */}

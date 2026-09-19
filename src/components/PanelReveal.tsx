@@ -9,17 +9,17 @@ export default function PanelReveal() {
   const activePanel = PANELS_LIST.find((p) => p.id === activePanelId) || PANELS_LIST[0]
 
   return (
-    <div id="symposia" className="relative mt-20 pt-16 border-t border-wine-900/60 scroll-mt-24">
+    <div id="panels" className="relative mt-20 pt-16 border-t border-wine-900/60 scroll-mt-24">
       {/* Hidden anchor target for backwards compatibility */}
-      <span id="panels" className="absolute -top-24 pointer-events-none" />
+      <span id="symposia" className="absolute -top-24 pointer-events-none" />
       
       {/* Section Header */}
       <div className="max-w-3xl mb-12">
         <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-          Symposia
+          Panels
         </h3>
         <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed">
-          Five focused panel symposia exploring multinational enterprise strategies, global capability centers, capital convergence, and economic resilience across borders.
+          Five focused panels exploring multinational enterprise strategies, global capability centers, capital convergence, and economic resilience across borders.
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export default function PanelReveal() {
             
             <div className="flex items-center justify-between gap-4 mb-5 pb-5 border-b border-wine-800/80">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-glc-magenta font-semibold">
-                <span>Symposium {activePanel.number}</span>
+                <span>Panel {activePanel.number}</span>
                 <span>·</span>
                 <span className="text-cream-300 font-normal">{activePanel.category}</span>
               </div>

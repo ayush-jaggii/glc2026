@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { TapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
+import { TapmiLogo, AccredationsLogo } from './Logos'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 
 export default function Navigation() {
@@ -18,7 +18,7 @@ export default function Navigation() {
 
   const navLinks = [
     { label: 'Speakers', href: '#speakers' },
-    { label: 'Symposia', href: '#symposia' },
+    { label: 'Panels', href: '#panels' },
     { label: 'Previous Editions', href: '#previous-editions' },
     { label: 'Delegate Benefits', href: '#delegate-benefits' },
     { label: 'Venue', href: '#venue' },
@@ -33,19 +33,21 @@ export default function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-6">
+        <div className="flex items-center justify-between gap-4 sm:gap-6">
           
-          {/* Brand Identity / Institutional Crests */}
-          <div className="flex items-center gap-4 sm:gap-6">
+          {/* Left: TAPMI Logo + LEADXAI in Tektype */}
+          <div className="flex items-center gap-3 sm:gap-4">
             <a href="#" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
-              <TapmiLogo className="h-9 sm:h-10 w-auto" variant="light" />
-              <div className="hidden sm:block h-6 w-px bg-wine-700/80" />
-              <MaheLogo className="hidden sm:block h-9 w-auto" variant="light" />
+              <TapmiLogo className="h-8 sm:h-9 w-auto" variant="light" />
+              <div className="h-5 w-px bg-wine-700/80" />
+              <span className="font-tektype text-base sm:text-lg text-[#ffc5b6] tracking-wider font-bold">
+                LEADXAI
+              </span>
             </a>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -57,8 +59,12 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* Action Button & Mobile Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right: Institutional Accreditation Logos & Register Button */}
+          <div className="flex items-center gap-3 sm:gap-5">
+            <div className="hidden md:flex items-center">
+              <AccredationsLogo className="h-5 sm:h-6 w-auto" variant="light" />
+            </div>
+
             <a
               href="#register"
               className="relative inline-flex items-center justify-center px-4 sm:px-5 py-2 text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_20px_-3px_rgba(244,81,151,0.5)]"
@@ -90,7 +96,12 @@ export default function Navigation() {
         <div className="lg:hidden bg-wine-950/98 backdrop-blur-xl border-b border-wine-800 px-6 py-6 transition-all duration-300">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between pb-3 border-b border-wine-800/80">
-              <MaheLogo className="h-8 w-auto" variant="light" />
+              <div className="flex items-center gap-2">
+                <TapmiLogo className="h-7 w-auto" variant="light" />
+                <span className="font-tektype text-sm text-[#ffc5b6] tracking-wider font-bold">
+                  LEADXAI
+                </span>
+              </div>
               <AccredationsLogo className="h-5 w-auto" variant="light" />
             </div>
             {navLinks.map((link) => (

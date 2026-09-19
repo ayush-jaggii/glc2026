@@ -58,7 +58,7 @@ export default function Footer() {
                 <a href="#speakers" className="hover:text-glc-orange transition-colors">Speakers</a>
               </li>
               <li>
-                <a href="#symposia" className="hover:text-glc-orange transition-colors">Symposia</a>
+                <a href="#panels" className="hover:text-glc-orange transition-colors">Panels</a>
               </li>
               <li>
                 <a href="#previous-editions" className="hover:text-glc-orange transition-colors">Previous Editions</a>
