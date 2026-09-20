@@ -14,7 +14,9 @@ export interface PanelSchema {
   number: string;
   title: string;
   category: string;
+  topic: string;
   subtitle: string;
+  image: string;
   description: string;
   keyQuestions: string[];
   isRevealed: boolean;
@@ -72,11 +74,13 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-1",
     number: "01",
     title: "Ctrl + Alt + Global",
-    category: "Information Technology & GCCs",
-    subtitle: "Enterprise Tech Decoupling & The Future of Capability Centers",
-    description: "The restructuring of global IT hubs, data localization protocols, sovereign cloud boundaries, and the ascendance of Indian GCCs as global architectural nerve centers.",
+    category: "Information Technology (IT)",
+    topic: "From Cost Centre to Innovation Hub: Agentic AI as a Strategic Catalyst",
+    subtitle: "Enterprise Tech Decoupling & Capability Centers",
+    image: "/panels/it-gcc.jpg",
+    description: "The restructuring of global IT hubs, sovereign cloud boundaries, and the ascendance of Indian GCCs as global architectural nerve centers.",
     keyQuestions: [
-      "How do multinational enterprises navigate data localization and cross-border AI governance?",
+      "How multinational enterprises navigate cross-border AI governance.",
       "From cost efficiency to core architecture: How GCCs drive enterprise-wide innovation."
     ],
     isRevealed: false,
@@ -85,11 +89,13 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-2",
     number: "02",
     title: "Aisle Be There",
-    category: "FMCG & Consumer Goods",
+    category: "Retail & FMCG",
+    topic: "From Shelf to Software: How GCCs Are Digitizing the FMCG Value Chain",
     subtitle: "Global Supply Networks & Borderless Consumer Resonance",
+    image: "/panels/fmcg-retail.jpg",
     description: "Cross-border consumer supply chains, regional sourcing agility, and brand positioning amidst economic nationalism and changing retail landscapes.",
     keyQuestions: [
-      "How are global FMCG leaders re-engineering sourcing to withstand localized disruptions?",
+      "How global FMCG leaders re-engineer sourcing to withstand localized disruptions.",
       "Maintaining universal brand authenticity while adapting to hyper-local cultural nuances."
     ],
     isRevealed: false,
@@ -98,11 +104,13 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-3",
     number: "03",
     title: "Capital Without Borders",
-    category: "BFSI & Investment Banking",
+    category: "Finance & BFSI",
+    topic: "India as the Financial Nerve Center: How GCCs are Redefining Global Finance Operations",
     subtitle: "Global Liquidity, Sovereign Wealth & International Settlement",
+    image: "/panels/finance-bfsi.jpg",
     description: "Managing international liquidity, cross-border M&A, digital currency protocols, and shifting institutional capital across emerging market corridors.",
     keyQuestions: [
-      "Where is institutional capital allocating in response to geopolitical realignments?",
+      "Where institutional capital allocates in response to geopolitical realignments.",
       "The role of next-generation digital settlement rails in bypassing legacy frictions."
     ],
     isRevealed: false,
@@ -111,8 +119,10 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-4",
     number: "04",
     title: "Shifting Gears",
-    category: "Automotive & Electric Mobility",
-    subtitle: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs",
+    category: "Automotive & Clean-Tech",
+    topic: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs in EV Mobility",
+    subtitle: "Clean-Tech Alliances & Automotive Manufacturing",
+    image: "/panels/auto-mobility.jpg",
     description: "EV battery supply chains, rare-earth mineral geopolitics, regulatory mandates, and global automotive manufacturing alliances.",
     keyQuestions: [
       "Mitigating critical mineral bottlenecks and battery recycling corridors.",
@@ -124,8 +134,10 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-5",
     number: "05",
     title: "Going Viral, Staying Local",
-    category: "Media, Marketing & Global Brands",
-    subtitle: "Cultural Resonance vs. International Scale",
+    category: "Media & Global Brands",
+    topic: "Cultural Resonance vs. International Scale: Navigating Borderless Media",
+    subtitle: "Balancing Global Brand Trust with Localized Consumer Empathy",
+    image: "/panels/media-brands.jpg",
     description: "Balancing universal brand narratives with hyper-localized nuances across fragmented media channels and culturally sensitive global audiences.",
     keyQuestions: [
       "How enterprise marketing teams maintain global brand trust during geopolitical friction.",

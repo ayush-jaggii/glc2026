@@ -1,136 +1,94 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { PANELS_LIST } from '@/data/eventData'
-import { Layers } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 
 export default function PanelReveal() {
-  const topPanels = PANELS_LIST.slice(0, 2)
-  const bottomPanels = PANELS_LIST.slice(2, 5)
-
   return (
-    <div id="panels" className="relative mt-24 pt-16 border-t border-wine-900/60 scroll-mt-24">
+    <section id="panels" className="relative mt-20 pt-16 border-t border-wine-900/60 scroll-mt-24">
       {/* Hidden anchor target for backwards compatibility */}
       <span id="symposia" className="absolute -top-24 pointer-events-none" />
-      
+
       {/* Section Header */}
-      <div className="max-w-3xl mb-14">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700 mb-3">
-          <Layers className="w-3.5 h-3.5 text-glc-orange" />
-          <span>Strategic Themes</span>
-        </div>
-        <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
-          Panels
+      <div className="max-w-3xl mb-12 sm:mb-16">
+        <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-3">
+          Panel Discussion Topics
         </h3>
-        <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed">
-          Five focused tracks exploring multinational enterprise strategies, global capability centers, capital convergence, and cross-border innovation.
+        <p className="text-xs sm:text-sm text-cream-200/80 leading-relaxed font-normal">
+          Five focused symposia exploring multinational enterprise strategy, capability centers, and global market dynamics.
         </p>
       </div>
 
-      {/* 5-Panel Editorial Multi-Track Grid */}
-      <div className="space-y-6 sm:space-y-8">
-        
-        {/* Row 1: 2 Major Flagship Panels (2 x col-span-6) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
-          {topPanels.map((panel) => (
-            <div
-              key={panel.id}
-              className="lg:col-span-6 rounded-2xl p-7 sm:p-9 bg-gradient-to-br from-[#180515]/95 via-[#11030E]/95 to-[#0A0108]/95 border border-wine-800/80 hover:border-glc-magenta/60 shadow-xl hover:shadow-[0_12px_36px_-10px_rgba(244,81,151,0.25)] transition-all duration-300 flex flex-col justify-between group"
-            >
-              <div>
-                {/* Top Track Pill & Number */}
-                <div className="flex items-center justify-between gap-4 mb-5">
-                  <span className="text-xs font-bold px-3 py-1 rounded-sm bg-wine-900 text-glc-magenta border border-wine-700 tracking-wider">
-                    PANEL {panel.number}
-                  </span>
-                  <span className="text-xs uppercase tracking-wider text-glc-orange font-semibold">
+      {/* Minimalist Editorial Panels List */}
+      <div className="divide-y divide-wine-800/60 border-y border-wine-800/60">
+        {PANELS_LIST.map((panel) => (
+          <div
+            key={panel.id}
+            className="group relative py-7 sm:py-9 px-2 sm:px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-wine-900/25 transition-all duration-300 rounded-xl cursor-default"
+          >
+            {/* Left Column: Photo Thumbnail & Topic Info */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-7 flex-1 min-w-0">
+              
+              {/* Panel Image Thumbnail */}
+              <div className="relative w-full sm:w-44 md:w-56 h-28 sm:h-28 md:h-32 rounded-lg overflow-hidden shrink-0 bg-wine-950 border border-wine-800/80 group-hover:border-glc-magenta/70 shadow-lg group-hover:shadow-[0_0_24px_-6px_rgba(244,81,151,0.35)] transition-all duration-300">
+                <Image
+                  src={panel.image}
+                  alt={panel.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 176px, 224px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                />
+                {/* Subtle dark vignette on image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Track Number Badge */}
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-black/70 text-cream-200 border border-white/10 backdrop-blur-sm">
+                  Track {panel.number}
+                </div>
+              </div>
+
+              {/* One-Liner Topic & Sector Tag */}
+              <div className="flex flex-col justify-center min-w-0">
+                
+                {/* Creative Title (Secondary / Accent) */}
+                <div className="text-xs font-tektype tracking-wide uppercase text-cream-400 group-hover:text-cream-300 mb-1.5 transition-colors">
+                  {panel.title}
+                </div>
+
+                {/* Primary One-Liner Topic */}
+                <h4 className="text-base sm:text-lg md:text-xl font-bold text-cream-100 group-hover:text-white group-hover:text-[#ffc5b6] transition-colors leading-snug">
+                  {panel.topic}
+                </h4>
+
+                {/* Sector Category Tag in warm accent color */}
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs font-semibold tracking-wide text-glc-orange group-hover:text-glc-pink transition-colors">
                     {panel.category}
                   </span>
-                </div>
-
-                {/* Panel Title & Subtitle */}
-                <h4 className="text-2xl sm:text-3xl font-bold text-cream-50 group-hover:text-white transition-colors mb-2">
-                  {panel.title}
-                </h4>
-                <div className="text-xs sm:text-sm font-medium text-glc-pink/95 mb-4">
-                  {panel.subtitle}
-                </div>
-
-                {/* Synopsis */}
-                <p className="text-xs sm:text-sm text-cream-200/90 leading-relaxed mb-6">
-                  {panel.description}
-                </p>
-              </div>
-
-              {/* Discussion Themes */}
-              <div className="pt-5 border-t border-wine-800/70 mt-4">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-cream-300/80 mb-2.5">
-                  Core Discussion Themes
-                </div>
-                <ul className="space-y-2">
-                  {panel.keyQuestions.map((q, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-xs text-cream-200/90 leading-relaxed">
-                      <span className="w-1.5 h-1.5 rounded-full bg-glc-orange shrink-0 mt-1.5" />
-                      <span>{q}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Row 2: 3 Focused Industry Panels (3 x col-span-4) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
-          {bottomPanels.map((panel, idx) => (
-            <div
-              key={panel.id}
-              className={`${idx === 2 ? 'md:col-span-2 lg:col-span-4' : 'lg:col-span-4'} rounded-2xl p-7 sm:p-8 bg-gradient-to-br from-[#180515]/95 via-[#11030E]/95 to-[#0A0108]/95 border border-wine-800/80 hover:border-glc-magenta/60 shadow-xl hover:shadow-[0_12px_36px_-10px_rgba(244,81,151,0.25)] transition-all duration-300 flex flex-col justify-between group`}
-            >
-              <div>
-                {/* Top Track Pill & Number */}
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-sm bg-wine-900 text-glc-magenta border border-wine-700 tracking-wider">
-                    PANEL {panel.number}
-                  </span>
-                  <span className="text-[11px] uppercase tracking-wider text-glc-orange font-semibold truncate">
-                    {panel.category}
+                  <span className="text-cream-400/40 text-xs">·</span>
+                  <span className="text-xs text-cream-300/80 truncate">
+                    {panel.subtitle}
                   </span>
                 </div>
 
-                {/* Panel Title & Subtitle */}
-                <h4 className="text-xl sm:text-2xl font-bold text-cream-50 group-hover:text-white transition-colors mb-2">
-                  {panel.title}
-                </h4>
-                <div className="text-xs font-medium text-glc-pink/95 mb-4">
-                  {panel.subtitle}
-                </div>
-
-                {/* Synopsis */}
-                <p className="text-xs text-cream-200/90 leading-relaxed mb-6">
-                  {panel.description}
-                </p>
               </div>
 
-              {/* Discussion Themes */}
-              <div className="pt-4 border-t border-wine-800/70 mt-4">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-cream-300/80 mb-2">
-                  Core Discussion Themes
-                </div>
-                <ul className="space-y-1.5">
-                  {panel.keyQuestions.map((q, qIdx) => (
-                    <li key={qIdx} className="flex items-start gap-2 text-xs text-cream-200/90 leading-relaxed">
-                      <span className="w-1.5 h-1.5 rounded-full bg-glc-orange shrink-0 mt-1.5" />
-                      <span>{q}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
-          ))}
-        </div>
 
+            {/* Right Column: Active Gradient Edge Indicator & Arrow */}
+            <div className="hidden sm:flex items-center gap-4 shrink-0 pl-4">
+              <ArrowUpRight className="w-5 h-5 text-cream-400/60 group-hover:text-glc-orange transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+              
+              {/* Gradient Accent Bar (Inspired by reference design) */}
+              <div className="w-2.5 h-16 rounded-full bg-gradient-to-b from-glc-orange via-glc-pink to-glc-magenta opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_16px_rgba(244,81,151,0.6)]" />
+            </div>
+
+          </div>
+        ))}
       </div>
-    </div>
+
+    </section>
   )
 }
