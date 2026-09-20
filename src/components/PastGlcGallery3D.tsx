@@ -38,7 +38,6 @@ export default function PastGlcGallery3D() {
   const progressRef = useRef(0)
   const isLockedRef = useRef(false)
   const isCompletedRef = useRef(false)
-  const [isLocked, setIsLocked] = useState(false)
 
   // 1. Wheel listener to lock page scroll on arrival and advance photos until cycle is complete
   useEffect(() => {
@@ -53,8 +52,6 @@ export default function PastGlcGallery3D() {
       if (inView && !isCompletedRef.current) {
         if (!isLockedRef.current) {
           isLockedRef.current = true
-          setIsLocked(true)
-          // Snap smoothly to lock position
           containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       }
@@ -69,7 +66,6 @@ export default function PastGlcGallery3D() {
         // If user scrolls UP while at the beginning, release lock upwards
         if (delta < 0 && progressRef.current <= 0.01) {
           isLockedRef.current = false
-          setIsLocked(false)
           return
         }
 
@@ -81,9 +77,7 @@ export default function PastGlcGallery3D() {
         // When all 10 photos are done coming, release the lock and continue website scroll!
         if (next >= 1.0) {
           isLockedRef.current = false
-          setIsLocked(false)
           isCompletedRef.current = true
-          // Smoothly continue scrolling down the website
           window.scrollBy({ top: 160, behavior: 'smooth' })
         }
       }
@@ -109,7 +103,6 @@ export default function PastGlcGallery3D() {
       if (inView && !isCompletedRef.current) {
         if (!isLockedRef.current) {
           isLockedRef.current = true
-          setIsLocked(true)
           containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       }
@@ -125,7 +118,6 @@ export default function PastGlcGallery3D() {
 
         if (delta < 0 && progressRef.current <= 0.01) {
           isLockedRef.current = false
-          setIsLocked(false)
           return
         }
 
@@ -135,7 +127,6 @@ export default function PastGlcGallery3D() {
 
         if (next >= 1.0) {
           isLockedRef.current = false
-          setIsLocked(false)
           isCompletedRef.current = true
           window.scrollBy({ top: 160, behavior: 'smooth' })
         }
@@ -162,7 +153,6 @@ export default function PastGlcGallery3D() {
         setScrollProgress(next)
         if (next >= 1.0) {
           isLockedRef.current = false
-          setIsLocked(false)
           isCompletedRef.current = true
           window.scrollBy({ top: 160, behavior: 'smooth' })
         }
@@ -171,7 +161,6 @@ export default function PastGlcGallery3D() {
         const next = Math.max(0, progressRef.current - 0.1)
         if (next <= 0) {
           isLockedRef.current = false
-          setIsLocked(false)
         }
         progressRef.current = next
         setScrollProgress(next)
@@ -198,18 +187,6 @@ export default function PastGlcGallery3D() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Manual skip function
-  const handleSkip = () => {
-    isLockedRef.current = false
-    setIsLocked(false)
-    isCompletedRef.current = true
-    progressRef.current = 1.0
-    setScrollProgress(1.0)
-    window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })
-  }
-
-  const currentPhotoNum = Math.min(10, Math.floor(scrollProgress * 10) + 1)
-
   return (
     <div
       ref={containerRef}
@@ -231,33 +208,11 @@ export default function PastGlcGallery3D() {
         />
       </div>
 
-      {/* Prominent GLC Text in the Middle with mix-blend-exclusion */}
-      <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-center px-4 mix-blend-exclusion z-20 select-none">
-        <h2 className="font-tektype text-7xl sm:text-9xl md:text-[12rem] lg:text-[15rem] font-bold tracking-tight text-white leading-none">
+      {/* Clean, Prominent GLC in Hero Pink (#ffc5b6) */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 z-20 select-none">
+        <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none drop-shadow-[0_0_55px_rgba(244,81,151,0.38)]">
           GLC
         </h2>
-        <p className="font-mono text-xs sm:text-sm md:text-base tracking-[0.35em] uppercase text-white/90 mt-2 font-medium">
-          Archival Chronicles
-        </p>
-      </div>
-
-      {/* Dynamic Scroll Lock Status & Progress Indicator */}
-      <div className="absolute bottom-6 left-0 right-0 z-30 flex items-center justify-between px-6 sm:px-12 pointer-events-none">
-        <div className="flex items-center gap-2.5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[11px] font-mono text-cream-200">
-          <span className="w-2 h-2 rounded-full bg-glc-magenta animate-pulse" />
-          <span>Photo {currentPhotoNum} of 10</span>
-          <span className="text-cream-400/60">· Scroll to advance</span>
-        </div>
-
-        {isLocked && (
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="pointer-events-auto text-[11px] font-mono uppercase tracking-wider text-cream-300 hover:text-white bg-black/60 hover:bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 transition-colors"
-          >
-            Continue to Editions ↓
-          </button>
-        )}
       </div>
 
       {/* Top and Bottom Feathering Gradients for seamless section blending */}
