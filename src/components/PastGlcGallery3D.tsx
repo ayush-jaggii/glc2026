@@ -208,9 +208,9 @@ export default function PastGlcGallery3D() {
         />
       </div>
 
-      {/* Clean, Prominent GLC in Hero Pink (#ffc5b6) */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 z-20 select-none">
-        <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none drop-shadow-[0_0_55px_rgba(244,81,151,0.38)]">
+      {/* Prominent GLC in Hero Pink (#ffc5b6) with Negative Photo Inversion Effect */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 mix-blend-exclusion z-20 select-none">
+        <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none">
           GLC
         </h2>
       </div>
