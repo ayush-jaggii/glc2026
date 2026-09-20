@@ -31,7 +31,7 @@ interface BlurSettings {
 	maxBlur: number;
 }
 
-interface InfiniteGalleryProps {
+export interface InfiniteGalleryProps {
 	images: ImageItem[];
 	speed?: number;
 	zSpacing?: number;
@@ -41,6 +41,8 @@ interface InfiniteGalleryProps {
 	blurSettings?: BlurSettings;
 	className?: string;
 	style?: React.CSSProperties;
+	scrollProgress?: number;
+	autoPlay?: boolean;
 }
 
 interface PlaneData {
@@ -203,10 +205,14 @@ function GalleryScene({
 		blurOut: { start: 0.9, end: 1.0 },
 		maxBlur: 3.0,
 	},
+	scrollProgress,
+	autoPlay: initialAutoPlay = false,
 }: Omit<InfiniteGalleryProps, 'className' | 'style'>) {
 	const [scrollVelocity, setScrollVelocity] = useState(0);
-	const [autoPlay, setAutoPlay] = useState(true);
+	const isScrollControlled = scrollProgress !== undefined;
+	const [autoPlay, setAutoPlay] = useState(isScrollControlled ? false : initialAutoPlay);
 	const lastInteraction = useRef(Date.now());
+	const currentZOffset = useRef(0);
 
 	const normalizedImages = useMemo(
 		() =>
@@ -230,12 +236,11 @@ function GalleryScene({
 		const maxVerticalOffset = MAX_VERTICAL_OFFSET;
 
 		for (let i = 0; i < visibleCount; i++) {
-			// Create varied distribution patterns for both axes
-			const horizontalAngle = (i * 2.618) % (Math.PI * 2); // Golden angle for natural distribution
-			const verticalAngle = (i * 1.618 + Math.PI / 3) % (Math.PI * 2); // Offset angle for vertical
+			const horizontalAngle = (i * 2.618) % (Math.PI * 2);
+			const verticalAngle = (i * 1.618 + Math.PI / 3) % (Math.PI * 2);
 
-			const horizontalRadius = (i % 3) * 1.2; // Vary the distance from center
-			const verticalRadius = ((i + 1) % 4) * 0.8; // Different pattern for vertical
+			const horizontalRadius = (i % 3) * 1.2;
+			const verticalRadius = ((i + 1) % 4) * 0.8;
 
 			const x =
 				(Math.sin(horizontalAngle) * horizontalRadius * maxHorizontalOffset) /
@@ -258,8 +263,8 @@ function GalleryScene({
 			index: i,
 			z: visibleCount > 0 ? ((depthRange / visibleCount) * i) % depthRange : 0,
 			imageIndex: totalImages > 0 ? i % totalImages : 0,
-			x: spatialPositions[i]?.x ?? 0, // Use spatial positions for x
-			y: spatialPositions[i]?.y ?? 0, // Use spatial positions for y
+			x: spatialPositions[i]?.x ?? 0,
+			y: spatialPositions[i]?.y ?? 0,
 		}))
 	);
 
@@ -276,20 +281,21 @@ function GalleryScene({
 		}));
 	}, [depthRange, spatialPositions, totalImages, visibleCount]);
 
-	// Handle scroll input
+	// Standalone wheel/keyboard input (only when not driven by external page scrollProgress)
 	const handleWheel = useCallback(
 		(event: WheelEvent) => {
+			if (isScrollControlled) return;
 			event.preventDefault();
 			setScrollVelocity((prev) => prev + event.deltaY * 0.01 * speed);
 			setAutoPlay(false);
 			lastInteraction.current = Date.now();
 		},
-		[speed]
+		[speed, isScrollControlled]
 	);
 
-	// Handle keyboard input
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
+			if (isScrollControlled) return;
 			if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
 				setScrollVelocity((prev) => prev - 2 * speed);
 				setAutoPlay(false);
@@ -300,10 +306,11 @@ function GalleryScene({
 				lastInteraction.current = Date.now();
 			}
 		},
-		[speed]
+		[speed, isScrollControlled]
 	);
 
 	useEffect(() => {
+		if (isScrollControlled) return;
 		const canvas = document.querySelector('canvas');
 		if (canvas) {
 			canvas.addEventListener('wheel', handleWheel, { passive: false });
@@ -314,33 +321,43 @@ function GalleryScene({
 				document.removeEventListener('keydown', handleKeyDown);
 			};
 		}
-	}, [handleWheel, handleKeyDown]);
+	}, [handleWheel, handleKeyDown, isScrollControlled]);
 
-	// Auto-play logic
+	// Auto-play logic only if enabled and not scroll controlled
 	useEffect(() => {
+		if (isScrollControlled || !initialAutoPlay) return;
 		const interval = setInterval(() => {
 			if (Date.now() - lastInteraction.current > 3000) {
 				setAutoPlay(true);
 			}
 		}, 1000);
 		return () => clearInterval(interval);
-	}, []);
+	}, [isScrollControlled, initialAutoPlay]);
 
 	useFrame((state, delta) => {
-		// Apply auto-play
-		if (autoPlay) {
-			setScrollVelocity((prev) => prev + 0.3 * delta);
+		let currentVelocity = scrollVelocity;
+
+		if (isScrollControlled) {
+			// Controlled by page scrollProgress (0 to 1)
+			const targetZ = (scrollProgress ?? 0) * depthRange;
+			const deltaDiff = targetZ - currentZOffset.current;
+			currentZOffset.current += deltaDiff * 0.14;
+			currentVelocity = deltaDiff * 8.0;
+		} else {
+			// Apply auto-play or damping
+			if (autoPlay) {
+				setScrollVelocity((prev) => prev + 0.3 * delta);
+			}
+			setScrollVelocity((prev) => prev * 0.95);
+			currentZOffset.current += scrollVelocity * delta * 10;
 		}
 
-		// Damping
-		setScrollVelocity((prev) => prev * 0.95);
-
-		// Update time uniform for all materials
+		// Update time and force uniform for all materials
 		const time = state.clock.getElapsedTime();
 		materials.forEach((material) => {
 			if (material && material.uniforms) {
 				material.uniforms.time.value = time;
-				material.uniforms.scrollForce.value = scrollVelocity;
+				material.uniforms.scrollForce.value = currentVelocity;
 			}
 		});
 
@@ -351,65 +368,61 @@ function GalleryScene({
 		const halfRange = totalRange / 2;
 
 		planesData.current.forEach((plane, i) => {
-			let newZ = plane.z + scrollVelocity * delta * 10;
+			const initialZ = visibleCount > 0 ? (depthRange / visibleCount) * i : 0;
+			let calculatedZ = initialZ + currentZOffset.current;
 			let wrapsForward = 0;
 			let wrapsBackward = 0;
 
-			if (newZ >= totalRange) {
-				wrapsForward = Math.floor(newZ / totalRange);
-				newZ -= totalRange * wrapsForward;
-			} else if (newZ < 0) {
-				wrapsBackward = Math.ceil(-newZ / totalRange);
-				newZ += totalRange * wrapsBackward;
+			if (calculatedZ >= totalRange) {
+				wrapsForward = Math.floor(calculatedZ / totalRange);
+				calculatedZ -= totalRange * wrapsForward;
+			} else if (calculatedZ < 0) {
+				wrapsBackward = Math.ceil(-calculatedZ / totalRange);
+				calculatedZ += totalRange * wrapsBackward;
 			}
 
 			if (wrapsForward > 0 && imageAdvance > 0 && totalImages > 0) {
 				plane.imageIndex =
-					(plane.imageIndex + wrapsForward * imageAdvance) % totalImages;
-			}
-
-			if (wrapsBackward > 0 && imageAdvance > 0 && totalImages > 0) {
-				const step = plane.imageIndex - wrapsBackward * imageAdvance;
+					(i + wrapsForward * imageAdvance) % totalImages;
+			} else if (wrapsBackward > 0 && imageAdvance > 0 && totalImages > 0) {
+				const step = i - wrapsBackward * imageAdvance;
 				plane.imageIndex = ((step % totalImages) + totalImages) % totalImages;
+			} else {
+				plane.imageIndex = i % totalImages;
 			}
 
-			plane.z = ((newZ % totalRange) + totalRange) % totalRange;
+			plane.z = ((calculatedZ % totalRange) + totalRange) % totalRange;
 			plane.x = spatialPositions[i]?.x ?? 0;
 			plane.y = spatialPositions[i]?.y ?? 0;
 
 			const worldZ = plane.z - halfRange;
 
 			// Calculate opacity based on fade settings
-			const normalizedPosition = plane.z / totalRange; // 0 to 1
+			const normalizedPosition = plane.z / totalRange;
 			let opacity = 1;
 
 			if (
 				normalizedPosition >= fadeSettings.fadeIn.start &&
 				normalizedPosition <= fadeSettings.fadeIn.end
 			) {
-				// Fade in: opacity goes from 0 to 1 within the fade in range
 				const fadeInProgress =
 					(normalizedPosition - fadeSettings.fadeIn.start) /
 					(fadeSettings.fadeIn.end - fadeSettings.fadeIn.start);
 				opacity = fadeInProgress;
 			} else if (normalizedPosition < fadeSettings.fadeIn.start) {
-				// Before fade in starts: fully transparent
 				opacity = 0;
 			} else if (
 				normalizedPosition >= fadeSettings.fadeOut.start &&
 				normalizedPosition <= fadeSettings.fadeOut.end
 			) {
-				// Fade out: opacity goes from 1 to 0 within the fade out range
 				const fadeOutProgress =
 					(normalizedPosition - fadeSettings.fadeOut.start) /
 					(fadeSettings.fadeOut.end - fadeSettings.fadeOut.start);
 				opacity = 1 - fadeOutProgress;
 			} else if (normalizedPosition > fadeSettings.fadeOut.end) {
-				// After fade out ends: fully transparent
 				opacity = 0;
 			}
 
-			// Clamp opacity between 0 and 1
 			opacity = Math.max(0, Math.min(1, opacity));
 
 			// Calculate blur based on blur settings
@@ -419,32 +432,26 @@ function GalleryScene({
 				normalizedPosition >= blurSettings.blurIn.start &&
 				normalizedPosition <= blurSettings.blurIn.end
 			) {
-				// Blur in: blur goes from maxBlur to 0 within the blur in range
 				const blurInProgress =
 					(normalizedPosition - blurSettings.blurIn.start) /
 					(blurSettings.blurIn.end - blurSettings.blurIn.start);
 				blur = blurSettings.maxBlur * (1 - blurInProgress);
 			} else if (normalizedPosition < blurSettings.blurIn.start) {
-				// Before blur in starts: full blur
 				blur = blurSettings.maxBlur;
 			} else if (
 				normalizedPosition >= blurSettings.blurOut.start &&
 				normalizedPosition <= blurSettings.blurOut.end
 			) {
-				// Blur out: blur goes from 0 to maxBlur within the blur out range
 				const blurOutProgress =
 					(normalizedPosition - blurSettings.blurOut.start) /
 					(blurSettings.blurOut.end - blurSettings.blurOut.start);
 				blur = blurSettings.maxBlur * blurOutProgress;
 			} else if (normalizedPosition > blurSettings.blurOut.end) {
-				// After blur out ends: full blur
 				blur = blurSettings.maxBlur;
 			}
 
-			// Clamp blur to reasonable values
 			blur = Math.max(0, Math.min(blurSettings.maxBlur, blur));
 
-			// Update material uniforms
 			const material = materials[i];
 			if (material && material.uniforms) {
 				material.uniforms.opacity.value = opacity;
@@ -465,7 +472,6 @@ function GalleryScene({
 
 				const worldZ = plane.z - depthRange / 2;
 
-				// Calculate scale to maintain aspect ratio
 				const aspect = texture.image
 					? texture.image.width / texture.image.height
 					: 1;
@@ -476,7 +482,7 @@ function GalleryScene({
 					<ImagePlane
 						key={plane.index}
 						texture={texture}
-						position={[plane.x, plane.y, worldZ]} // Position planes relative to camera center
+						position={[plane.x, plane.y, worldZ]}
 						scale={scale}
 						material={material}
 					/>
@@ -486,7 +492,6 @@ function GalleryScene({
 	);
 }
 
-// Fallback component for when WebGL is not available
 function FallbackGallery({ images }: { images: ImageItem[] }) {
 	const normalizedImages = useMemo(
 		() =>
@@ -498,9 +503,6 @@ function FallbackGallery({ images }: { images: ImageItem[] }) {
 
 	return (
 		<div className="flex flex-col items-center justify-center h-full bg-wine-950 p-4">
-			<p className="text-cream-300 mb-4 text-xs font-mono uppercase tracking-wider">
-				WebGL not supported. Showing image preview:
-			</p>
 			<div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
 				{normalizedImages.map((img, i) => (
 					<img
@@ -519,6 +521,9 @@ export default function InfiniteGallery({
 	images,
 	className = 'h-96 w-full',
 	style,
+	speed = 1,
+	zSpacing = 3,
+	visibleCount = 8,
 	fadeSettings = {
 		fadeIn: { start: 0.05, end: 0.25 },
 		fadeOut: { start: 0.4, end: 0.43 },
@@ -528,11 +533,12 @@ export default function InfiniteGallery({
 		blurOut: { start: 0.4, end: 0.43 },
 		maxBlur: 8.0,
 	},
+	scrollProgress,
+	autoPlay,
 }: InfiniteGalleryProps) {
 	const [webglSupported, setWebglSupported] = useState(true);
 
 	useEffect(() => {
-		// Check WebGL support
 		try {
 			const canvas = document.createElement('canvas');
 			const gl =
@@ -562,8 +568,13 @@ export default function InfiniteGallery({
 				<Suspense fallback={null}>
 					<GalleryScene
 						images={images}
+						speed={speed}
+						zSpacing={zSpacing}
+						visibleCount={visibleCount}
 						fadeSettings={fadeSettings}
 						blurSettings={blurSettings}
+						scrollProgress={scrollProgress}
+						autoPlay={autoPlay}
 					/>
 				</Suspense>
 			</Canvas>

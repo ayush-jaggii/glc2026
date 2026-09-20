@@ -55,12 +55,14 @@ export default function ArchiveGallery() {
 
         {/* Video Showcase Component */}
         <VideoShowcase />
+      </div>
 
-        {/* 3D Immersive Past GLC Photo Retrospective */}
-        <PastGlcGallery3D />
+      {/* Seamless 3D Scroll-Driven Photography Journey */}
+      <PastGlcGallery3D />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Edition Chronology */}
-        <div className="mt-16">
+        <div className="mt-8 sm:mt-12">
           
           {/* Edition Selector Tabs */}
           <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
