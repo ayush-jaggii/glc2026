@@ -53,7 +53,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
   const panelInfo = TRACK_PANEL_MAP[panelist.trackCode] || {
     number: '01',
     title: panelist.trackName,
-    subtitle: 'Strategic Colloquium Track',
+    subtitle: 'Strategic Colloquium Panel',
   }
 
   // Compute initials for monogram placeholder
@@ -148,10 +148,6 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
           
           {/* Panel Info Box */}
           <div className="rounded-xl p-3 bg-wine-950/95 border border-wine-700/80 shadow-inner mb-3">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-glc-magenta mb-1">
-              <Layers className="w-3 h-3 text-glc-orange shrink-0" />
-              <span>Panel {panelInfo.number} Track</span>
-            </div>
             <div className="text-xs font-bold text-cream-100 leading-snug">
               {panelInfo.title}
             </div>

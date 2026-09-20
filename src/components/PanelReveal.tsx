@@ -42,18 +42,13 @@ export default function PanelReveal() {
                 />
                 {/* Subtle dark vignette on image */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-                
-                {/* Track Number Badge */}
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-black/70 text-cream-200 border border-white/10 backdrop-blur-sm">
-                  Track {panel.number}
-                </div>
               </div>
 
               {/* One-Liner Topic & Sector Tag */}
               <div className="flex flex-col justify-center min-w-0">
                 
-                {/* Creative Title (Secondary / Accent) */}
-                <div className="text-xs font-tektype tracking-wide uppercase text-cream-400 group-hover:text-cream-300 mb-1.5 transition-colors">
+                {/* Creative Title (Helvetica only) */}
+                <div className="text-xs font-sans font-bold tracking-wider uppercase text-cream-400 group-hover:text-cream-300 mb-1.5 transition-colors">
                   {panel.title}
                 </div>
 
