@@ -34,8 +34,13 @@ yarn-error.log*
 /*.pdf
 /*.jpeg
 /*.jpg
+/*.webp
 /*.zip
 
+
+# Raw assets & dumps
+GLC PHOTOS/
+*.tsbuildinfo
 
 # Vercel & Netlify
 .vercel

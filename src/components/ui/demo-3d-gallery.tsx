@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import InfiniteGallery from './3d-gallery-photography';
+import InfiniteGallery from '@/components/ui/3d-gallery-photography';
 
 export default function DemoOne() {
   const sampleImages = [

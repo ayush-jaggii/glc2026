@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { ARCHIVE_EDITIONS } from '@/data/eventData'
 import VideoShowcase from './VideoShowcase'
+import PastGlcGallery3D from './PastGlcGallery3D'
 import { History, CheckCircle } from 'lucide-react'
 import { CountingNumber } from '@/components/ui/counting-number'
 
@@ -54,6 +55,9 @@ export default function ArchiveGallery() {
 
         {/* Video Showcase Component */}
         <VideoShowcase />
+
+        {/* 3D Immersive Past GLC Photo Retrospective */}
+        <PastGlcGallery3D />
 
         {/* Edition Chronology */}
         <div className="mt-16">
