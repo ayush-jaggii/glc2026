@@ -17,7 +17,7 @@ export default function PanelReveal() {
           Panel Discussion Topics
         </h3>
         <p className="text-xs sm:text-sm text-cream-200/80 leading-relaxed font-normal">
-          Five focused symposia exploring multinational enterprise strategy, capability centers, and global market dynamics.
+          Five focused symposia exploring multinational enterprise strategy, market expansion, and cross-border innovation.
         </p>
       </div>
 
@@ -44,30 +44,19 @@ export default function PanelReveal() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               </div>
 
-              {/* One-Liner Topic & Sector Tag */}
+              {/* Panel Name & Sector Tag Only */}
               <div className="flex flex-col justify-center min-w-0">
-                
-                {/* Creative Title (Helvetica only) */}
-                <div className="text-xs font-sans font-bold tracking-wider uppercase text-cream-400 group-hover:text-cream-300 mb-1.5 transition-colors">
+                {/* Panel Title (Helvetica only) */}
+                <h4 className="text-xl sm:text-2xl md:text-3xl font-bold font-sans tracking-tight text-cream-100 group-hover:text-white transition-colors leading-snug">
                   {panel.title}
-                </div>
-
-                {/* Primary One-Liner Topic */}
-                <h4 className="text-base sm:text-lg md:text-xl font-bold text-cream-100 group-hover:text-white group-hover:text-[#ffc5b6] transition-colors leading-snug">
-                  {panel.topic}
                 </h4>
 
                 {/* Sector Category Tag in warm accent color */}
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-xs font-semibold tracking-wide text-glc-orange group-hover:text-glc-pink transition-colors">
+                <div className="mt-1.5 flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-medium tracking-wide text-glc-orange group-hover:text-glc-pink transition-colors">
                     {panel.category}
                   </span>
-                  <span className="text-cream-400/40 text-xs">·</span>
-                  <span className="text-xs text-cream-300/80 truncate">
-                    {panel.subtitle}
-                  </span>
                 </div>
-
               </div>
 
             </div>
