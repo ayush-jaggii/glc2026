@@ -2,7 +2,6 @@
 
 import React from 'react'
 import VideoShowcase from './VideoShowcase'
-import PastGlcGallery3D from './PastGlcGallery3D'
 import { CountingNumber } from '@/components/ui/counting-number'
 
 const CUMULATIVE_PAST_STATS = [
@@ -49,9 +48,6 @@ export default function ArchiveGallery() {
         {/* Video Showcase Component */}
         <VideoShowcase />
       </div>
-
-      {/* Seamless 3D Scroll-Driven Photography Journey */}
-      <PastGlcGallery3D />
     </section>
   )
 }

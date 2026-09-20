@@ -1,6 +1,7 @@
 import Navigation from '@/components/Navigation'
 import HeroSection from '@/components/HeroSection'
 import RevealSection from '@/components/RevealSection'
+import PastGlcGallery3D from '@/components/PastGlcGallery3D'
 import ArchiveGallery from '@/components/ArchiveGallery'
 import DelegateAdvantage from '@/components/DelegateAdvantage'
 import RegistrationSection from '@/components/RegistrationSection'
@@ -18,6 +19,9 @@ export default function HomePage() {
 
       {/* 3. The 5 Strategic Symposia & Locked Speaker Embargo */}
       <RevealSection />
+
+      {/* 4. 3D Photography Journey right after panel topics */}
+      <PastGlcGallery3D />
 
       {/* 5. Historical Archive & Auditorium Retrospective Film */}
       <ArchiveGallery />
