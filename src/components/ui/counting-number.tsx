@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 
 export type CountingNumberRef = {
   startAnimation: () => void;
+  reset: () => void;
 };
 
 export type CountingNumberProps = {
@@ -30,6 +31,8 @@ export type CountingNumberProps = {
   onStart?: () => void;
   onComplete?: () => void;
   autoStart?: boolean;
+  once?: boolean;
+  inView?: boolean;
 };
 
 export const CountingNumber = forwardRef<
@@ -40,23 +43,31 @@ export const CountingNumber = forwardRef<
     {
       from = 0,
       target = 100,
-      transition = { duration: 2.5, ease: "easeOut", type: "tween" },
+      transition = { duration: 2, ease: "easeOut", type: "tween" },
       className,
       onStart,
       onComplete,
       autoStart = true,
+      once = false,
+      inView: externalInView,
       ...props
     },
     ref,
   ) => {
     const elementRef = useRef<HTMLSpanElement | null>(null);
-    const isInView = useInView(elementRef, { once: true, margin: "0px 0px -60px 0px" });
+    const internalInView = useInView(elementRef, { once, margin: "0px 0px -40px 0px" });
+    const isInView = externalInView !== undefined ? externalInView : internalInView;
 
     const count = useMotionValue(from);
     const rounded = useTransform(count, (latest) =>
       Math.round(latest).toLocaleString(),
     );
     const controlsRef = useRef<AnimationPlaybackControls | null>(null);
+
+    const reset = useCallback(() => {
+      controlsRef.current?.stop();
+      count.set(from);
+    }, [count, from]);
 
     const startAnimation = useCallback(() => {
       controlsRef.current?.stop();
@@ -68,14 +79,16 @@ export const CountingNumber = forwardRef<
       });
     }, [from, target, transition, onStart, onComplete, count]);
 
-    useImperativeHandle(ref, () => ({ startAnimation }));
+    useImperativeHandle(ref, () => ({ startAnimation, reset }));
 
     useEffect(() => {
       if (autoStart && isInView) {
         startAnimation();
+      } else if (!isInView && !once) {
+        reset();
       }
       return () => controlsRef.current?.stop();
-    }, [autoStart, isInView, startAnimation]);
+    }, [autoStart, isInView, startAnimation, reset, once]);
 
     return (
       <motion.span ref={elementRef} className={cn("tabular-nums", className)} {...props}>
