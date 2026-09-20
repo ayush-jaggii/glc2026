@@ -318,7 +318,7 @@ export default function RegistrationSection() {
 
                   <div className="flex items-center justify-center gap-2 text-[10px] text-cream-400">
                     <ShieldCheck className="w-3.5 h-3.5 text-glc-orange" />
-                    <span>Official registration portal of TAPMI Bengaluru, MAHE Manipal</span>
+                    <span>Official registration portal of TAPMI Bengaluru, MAHE Bengaluru</span>
                   </div>
 
                 </form>

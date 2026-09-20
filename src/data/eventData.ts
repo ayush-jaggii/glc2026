@@ -61,8 +61,7 @@ export const EVENT_DETAILS = {
   contacts: {
     email: "engage.tapmiblr@manipal.edu",
     leads: [
-      { name: "Abhishek Singh", phone: "+91 917 955 5441", role: "PACE Committee Lead" },
-      { name: "Johnson P", phone: "+91 960 601 3114", role: "Corporate Relations Lead" },
+      { name: "Johnson P", phone: "+91 960 601 3114", role: "Corporate Relations & PACE Lead" },
     ],
   },
   registrationSheetId: "1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0",

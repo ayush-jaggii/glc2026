@@ -1,9 +1,37 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { EVENT_DETAILS } from '@/data/eventData'
 import { TapmiLogo, MaheLogo, AccredationsLogo } from './Logos'
-import { MapPin, Mail, Phone, ArrowUp } from 'lucide-react'
+import { MapPin, Mail, Phone, ArrowUp, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react'
+
+const SOCIAL_LINKS = [
+  {
+    name: 'Instagram',
+    icon: Instagram,
+    href: 'https://www.instagram.com/tapmibengaluru/',
+    hoverColor: 'hover:text-[#E4405F] hover:border-[#E4405F]/60 hover:shadow-[0_0_12px_rgba(228,64,95,0.4)]',
+  },
+  {
+    name: 'Facebook',
+    icon: Facebook,
+    href: 'https://www.facebook.com/tapmibengaluru/',
+    hoverColor: 'hover:text-[#1877F2] hover:border-[#1877F2]/60 hover:shadow-[0_0_12px_rgba(24,119,242,0.4)]',
+  },
+  {
+    name: 'LinkedIn',
+    icon: Linkedin,
+    href: 'https://www.linkedin.com/school/tapmibengaluru/',
+    hoverColor: 'hover:text-[#0A66C2] hover:border-[#0A66C2]/60 hover:shadow-[0_0_12px_rgba(10,102,194,0.4)]',
+  },
+  {
+    name: 'YouTube',
+    icon: Youtube,
+    href: 'https://www.youtube.com/@TAPMIBengaluru',
+    hoverColor: 'hover:text-[#FF0000] hover:border-[#FF0000]/60 hover:shadow-[0_0_12px_rgba(255,0,0,0.4)]',
+  },
+]
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -20,7 +48,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-wine-900">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12">
           
           {/* Col 1: Institutional Leadership & Brand */}
           <div className="lg:col-span-5 space-y-4">
@@ -40,7 +68,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-cream-400 max-w-sm leading-relaxed">
-              Global Leadership Conference 4.0 organized by the TAPMI PACE Committee, T. A. Pai Management Institute Bengaluru, a constituent unit of Manipal Academy of Higher Education (Institution of Eminence).
+              Global Leadership Conference 4.0 organized by the TAPMI PACE Committee, T. A. Pai Management Institute Bengaluru, a constituent unit of Manipal Academy of Higher Education (MAHE Bengaluru).
             </p>
 
             <div className="pt-2">
@@ -95,27 +123,84 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-glc-orange shrink-0" />
-                <span className="text-cream-400">
+                <a href="tel:+919606013114" className="text-cream-400 hover:text-white transition-colors">
                   {EVENT_DETAILS.contacts.leads[0].name}: {EVENT_DETAILS.contacts.leads[0].phone}
-                </span>
+                </a>
               </div>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom Baseline Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-cream-400">
-          <div>
-            © {new Date().getFullYear()} TAPMI Bengaluru · MAHE Manipal. All rights reserved.
+        {/* Contact & Social Bar (Inspired by Last Year's Footer) */}
+        <div className="py-6 border-y border-wine-900/80 flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Quick Contact Links */}
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-5 sm:gap-7 text-xs text-cream-300">
+            <a
+              href="tel:+919606013114"
+              className="flex items-center gap-2 hover:text-white transition-colors group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-orange group-hover:border-glc-orange transition-colors">
+                <Phone className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-cream-300 group-hover:text-white font-medium">Johnson P: +91 960 601 3114</span>
+            </a>
+
+            <a
+              href={`mailto:${EVENT_DETAILS.contacts.email}`}
+              className="flex items-center gap-2 hover:text-white transition-colors group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-pink group-hover:border-glc-pink transition-colors">
+                <Mail className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-cream-300 group-hover:text-white font-medium">{EVENT_DETAILS.contacts.email}</span>
+            </a>
           </div>
 
-          {/* IT Team Credit */}
+          {/* Social Media Channels with Styled Square Borders */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs uppercase tracking-widest text-cream-400 font-semibold mr-1 hidden sm:inline-block">
+              Follow Us
+            </span>
+            {SOCIAL_LINKS.map((s) => {
+              const Icon = s.icon
+              return (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`TAPMI Bengaluru on ${s.name}`}
+                  className={`w-9 h-9 rounded-lg bg-wine-900/70 border border-wine-800 flex items-center justify-center text-cream-300 transition-all duration-300 hover:scale-105 ${s.hoverColor}`}
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Bottom Baseline Bar */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-5 text-[11px] text-cream-400">
+          <div>
+            © {new Date().getFullYear()} TAPMI Bengaluru · MAHE Bengaluru. All rights reserved.
+          </div>
+
+          {/* Nexora IT Club Signature Credit */}
           <div className="flex items-center gap-2 text-cream-400">
             <span>Designed & Engineered by</span>
-            <span className="text-cream-200 font-semibold flex items-center gap-1.5">
-              <span>NEXORA IT CLUB</span>
-            </span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wine-900/80 border border-wine-700/80 shadow-md hover:border-glc-magenta/70 transition-all">
+              <Image
+                src="/logos/nexora-emblem-bright.png"
+                alt="Nexora IT Club"
+                width={20}
+                height={20}
+                className="w-4 h-auto object-contain"
+              />
+              <span className="text-xs font-bold text-cream-100 tracking-wide">
+                NEXORA IT CLUB
+              </span>
+            </div>
           </div>
 
           {/* Back to Top */}
