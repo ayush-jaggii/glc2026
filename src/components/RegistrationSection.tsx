@@ -201,54 +201,7 @@ export default function RegistrationSection() {
                     : 'Convene with senior enterprise leaders, managing directors, and policymakers at TAPMI Bengaluru for the flagship 4th Global Leadership Conference.'}
                 </p>
 
-                {/* Protocol Highlights */}
-                <div className="space-y-4 mb-8">
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-glc-magenta/20 border border-glc-magenta flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-glc-magenta" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-semibold text-cream-100 block">
-                        {stream === 'student' ? 'Automated Student Tier Seat Allocation' : 'Priority Auditorium Stalls Seating'}
-                      </span>
-                      <span className="text-xs text-cream-400">
-                        {stream === 'student'
-                          ? 'Each registration receives a designated seat in the auditorium with entry pass & QR code.'
-                          : 'Executive and corporate delegates are allocated premium front-row stalls with VIP check-in.'}
-                      </span>
-                    </div>
-                  </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-glc-orange/20 border border-glc-orange flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-glc-orange" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-semibold text-cream-100 block">
-                        Full Conference & Plenary Access
-                      </span>
-                      <span className="text-xs text-cream-400">
-                        Access to all 5 flagship industry tracks, leadership roundtables, and keynote debates.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-wine-700 border border-wine-500 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-cream-200" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-semibold text-cream-100 block">
-                        Institutional Certification
-                      </span>
-                      <span className="text-xs text-cream-400">
-                        Official certificate of participation endorsed by TAPMI and MAHE Bengaluru.
-                      </span>
-                    </div>
-                  </div>
-
-                </div>
               </div>
 
               {/* Direct Committee Support */}
