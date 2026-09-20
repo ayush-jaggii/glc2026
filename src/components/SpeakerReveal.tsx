@@ -14,13 +14,9 @@ export default function SpeakerReveal() {
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-glc-orange/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-cream-50 uppercase">
             MEET OUR SPEAKERS
           </h2>
-
-          <p className="text-sm sm:text-base text-cream-200/90 max-w-2xl mx-auto leading-relaxed">
-            Distinguished industry chairs, managing directors, and senior leaders addressing global business transformation across 5 core industry panels.
-          </p>
         </div>
       </div>
 
