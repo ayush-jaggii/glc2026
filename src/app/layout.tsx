@@ -46,6 +46,15 @@ export const metadata: Metadata = {
     description: "TAPMI Bengaluru Flagship Global Leadership Colloquium · 10 October 2026",
     images: ["/images/ribbons/hero-ribbon-confluence.jpg"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "256x256" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
