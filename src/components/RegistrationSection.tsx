@@ -117,8 +117,11 @@ export default function RegistrationSection() {
                 Corporate Delegation Inquiries
               </div>
               <div className="text-cream-400 space-y-1">
-                <div>Lead: <span className="text-cream-200">{EVENT_DETAILS.contacts.leads[0].name}</span> ({EVENT_DETAILS.contacts.leads[0].phone})</div>
-                <div>Relations: <span className="text-cream-200">{EVENT_DETAILS.contacts.leads[1].name}</span> ({EVENT_DETAILS.contacts.leads[1].phone})</div>
+                {EVENT_DETAILS.contacts.leads.map((lead) => (
+                  <div key={lead.name}>
+                    Corporate Relations: <span className="text-cream-200">{lead.name}</span> ({lead.phone})
+                  </div>
+                ))}
                 <div>Email: <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="text-glc-orange hover:underline">{EVENT_DETAILS.contacts.email}</a></div>
               </div>
             </div>
