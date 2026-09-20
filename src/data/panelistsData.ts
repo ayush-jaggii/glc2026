@@ -25,7 +25,7 @@ export const PANEL_TRACKS: PanelTrack[] = [
   {
     code: 'IT',
     name: 'IT & Digital Acceleration',
-    shortTitle: 'IT & GCC',
+    shortTitle: 'IT & Enterprise Tech',
     color: '#3B82F6',
     badgeBg: 'bg-blue-950/80',
     badgeBorder: 'border-blue-700/70',
@@ -95,7 +95,7 @@ export const PANELISTS_DATA: Panelist[] = [
     trackCode: 'IT',
     trackName: 'IT & Digital Acceleration',
     photo: '/images/panelists/IT/Amit_Bhavnani_IT.jpeg',
-    tags: ['Enterprise Tech', 'Digital Transformation', 'GCC Strategy'],
+    tags: ['Enterprise Tech', 'Digital Transformation', 'Global Scale'],
   },
   {
     id: 'it-2',
@@ -438,8 +438,8 @@ export const FEATURED_ACCORDION_ITEMS = [
     company: 'Accenture',
     designation: 'Managing Director',
     linkedin: 'https://www.linkedin.com/in/amit-bhavnani/',
-    track: 'IT & GCC Architecture',
-    tags: ['Enterprise Tech', 'Digital Transformation', 'GCC Strategy'],
+    track: 'IT & Enterprise Architecture',
+    tags: ['Enterprise Tech', 'Digital Transformation', 'Global Scale'],
   },
   {
     id: 'auto-1',

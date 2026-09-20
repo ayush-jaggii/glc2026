@@ -11,7 +11,7 @@ const tektype = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL("https://glc.tapmi.edu.in"),
   title: "GLC 2026 | BUSINESS BEYOND BORDERS — Global Leadership Colloquium",
-  description: "Global Leadership Conference 4.0 hosted by TAPMI Bengaluru (MAHE, Manipal). Navigating enterprise strategy, global capability centers, geopolitics, and capital convergence across international borders.",
+  description: "Global Leadership Conference 4.0 hosted by TAPMI Bengaluru (MAHE, Manipal). Navigating enterprise strategy, cross-border supply chains, geopolitics, and capital convergence across international borders.",
   keywords: [
     "GLC 2026",
     "Global Leadership Conference",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "TAPMI Bengaluru",
     "MAHE Manipal",
     "Leadership Colloquium",
-    "GCCs",
+    "Enterprise Tech",
     "BFSI",
     "Global Trade"
   ],

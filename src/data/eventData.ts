@@ -75,13 +75,13 @@ export const PANELS_LIST: PanelSchema[] = [
     number: "01",
     title: "Ctrl + Alt + Global",
     category: "Information Technology (IT)",
-    topic: "From Cost Centre to Innovation Hub: Agentic AI as a Strategic Catalyst",
-    subtitle: "Enterprise Tech Decoupling & Capability Centers",
+    topic: "Enterprise Tech Decoupling, AI Governance & Sovereign Cloud Infrastructure",
+    subtitle: "Cross-Border Digital Architecture & Enterprise Scaling",
     image: "/panels/it-gcc.jpg",
-    description: "The restructuring of global IT hubs, sovereign cloud boundaries, and the ascendance of Indian GCCs as global architectural nerve centers.",
+    description: "The restructuring of multinational IT architectures, data sovereignty boundaries, and cross-border AI governance frameworks.",
     keyQuestions: [
-      "How multinational enterprises navigate cross-border AI governance.",
-      "From cost efficiency to core architecture: How GCCs drive enterprise-wide innovation."
+      "Navigating cross-border data localization and ethical AI governance.",
+      "From infrastructure cost centers to strategic platforms: Driving borderless tech innovation."
     ],
     isRevealed: false,
   },
@@ -90,8 +90,8 @@ export const PANELS_LIST: PanelSchema[] = [
     number: "02",
     title: "Aisle Be There",
     category: "Retail & FMCG",
-    topic: "From Shelf to Software: How GCCs Are Digitizing the FMCG Value Chain",
-    subtitle: "Global Supply Networks & Borderless Consumer Resonance",
+    topic: "Global Supply Networks, Sourcing Agility & Borderless Consumer Resonance",
+    subtitle: "Cross-Border FMCG Value Chains & Consumer Demographics",
     image: "/panels/fmcg-retail.jpg",
     description: "Cross-border consumer supply chains, regional sourcing agility, and brand positioning amidst economic nationalism and changing retail landscapes.",
     keyQuestions: [
@@ -105,8 +105,8 @@ export const PANELS_LIST: PanelSchema[] = [
     number: "03",
     title: "Capital Without Borders",
     category: "Finance & BFSI",
-    topic: "India as the Financial Nerve Center: How GCCs are Redefining Global Finance Operations",
-    subtitle: "Global Liquidity, Sovereign Wealth & International Settlement",
+    topic: "Global Liquidity, Sovereign Wealth & Next-Gen International Settlement",
+    subtitle: "Cross-Border Capital Flows, Fintech & Alternative Settlement Rails",
     image: "/panels/finance-bfsi.jpg",
     description: "Managing international liquidity, cross-border M&A, digital currency protocols, and shifting institutional capital across emerging market corridors.",
     keyQuestions: [
@@ -160,7 +160,7 @@ export const ARCHIVE_EDITIONS: ArchiveEdition[] = [
       { label: "Participating MNCs", value: "65+" },
     ],
     highlights: [
-      "Executive address on Agentic AI as a Strategic Catalyst in Global GCCs",
+      "Executive address on Agentic AI as a Strategic Catalyst in Global Enterprises",
       "Roundtables on Enterprise AI Ethics, Cloud Sovereignty & IP Protection",
       "TAPMI Business Excellence Awards honoring trailblazing corporate initiatives"
     ],
@@ -205,14 +205,14 @@ export const DELEGATE_ADVANTAGES = [
   {
     step: "01",
     title: "C-Suite & Geopolitical Intelligence",
-    description: "Direct, off-the-record discussions with multinational CEOs, GCC managing directors, and global strategists navigating volatile border dynamics.",
+    description: "Direct, off-the-record discussions with multinational CEOs, global managing directors, and enterprise strategists navigating volatile border dynamics.",
     metric: "40+ CXO Speakers",
   },
   {
     step: "02",
     title: "Cross-Industry Synthesis Across 5 Sectors",
-    description: "Gain cross-cutting perspectives spanning IT/GCCs, BFSI, FMCG, Electric Mobility, and Media — breaking through traditional industry echo chambers.",
-    metric: "5 High-Impact Tracks",
+    description: "Gain cross-cutting perspectives spanning IT & Enterprise Tech, BFSI, FMCG, Electric Mobility, and Media — breaking through traditional industry echo chambers.",
+    metric: "5 High-Impact Panels",
   },
   {
     step: "03",

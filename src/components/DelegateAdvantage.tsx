@@ -8,7 +8,7 @@ const DELEGATE_POINTS = [
   {
     title: 'Access to Global Leaders & Decision-Makers',
     description:
-      'Engage directly with multinational CEOs, managing directors, and GCC chairs driving transformation across industries.',
+      'Engage directly with multinational CEOs, managing directors, and industry chairs driving transformation across borders.',
   },
   {
     title: 'Future-Ready Insights & Strategies',
