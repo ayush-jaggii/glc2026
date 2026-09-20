@@ -197,7 +197,7 @@ export const PANELISTS_DATA: Panelist[] = [
     linkedin: 'https://linkedin.com/in/maharana-ray-28b9b714',
     trackCode: 'Auto',
     trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/CGD/Auto/MaharanaRay_Auto.jpeg',
+    photo: '/images/panelists/Auto/MaharanaRay_Auto.jpeg',
     tags: ['Automotive Leadership', 'Mobility Platforms', 'Global Scale'],
   },
   {
@@ -208,7 +208,7 @@ export const PANELISTS_DATA: Panelist[] = [
     linkedin: 'https://www.linkedin.com/in/commander-anurag-bhardwaj/',
     trackCode: 'Auto',
     trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/CGD/Auto/AnuragB_Auto.jpeg',
+    photo: '/images/panelists/Auto/AnuragB_Auto.jpeg',
     tags: ['EV Transition', 'Hardware Innovation', 'Clean Mobility'],
   },
   {
@@ -219,7 +219,7 @@ export const PANELISTS_DATA: Panelist[] = [
     linkedin: 'https://www.linkedin.com/in/shridharraob/',
     trackCode: 'Auto',
     trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/CGD/Auto/SridharRao_Auto.jpeg',
+    photo: '/images/panelists/Auto/SridharRao_Auto.jpeg',
     tags: ['Powertrain Systems', 'Industrial Manufacturing', 'Automotive'],
   },
   {
@@ -230,7 +230,7 @@ export const PANELISTS_DATA: Panelist[] = [
     linkedin: 'https://www.linkedin.com/in/manojgu/',
     trackCode: 'Auto',
     trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/CGD/Auto/ManojGupta_Auto.jpeg',
+    photo: '/images/panelists/Auto/ManojGupta_Auto.jpeg',
     tags: ['Clean Energy', 'Electric Buses', 'Commercial EV'],
   },
 
@@ -417,6 +417,61 @@ export const PANELISTS_DATA: Panelist[] = [
   },
 ]
 
+/**
+ * Active panelists that have verified portrait photos uploaded.
+ * Panelists without photos are preserved in PANELISTS_DATA and will automatically
+ * be included here once their photos are added.
+ * 
+ * Interleaved across industries/panels to ensure rich visual diversity
+ * and prevent clustering of the same tracks.
+ */
+export const SHUFFLED_PANELISTS: Panelist[] = (() => {
+  // 1. Filter only panelists with valid photo files
+  const withPhotos = PANELISTS_DATA.filter((p) => Boolean(p.photo && p.photo.trim().length > 0))
+
+  // 2. Separate CGD and non-CGD tracks for balanced distribution
+  const cgd = withPhotos.filter((p) => p.trackCode === 'CGD')
+  const nonCgd = withPhotos.filter((p) => p.trackCode !== 'CGD')
+
+  const byTrack: Record<string, Panelist[]> = {}
+  for (const p of nonCgd) {
+    if (!byTrack[p.trackCode]) byTrack[p.trackCode] = []
+    byTrack[p.trackCode].push(p)
+  }
+
+  const tracks: Array<'IT' | 'Auto' | 'FMCG' | 'BFSI' | 'Media'> = ['IT', 'Auto', 'FMCG', 'BFSI', 'Media']
+  const nonCgdOrdered: Panelist[] = []
+  const maxLen = Math.max(...tracks.map((t) => (byTrack[t] ? byTrack[t].length : 0)))
+
+  for (let i = 0; i < maxLen; i++) {
+    for (const t of tracks) {
+      const items = byTrack[t]
+      if (items && i < items.length) {
+        nonCgdOrdered.push(items[i])
+      }
+    }
+  }
+
+  // Interleave the CGD panelists smoothly across the list
+  const result: Panelist[] = []
+  let cgdIdx = 0
+
+  for (let idx = 0; idx < nonCgdOrdered.length; idx++) {
+    result.push(nonCgdOrdered[idx])
+    if ((idx + 1) % 3 === 0 && cgdIdx < cgd.length) {
+      result.push(cgd[cgdIdx])
+      cgdIdx++
+    }
+  }
+
+  while (cgdIdx < cgd.length) {
+    result.push(cgd[cgdIdx])
+    cgdIdx++
+  }
+
+  return result
+})()
+
 // Prominent keynote/featured selection for the interactive accordion
 export const FEATURED_ACCORDION_ITEMS = [
   {
@@ -443,7 +498,7 @@ export const FEATURED_ACCORDION_ITEMS = [
   },
   {
     id: 'auto-1',
-    url: '/images/panelists/CGD/Auto/MaharanaRay_Auto.jpeg',
+    url: '/images/panelists/Auto/MaharanaRay_Auto.jpeg',
     title: 'Maharana Ray',
     description: 'Bajaj Auto · President',
     company: 'Bajaj Auto',

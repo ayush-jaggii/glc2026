@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { PANELISTS_DATA } from '@/data/panelistsData'
+import { SHUFFLED_PANELISTS } from '@/data/panelistsData'
 import PanelistCard from './PanelistCard'
 
 export default function SpeakerReveal() {
@@ -24,14 +24,14 @@ export default function SpeakerReveal() {
       <div className="relative overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 py-6 group">
         <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
           <div className="animate-marquee flex gap-6 py-4 group-hover:[animation-play-state:paused] hover:[animation-play-state:paused]">
-            {PANELISTS_DATA.map((panelist, idx) => (
+            {SHUFFLED_PANELISTS.map((panelist, idx) => (
               <PanelistCard
                 key={`marquee-1-${panelist.id}-${idx}`}
                 panelist={panelist}
                 isCarousel
               />
             ))}
-            {PANELISTS_DATA.map((panelist, idx) => (
+            {SHUFFLED_PANELISTS.map((panelist, idx) => (
               <PanelistCard
                 key={`marquee-2-${panelist.id}-${idx}`}
                 panelist={panelist}
