@@ -121,12 +121,14 @@ export default function Footer() {
                   {EVENT_DETAILS.contacts.email}
                 </a>
               </div>
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-glc-orange shrink-0" />
-                <a href="tel:+919606013114" className="text-cream-400 hover:text-white transition-colors">
-                  {EVENT_DETAILS.contacts.leads[0].name}: {EVENT_DETAILS.contacts.leads[0].phone}
-                </a>
-              </div>
+              {EVENT_DETAILS.contacts.leads.map((lead) => (
+                <div key={lead.name} className="flex items-center gap-2.5">
+                  <Phone className="w-4 h-4 text-glc-orange shrink-0" />
+                  <a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-400 hover:text-white transition-colors">
+                    {lead.name}: {lead.phone}
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -136,15 +138,18 @@ export default function Footer() {
         <div className="py-6 border-y border-wine-900/80 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Quick Contact Links */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-5 sm:gap-7 text-xs text-cream-300">
-            <a
-              href="tel:+919606013114"
-              className="flex items-center gap-2 hover:text-white transition-colors group"
-            >
-              <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-orange group-hover:border-glc-orange transition-colors">
-                <Phone className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-cream-300 group-hover:text-white font-medium">Johnson P: +91 960 601 3114</span>
-            </a>
+            {EVENT_DETAILS.contacts.leads.map((lead) => (
+              <a
+                key={`bar-${lead.name}`}
+                href={`tel:${lead.phone.replace(/\s+/g, '')}`}
+                className="flex items-center gap-2 hover:text-white transition-colors group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-orange group-hover:border-glc-orange transition-colors">
+                  <Phone className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-cream-300 group-hover:text-white font-medium">{lead.name}: {lead.phone}</span>
+              </a>
+            ))}
 
             <a
               href={`mailto:${EVENT_DETAILS.contacts.email}`}
