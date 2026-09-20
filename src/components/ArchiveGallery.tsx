@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { ARCHIVE_EDITIONS } from '@/data/eventData'
 import VideoShowcase from './VideoShowcase'
 import PastGlcGallery3D from './PastGlcGallery3D'
-import { History, CheckCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import { CountingNumber } from '@/components/ui/counting-number'
 
 const CUMULATIVE_PAST_STATS = [
@@ -26,10 +26,6 @@ export default function ArchiveGallery() {
         
         {/* Section Header */}
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-pink border border-wine-700 mb-4">
-            <History className="w-3.5 h-3.5" />
-            <span>Conference History</span>
-          </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
             Past Editions
           </h2>
