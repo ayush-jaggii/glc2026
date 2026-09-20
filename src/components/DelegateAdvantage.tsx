@@ -61,10 +61,10 @@ export default function DelegateAdvantage() {
             <div>
               <a
                 href="#register"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-md bg-glc-pink hover:bg-glc-rose text-white text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,45,141,0.5)] hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
               >
-                <span>Register Now</span>
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <span>Register For Delegate Pass</span>
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
 

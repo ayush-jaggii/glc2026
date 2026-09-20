@@ -15,8 +15,7 @@ export async function POST(request: Request) {
       passType,
       trackPreference,
       // Student specific
-      institution,
-      program,
+      year,
       studentId
     } = body
 
@@ -42,16 +41,11 @@ export async function POST(request: Request) {
     let resolvedRoleOrProgram = ''
 
     if (registrationType === 'student') {
-      if (!institution) {
-        return NextResponse.json(
-          { error: 'Institution / College name is required for student registration.' },
-          { status: 400 }
-        )
-      }
       resolvedCategory = 'student'
       resolvedPassType = 'Student Delegate'
-      resolvedAffiliation = institution.trim()
-      resolvedRoleOrProgram = program?.trim() ? `${program.trim()}${studentId ? ` (${studentId.trim()})` : ''}` : 'Student Scholar'
+      resolvedAffiliation = 'TAPMI Bengaluru, MAHE'
+      const yearLabel = year?.trim() || 'Student'
+      resolvedRoleOrProgram = `${yearLabel}${studentId ? ` (${studentId.trim()})` : ''}`
     } else {
       if (!organization) {
         return NextResponse.json(

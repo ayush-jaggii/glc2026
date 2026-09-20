@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Loader2,
   ArrowRight,
-  ShieldCheck,
   Mail,
   Phone,
   Building,
@@ -14,8 +13,6 @@ import {
   Tag,
   GraduationCap,
   Briefcase,
-  Sparkles,
-  BookOpen,
   RotateCcw
 } from 'lucide-react'
 import DelegatePassCard, { PassDetails } from '@/components/pass/DelegatePassCard'
@@ -39,9 +36,8 @@ export default function RegistrationSection() {
   const [designation, setDesignation] = useState('')
   const [trackPreference, setTrackPreference] = useState('IT & Enterprise Tech')
 
-  // Student specific fields
-  const [institution, setInstitution] = useState('')
-  const [program, setProgram] = useState('')
+  // Student specific fields (only our college - TAPMI Bengaluru, MAHE)
+  const [year, setYear] = useState('1st Year')
   const [studentId, setStudentId] = useState('')
 
   // Submission & Pass State
@@ -54,17 +50,12 @@ export default function RegistrationSection() {
     setErrorMsg('')
 
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
-      setErrorMsg('Please complete all required contact fields (Full Name, Email, Phone).')
+      setErrorMsg('Please complete all required fields (Full Name, Email, Phone).')
       return
     }
 
     if (stream === 'delegate' && !organization.trim()) {
       setErrorMsg('Please provide your Organization or Company name.')
-      return
-    }
-
-    if (stream === 'student' && (!institution.trim() || !program.trim())) {
-      setErrorMsg('Please provide your University / Institution and Degree / Program.')
       return
     }
 
@@ -87,8 +78,7 @@ export default function RegistrationSection() {
             : 'Academic / Research Fellow',
         trackPreference,
         // Student fields
-        institution,
-        program,
+        year,
         studentId
       }
 
@@ -124,25 +114,23 @@ export default function RegistrationSection() {
     setPhone('')
     setOrganization('')
     setDesignation('')
-    setInstitution('')
-    setProgram('')
+    setYear('1st Year')
     setStudentId('')
     setErrorMsg('')
   }
 
   return (
     <section id="register" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/80 scroll-mt-24">
-      {/* Background Ambience */}
+      {/* Ambient background accents */}
       <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-glc-magenta/5 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-glc-orange/5 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* If pass has been generated: Render the Full Luxury Pass & Download Experience */}
+        {/* Generated Pass State */}
         {generatedPass ? (
           <div className="flex flex-col items-center justify-center animate-fadeIn">
             
-            {/* Success Header */}
             <div className="text-center max-w-2xl mx-auto mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 mb-4 shadow-lg">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -152,7 +140,7 @@ export default function RegistrationSection() {
                 Welcome to GLC 2026
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
-                Your auditorium seat has been reserved and your official delegate pass is ready. Please save or download your pass below.
+                Your auditorium seat has been reserved and your official delegate pass is ready.
               </p>
             </div>
 
@@ -166,7 +154,7 @@ export default function RegistrationSection() {
               <PassDownloadActions pass={generatedPass} />
             </div>
 
-            {/* Secondary Action: Register Another Attendee */}
+            {/* Reset Action */}
             <div className="mt-8 text-center">
               <button
                 type="button"
@@ -183,40 +171,39 @@ export default function RegistrationSection() {
           /* Registration Form & Context */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            {/* Left Column: Context, Protocols & Stream-specific details */}
-            <div className="lg:col-span-5 flex flex-col justify-between">
+            {/* Left Column: Clean & Revamped Context */}
+            <div className="lg:col-span-5 flex flex-col justify-between pt-2">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm text-xs font-semibold tracking-widest uppercase bg-wine-900 text-glc-magenta border border-wine-700 mb-4">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Official Registration</span>
-                </div>
-
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4 leading-tight">
                   {stream === 'student' ? 'Student Registration' : 'Delegate Registration'}
                 </h2>
 
-                <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed mb-8">
+                <p className="text-sm sm:text-base text-cream-200/80 leading-relaxed mb-6">
                   {stream === 'student'
-                    ? 'Join over 1,000 forward-thinking peers, scholars, and future executives at TAPMI Bengaluru. Gain firsthand exposure to industry keynotes, masterclasses, and executive dialogues.'
-                    : 'Convene with senior enterprise leaders, managing directors, and policymakers at TAPMI Bengaluru for the flagship 4th Global Leadership Conference.'}
+                    ? 'Register for your official student pass and reserved auditorium seating at TAPMI, MAHE Bengaluru.'
+                    : 'Register for executive access, reserved auditorium seating, and networking at GLC 2026.'}
                 </p>
-
-
               </div>
 
-              {/* Direct Committee Support */}
-              <div className="p-5 rounded-2xl bg-wine-900/50 border border-wine-800 text-xs">
-                <div className="font-semibold uppercase tracking-wider text-cream-300 mb-2">
-                  {stream === 'student' ? 'Student Delegation & Committee Support' : 'Corporate Delegation Inquiries'}
+              {/* Inquiries & Assistance */}
+              <div className="p-6 rounded-2xl bg-wine-900/40 border border-wine-800/80 text-xs mt-4">
+                <div className="font-semibold uppercase tracking-wider text-cream-300 mb-3">
+                  Inquiries & Assistance
                 </div>
-                <div className="text-cream-400 space-y-1">
+                <div className="text-cream-400 space-y-2.5">
                   {EVENT_DETAILS.contacts.leads.map((lead) => (
-                    <div key={lead.name}>
-                      {lead.role}: <span className="text-cream-200">{lead.name}</span> (<a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-200 hover:text-glc-orange">{lead.phone}</a>)
+                    <div key={lead.name} className="flex items-center justify-between gap-2">
+                      <span>{lead.name} ({lead.role})</span>
+                      <a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-200 hover:text-glc-orange font-medium">
+                        {lead.phone}
+                      </a>
                     </div>
                   ))}
-                  <div>
-                    Email: <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="text-glc-orange hover:underline">{EVENT_DETAILS.contacts.email}</a>
+                  <div className="pt-2 border-t border-wine-800/60 flex items-center justify-between">
+                    <span>Official Email</span>
+                    <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="text-glc-orange hover:underline font-medium">
+                      {EVENT_DETAILS.contacts.email}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -226,11 +213,8 @@ export default function RegistrationSection() {
             <div className="lg:col-span-7">
               <div className="bg-[#13030F] rounded-2xl p-6 sm:p-10 border border-wine-800 shadow-2xl relative">
                 
-                {/* Segmented Mode Switcher: Delegate vs Student */}
+                {/* Mode Switcher: Delegate vs Student */}
                 <div className="mb-8">
-                  <div className="text-[11px] uppercase tracking-wider text-cream-400 font-semibold mb-2">
-                    Registration Type
-                  </div>
                   <div className="grid grid-cols-2 p-1 rounded-xl bg-wine-950 border border-wine-800">
                     <button
                       type="button"
@@ -260,14 +244,14 @@ export default function RegistrationSection() {
                   </div>
                 </div>
 
-                {/* Form Error Banner */}
+                {/* Error Banner */}
                 {errorMsg && (
                   <div className="mb-6 p-3.5 rounded-xl bg-red-950/50 border border-red-800/80 text-xs text-red-200">
                     {errorMsg}
                   </div>
                 )}
 
-                {/* Registration Form */}
+                {/* Form */}
                 <form onSubmit={handleRegister} className="space-y-5">
                   
                   {/* Delegate-Only: Pass Tier Selection */}
@@ -302,183 +286,219 @@ export default function RegistrationSection() {
                     </div>
                   )}
 
-                  {/* Common: Full Name & Email */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Full Name */}
-                    <div>
-                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                        Full Name *
-                      </label>
-                      <div className="relative">
-                        <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                        <input
-                          type="text"
-                          required
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          placeholder={stream === 'student' ? 'e.g. Ananya Rao' : 'e.g. Dr. Rajesh Sharma'}
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                        {stream === 'student' ? 'Student / College Email *' : 'Official / Corporate Email *'}
-                      </label>
-                      <div className="relative">
-                        <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                        <input
-                          type="email"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder={stream === 'student' ? 'student@university.edu' : 'name@company.com'}
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Stream Specific Fields: Organization vs Institution */}
+                  {/* Delegate Form Fields */}
                   {stream === 'delegate' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Organization */}
-                      <div>
-                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Organization / Company *
-                        </label>
-                        <div className="relative">
-                          <Building className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                          <input
-                            type="text"
-                            required
-                            value={organization}
-                            onChange={(e) => setOrganization(e.target.value)}
-                            placeholder="e.g. Global Tech Solutions"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                          />
+                    <>
+                      {/* Name & Email */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Full Name *
+                          </label>
+                          <div className="relative">
+                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="text"
+                              required
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              placeholder="e.g. Dr. Rajesh Sharma"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Official / Corporate Email *
+                          </label>
+                          <div className="relative">
+                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="email"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="name@company.com"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      {/* Designation */}
-                      <div>
-                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Designation / Role
-                        </label>
-                        <div className="relative">
-                          <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                          <input
-                            type="text"
-                            value={designation}
-                            onChange={(e) => setDesignation(e.target.value)}
-                            placeholder="e.g. VP Global Strategy"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                          />
+                      {/* Organization & Designation */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Organization / Company *
+                          </label>
+                          <div className="relative">
+                            <Building className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="text"
+                              required
+                              value={organization}
+                              onChange={(e) => setOrganization(e.target.value)}
+                              placeholder="e.g. Global Tech Solutions"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Designation / Role
+                          </label>
+                          <div className="relative">
+                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="text"
+                              value={designation}
+                              onChange={(e) => setDesignation(e.target.value)}
+                              placeholder="e.g. VP Global Strategy"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+
+                      {/* Phone & Panel Interest */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Contact Phone / WhatsApp *
+                          </label>
+                          <div className="relative">
+                            <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="tel"
+                              required
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              placeholder="+91 98765 43210"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Primary Panel Interest
+                          </label>
+                          <select
+                            value={trackPreference}
+                            onChange={(e) => setTrackPreference(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
+                          >
+                            <option value="IT & Enterprise Tech">Ctrl + Alt + Global (IT & Enterprise Tech)</option>
+                            <option value="Automobile & EV">Shifting Gears (Automobile & Clean-Tech)</option>
+                            <option value="FMCG & Supply Chain">Aisle Be There (Global Supply & FMCG)</option>
+                            <option value="Executive Roundtable / CGD">Beyond The Bottomline (Roundtable)</option>
+                            <option value="BFSI & Fintech">Capital Without Borders (BFSI & Liquidity)</option>
+                            <option value="Media & Branding">Going Viral, Staying Local (Media)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* College / Institution */}
-                      <div>
-                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          College / University *
-                        </label>
-                        <div className="relative">
-                          <Building className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                          <input
-                            type="text"
-                            required
-                            value={institution}
-                            onChange={(e) => setInstitution(e.target.value)}
-                            placeholder="e.g. TAPMI Bengaluru / MAHE"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                          />
+                    /* Student Form Fields (Streamlined for TAPMI/MAHE Bengaluru) */
+                    <>
+                      {/* Name & College Email */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Full Name *
+                          </label>
+                          <div className="relative">
+                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="text"
+                              required
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              placeholder="e.g. Ananya Rao"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            College / Learner Email *
+                          </label>
+                          <div className="relative">
+                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="email"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="name@learner.manipal.edu"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      {/* Degree / Program */}
+                      {/* Year of Study & Roll Number */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Year *
+                          </label>
+                          <div className="relative">
+                            <GraduationCap className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <select
+                              value={year}
+                              onChange={(e) => setYear(e.target.value)}
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
+                            >
+                              <option value="1st Year">1st Year</option>
+                              <option value="2nd Year">2nd Year</option>
+                              <option value="PhD / Research Scholar">PhD / Research Scholar</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                            Roll No. / Student ID
+                          </label>
+                          <div className="relative">
+                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <input
+                              type="text"
+                              value={studentId}
+                              onChange={(e) => setStudentId(e.target.value)}
+                              placeholder="e.g. 24MBATM042"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Phone */}
                       <div>
                         <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Degree & Program *
+                          Contact Phone / WhatsApp *
                         </label>
                         <div className="relative">
-                          <BookOpen className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                          <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
                           <input
-                            type="text"
+                            type="tel"
                             required
-                            value={program}
-                            onChange={(e) => setProgram(e.target.value)}
-                            placeholder="e.g. MBA (Tech Management)"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="+91 98765 43210"
                             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                           />
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
 
-                  {/* Second Row: Phone & (Student ID or Track Preference) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Contact Phone */}
-                    <div>
-                      <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                        Contact Phone / WhatsApp *
-                      </label>
-                      <div className="relative">
-                        <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                        <input
-                          type="tel"
-                          required
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="+91 98765 43210"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Student ID / Roll or Track Selection */}
-                    {stream === 'student' ? (
-                      <div>
-                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Student ID / Roll No. (Optional)
-                        </label>
-                        <div className="relative">
-                          <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                          <input
-                            type="text"
-                            value={studentId}
-                            onChange={(e) => setStudentId(e.target.value)}
-                            placeholder="e.g. 24MBA089"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Primary Panel Interest
-                        </label>
-                        <select
-                          value={trackPreference}
-                          onChange={(e) => setTrackPreference(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
-                        >
-                          <option value="IT & Enterprise Tech">Ctrl + Alt + Global (IT & Enterprise Tech)</option>
-                          <option value="Automobile & EV">Shifting Gears (Automobile & Clean-Tech)</option>
-                          <option value="FMCG & Supply Chain">Aisle Be There (Global Supply & FMCG)</option>
-                          <option value="Executive Roundtable / CGD">Beyond The Bottomline (Roundtable)</option>
-                          <option value="BFSI & Fintech">Capital Without Borders (BFSI & Liquidity)</option>
-                          <option value="Media & Branding">Going Viral, Staying Local (Media)</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Submission CTA */}
-                  <div className="pt-3">
+                  {/* Submit Button */}
+                  <div className="pt-2">
                     <button
                       type="submit"
                       disabled={loading}
@@ -496,11 +516,6 @@ export default function RegistrationSection() {
                         </>
                       )}
                     </button>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-2 text-[10px] text-cream-400 pt-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-glc-orange" />
-                    <span>Instant Pass Generation · TAPMI Bengaluru, MAHE Bengaluru</span>
                   </div>
 
                 </form>

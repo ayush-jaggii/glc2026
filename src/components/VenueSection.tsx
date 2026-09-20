@@ -24,13 +24,9 @@ export default function VenueSection() {
             <span>Venue</span>
           </div>
           
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
             RAMDAS M. PAI CONVENTION CENTRE
           </h2>
-          
-          <p className="text-sm sm:text-base text-cream-300 leading-relaxed">
-            Hosted at the state-of-the-art convention facilities of MAHE Bengaluru.
-          </p>
         </div>
 
         {/* Two-Column Grid: Logistics Details + Interactive Maps Embed */}
