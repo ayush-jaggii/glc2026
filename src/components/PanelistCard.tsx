@@ -14,7 +14,7 @@ const TRACK_PANEL_MAP: Record<string, { number: string; title: string; subtitle:
   IT: {
     number: '01',
     title: 'Ctrl + Alt + Global',
-    subtitle: 'Enterprise Tech Decoupling & Capability Centers',
+    subtitle: 'Cross-Border Tech Architecture & AI',
   },
   FMCG: {
     number: '02',
