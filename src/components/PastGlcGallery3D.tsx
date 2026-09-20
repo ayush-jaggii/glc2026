@@ -67,13 +67,13 @@ export default function PastGlcGallery3D() {
   }, [])
 
   return (
-    <div ref={containerRef} className="relative w-full h-[230vh] my-12">
+    <div ref={containerRef} className="relative w-full h-[200vh] my-0 p-0">
       
-      {/* Sticky Viewport pinned during the scroll journey */}
+      {/* Sticky Viewport pinned while scrolling through all 10 photos */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center bg-transparent">
         
-        {/* Deep atmospheric radial glow blending seamlessly with the page */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,81,151,0.1)_0%,transparent_75%)] pointer-events-none z-10" />
+        {/* Atmospheric radial glow blending seamlessly with the deep wine background */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,81,151,0.08)_0%,transparent_75%)] pointer-events-none z-10" />
 
         {/* 3D Photography Canvas driven by page scroll */}
         <div className="absolute inset-0 w-full h-full">
@@ -83,7 +83,6 @@ export default function PastGlcGallery3D() {
             speed={1.0}
             zSpacing={3.2}
             visibleCount={10}
-            falloff={{ near: 0.8, far: 14 }}
             className="w-full h-full"
           />
         </div>
@@ -98,9 +97,9 @@ export default function PastGlcGallery3D() {
           </p>
         </div>
 
-        {/* Top and Bottom Feathering Gradients for 100% seamless transition */}
-        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
-        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
+        {/* Top and Bottom Feathering Gradients for seamless section blending */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-wine-950 via-wine-950/70 to-transparent pointer-events-none z-20" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-wine-950 via-wine-950/70 to-transparent pointer-events-none z-20" />
 
       </div>
 

@@ -62,7 +62,7 @@ export default function ArchiveGallery() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Edition Chronology */}
-        <div className="mt-8 sm:mt-12">
+        <div className="mt-2 sm:mt-4">
           
           {/* Edition Selector Tabs */}
           <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
