@@ -21,7 +21,6 @@ export default function Navigation() {
     { label: 'Panels', href: '#panels' },
     { label: 'Awards', href: '#awards' },
     { label: 'Past Editions', href: '#previous-editions' },
-    { label: 'Delegate Benefits', href: '#delegate-benefits' },
     { label: 'Venue', href: '#venue' },
   ]
 
@@ -31,8 +30,8 @@ export default function Navigation() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-wine-950/95 backdrop-blur-md border-b border-wine-800/80 shadow-2xl py-3'
-          : 'bg-gradient-to-b from-wine-950/90 via-wine-950/40 to-transparent py-4'
+          ? 'bg-wine-950/95 backdrop-blur-md border-b border-wine-800/80 shadow-2xl py-2.5 sm:py-3'
+          : 'bg-gradient-to-b from-wine-950/90 via-wine-950/40 to-transparent py-3.5 sm:py-4'
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
@@ -47,41 +46,37 @@ export default function Navigation() {
             </a>
           </div>
 
-          {/* Desktop Navigation Links - Single line, perfectly aligned, no wrapping */}
-          <nav className="hidden lg:flex items-center gap-4 xl:gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
+          {/* Desktop Navigation Links - Breathable, elegant, perfectly kerned */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] tracking-[0.14em] uppercase font-medium text-cream-300" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="whitespace-nowrap transition-colors duration-200 hover:text-glc-orange focus:outline-none focus:text-glc-magenta"
+                className="whitespace-nowrap transition-colors duration-200 hover:text-white focus:outline-none focus:text-glc-magenta"
               >
                 {link.label}
               </a>
             ))}
           </nav>
 
-          {/* Right: Institutional Accreditation Logos, Submit Nomination & Register Button */}
-          <div className="flex items-center gap-2.5 sm:gap-3 xl:gap-4 flex-shrink-0">
-            <div className="hidden xl:flex items-center">
-              <AccredationsLogo className="h-5 sm:h-6 w-auto" variant="light" />
-            </div>
-
+          {/* Right: Streamlined Action Buttons */}
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
             <a
               href={nominationFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-cream-100 hover:text-white rounded-full border border-wine-700/80 hover:border-glc-orange bg-wine-900/50 hover:bg-wine-850/80 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-glc-orange group"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-semibold tracking-wider uppercase text-cream-200 hover:text-white rounded-full border border-wine-700/80 hover:border-glc-orange bg-wine-900/50 hover:bg-wine-850/80 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-glc-orange group"
             >
-              <span>Submit Nomination</span>
+              <span>Nominate</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-glc-orange transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
 
             <a
               href="#register"
-              className="relative inline-flex items-center justify-center px-4 sm:px-5 py-2 text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_20px_-3px_rgba(244,81,151,0.5)]"
+              className="relative inline-flex items-center justify-center px-4 py-1.5 text-[11px] font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_18px_-3px_rgba(244,81,151,0.5)]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange opacity-95 group-hover:opacity-100 transition-opacity" />
-              <span className="relative flex items-center gap-1.5">
+              <span className="relative flex items-center gap-1">
                 <span>Register</span>
                 <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
@@ -114,7 +109,10 @@ export default function Navigation() {
               </div>
               <AccredationsLogo className="h-5 w-auto" variant="light" />
             </div>
-            {navLinks.map((link) => (
+            {[
+              ...navLinks,
+              { label: 'Delegate Benefits', href: '#delegate-benefits' }
+            ].map((link) => (
               <a
                 key={link.label}
                 href={link.href}
