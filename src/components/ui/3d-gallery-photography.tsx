@@ -203,6 +203,7 @@ function GalleryScene({
 	const [autoPlay, setAutoPlay] = useState(isScrollControlled ? false : initialAutoPlay);
 	const lastInteraction = useRef(Date.now());
 	const currentZOffset = useRef(0);
+	const initializedRef = useRef(false);
 
 	const normalizedImages = useMemo(
 		() =>
@@ -296,6 +297,10 @@ function GalleryScene({
 		if (isScrollControlled) {
 			// Directly driven by page scroll progress (0.0 to 1.0)
 			const targetTravel = (scrollProgress ?? 0) * totalTravel;
+			if (!initializedRef.current && scrollProgress !== undefined) {
+				currentZOffset.current = targetTravel;
+				initializedRef.current = true;
+			}
 			const deltaDiff = targetTravel - currentZOffset.current;
 			// Smooth physics lerp
 			currentZOffset.current += deltaDiff * 0.16;

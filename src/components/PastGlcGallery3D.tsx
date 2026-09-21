@@ -33,191 +33,81 @@ const GLC_PAST_PHOTOS = [
 ]
 
 export default function PastGlcGallery3D() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const progressRef = useRef(0)
-  const isLockedRef = useRef(false)
-  const isCompletedRef = useRef(false)
 
-  // 1. Wheel listener to lock page scroll on arrival and advance photos until cycle is complete
+  // Native, non-blocking bidirectional scroll tracking
+  // Works seamlessly when scrolling down, scrolling back up, or changing direction mid-scroll
   useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
+    let animationFrameId: number | null = null
+
+    const updateProgress = () => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
-      
-      // When the section is centered/aligned in the viewport
-      const inView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50
-
-      // Lock scroll if user lands on this section and hasn't finished the photo cycle
-      if (inView && !isCompletedRef.current) {
-        if (!isLockedRef.current) {
-          isLockedRef.current = true
-          containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-      }
-
-      if (isLockedRef.current) {
-        // Prevent website from scrolling while viewing photos
-        e.preventDefault()
-
-        const delta = e.deltaY * 0.0012
-        let next = progressRef.current + delta
-
-        // If user scrolls UP while at the beginning, release lock upwards
-        if (delta < 0 && progressRef.current <= 0.01) {
-          isLockedRef.current = false
-          return
-        }
-
-        // Clamp between 0.0 and 1.0
-        next = Math.max(0, Math.min(1.0, next))
-        progressRef.current = next
-        setScrollProgress(next)
-
-        // When all 10 photos are done coming, release the lock and continue website scroll!
-        if (next >= 1.0) {
-          isLockedRef.current = false
-          isCompletedRef.current = true
-          window.scrollBy({ top: 160, behavior: 'smooth' })
-        }
+      const totalScrollable = rect.height - window.innerHeight
+      if (totalScrollable > 0) {
+        // rect.top is 0 when the sticky viewport pins, and -totalScrollable when it unpins
+        const progress = -rect.top / totalScrollable
+        const clamped = Math.max(0, Math.min(1.0, progress))
+        setScrollProgress(clamped)
       }
     }
 
-    window.addEventListener('wheel', onWheel, { passive: false })
-    return () => window.removeEventListener('wheel', onWheel)
-  }, [])
-
-  // 2. Touch listener for mobile devices
-  useEffect(() => {
-    let touchStartY = 0
-
-    const onTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY
+    const onScroll = () => {
+      if (animationFrameId !== null) return
+      animationFrameId = window.requestAnimationFrame(() => {
+        updateProgress()
+        animationFrameId = null
+      })
     }
 
-    const onTouchMove = (e: TouchEvent) => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      const inView = rect.top <= 60 && rect.bottom >= window.innerHeight - 60
-
-      if (inView && !isCompletedRef.current) {
-        if (!isLockedRef.current) {
-          isLockedRef.current = true
-          containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-      }
-
-      if (isLockedRef.current) {
-        const currentY = e.touches[0].clientY
-        const deltaY = touchStartY - currentY
-        touchStartY = currentY
-
-        e.preventDefault()
-        const delta = deltaY * 0.0028
-        let next = progressRef.current + delta
-
-        if (delta < 0 && progressRef.current <= 0.01) {
-          isLockedRef.current = false
-          return
-        }
-
-        next = Math.max(0, Math.min(1.0, next))
-        progressRef.current = next
-        setScrollProgress(next)
-
-        if (next >= 1.0) {
-          isLockedRef.current = false
-          isCompletedRef.current = true
-          window.scrollBy({ top: 160, behavior: 'smooth' })
-        }
-      }
-    }
-
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    updateProgress()
 
     return () => {
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
-    }
-  }, [])
-
-  // 3. Keyboard navigation support (ArrowDown, PageDown, Space)
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (!isLockedRef.current) return
-      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-        e.preventDefault()
-        const next = Math.min(1.0, progressRef.current + 0.1)
-        progressRef.current = next
-        setScrollProgress(next)
-        if (next >= 1.0) {
-          isLockedRef.current = false
-          isCompletedRef.current = true
-          window.scrollBy({ top: 160, behavior: 'smooth' })
-        }
-      } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-        e.preventDefault()
-        const next = Math.max(0, progressRef.current - 0.1)
-        if (next <= 0) {
-          isLockedRef.current = false
-        }
-        progressRef.current = next
-        setScrollProgress(next)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId)
       }
     }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
-
-  // 4. Reset completion if user scrolls back above the section
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      if (rect.top > window.innerHeight * 0.85) {
-        isCompletedRef.current = false
-        progressRef.current = 0
-        setScrollProgress(0)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <div
+    <section
       ref={containerRef}
       id="past-glc-gallery"
-      className="relative w-full h-screen overflow-hidden flex items-center justify-center my-0 p-0 bg-wine-950"
+      className="relative w-full h-[300vh] bg-wine-950"
     >
-      {/* Deep atmospheric radial glow blending seamlessly with the page */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,81,151,0.09)_0%,transparent_75%)] pointer-events-none z-10" />
+      {/* Sticky full-viewport frame pinned while scrolling through the 3D photo journey */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+        {/* Deep atmospheric radial glow blending seamlessly with the page */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,81,151,0.09)_0%,transparent_75%)] pointer-events-none z-10" />
 
-      {/* 3D Photography Canvas driven by scrollProgress */}
-      <div className="absolute inset-0 w-full h-full">
-        <InfiniteGallery
-          images={GLC_PAST_PHOTOS}
-          scrollProgress={scrollProgress}
-          speed={1.0}
-          zSpacing={3.2}
-          visibleCount={10}
-          className="w-full h-full"
-        />
+        {/* 3D Photography Canvas driven smoothly by bidirectional scrollProgress */}
+        <div className="absolute inset-0 w-full h-full">
+          <InfiniteGallery
+            images={GLC_PAST_PHOTOS}
+            scrollProgress={scrollProgress}
+            speed={1.0}
+            zSpacing={3.2}
+            visibleCount={10}
+            className="w-full h-full"
+          />
+        </div>
+
+        {/* Prominent GLC in Hero Pink (#ffc5b6) with Negative Photo Inversion Effect */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 mix-blend-exclusion z-20 select-none">
+          <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none">
+            GLC
+          </h2>
+        </div>
+
+        {/* Top and Bottom Feathering Gradients for seamless section blending */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
       </div>
-
-      {/* Prominent GLC in Hero Pink (#ffc5b6) with Negative Photo Inversion Effect */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 mix-blend-exclusion z-20 select-none">
-        <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none">
-          GLC
-        </h2>
-      </div>
-
-      {/* Top and Bottom Feathering Gradients for seamless section blending */}
-      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
-    </div>
+    </section>
   )
 }
