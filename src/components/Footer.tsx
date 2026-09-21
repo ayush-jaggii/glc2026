@@ -89,6 +89,9 @@ export default function Footer() {
                 <a href="#panels" className="hover:text-glc-orange transition-colors">Panels</a>
               </li>
               <li>
+                <a href="#awards" className="hover:text-glc-orange transition-colors">Business Excellence Awards</a>
+              </li>
+              <li>
                 <a href="#previous-editions" className="hover:text-glc-orange transition-colors">Previous Editions</a>
               </li>
               <li>

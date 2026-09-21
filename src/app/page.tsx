@@ -2,6 +2,7 @@ import Navigation from '@/components/Navigation'
 import HeroSection from '@/components/HeroSection'
 import RevealSection from '@/components/RevealSection'
 import PastGlcGallery3D from '@/components/PastGlcGallery3D'
+import AwardsSection from '@/components/AwardsSection'
 import ArchiveGallery from '@/components/ArchiveGallery'
 import DelegateAdvantage from '@/components/DelegateAdvantage'
 import RegistrationSection from '@/components/RegistrationSection'
@@ -23,7 +24,10 @@ export default function HomePage() {
       {/* 4. 3D Photography Journey right after panel topics */}
       <PastGlcGallery3D />
 
-      {/* 5. Historical Archive & Auditorium Retrospective Film */}
+      {/* 5. Business Excellence Awards 2026 (Co-presented by Plugscale) */}
+      <AwardsSection />
+
+      {/* 6. Historical Archive & Auditorium Retrospective Film */}
       <ArchiveGallery />
 
       {/* 6. Executive Delegate ROI & Advantage Path */}
