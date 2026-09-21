@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Plus, Minus, ArrowUpRight, Award, ExternalLink } from 'lucide-react'
+import React from 'react'
+import { ArrowUpRight } from 'lucide-react'
 
 function TapmiBlruWordmark({ className = 'h-5 sm:h-6 md:h-7 w-auto text-[#ffc5b6]' }: { className?: string }) {
   return (
@@ -38,59 +38,35 @@ function TapmiBlruWordmark({ className = 'h-5 sm:h-6 md:h-7 w-auto text-[#ffc5b6
 
 interface AwardCategory {
   id: string
-  number: string
   title: string
-  tagline: string
-  description: string
-  focusAreas: string[]
+  subheading: string
 }
 
 const AWARD_CATEGORIES: AwardCategory[] = [
   {
     id: 'global-business-excellence',
-    number: '01',
     title: 'Global Business Excellence',
-    tagline: 'Honoring organizational mastery and resilient international value creation',
-    description:
-      'Recognizing multinational enterprises and institutions that demonstrate sustained business excellence, operational brilliance, and transformational leadership across global markets.',
-    focusAreas: ['Strategic Scalability', 'Financial & Operational Resilience', 'Cross-Border Governance']
+    subheading: 'Honoring organizational mastery and resilient international value creation'
   },
   {
     id: 'cross-border-innovation',
-    number: '02',
     title: 'Cross-border Innovation',
-    tagline: 'Celebrating disruptive technologies bridging multinational frontiers',
-    description:
-      'Commending breakthrough digital architectures, frontier AI platforms, and innovative business models that solve critical challenges and bridge multinational ecosystems.',
-    focusAreas: ['Technological Originality', 'Cross-Border Scalability', 'Measurable Market Disruption']
+    subheading: 'Celebrating disruptive technologies bridging multinational frontiers'
   },
   {
     id: 'international-market-leadership',
-    number: '03',
     title: 'International Market Leadership',
-    tagline: 'Recognizing visionary market expansion and competitive stewardship',
-    description:
-      'Honoring leaders and organizations that have successfully entered, navigated, and established decisive market leadership across international territories through strategic agility.',
-    focusAreas: ['Market Agility & Expansion', 'Global Brand Equity', 'Competitive Strategy']
+    subheading: 'Recognizing visionary market expansion and competitive stewardship'
   },
   {
     id: 'global-growth-impact',
-    number: '04',
     title: 'Global Growth and Impact',
-    tagline: 'Commending sustainable, high-impact enterprise footprints',
-    description:
-      'Awarding enterprises creating meaningful economic, societal, and environmental impact across borders through ESG stewardship, clean-tech adoption, and sustainable growth.',
-    focusAreas: ['ESG Integration & Clean-Tech', 'Societal Footprint', 'Multinational Partnership Vitality']
+    subheading: 'Commending sustainable, high-impact enterprise footprints'
   }
 ]
 
 export default function AwardsSection() {
-  const [expandedId, setExpandedId] = useState<string | null>('global-business-excellence')
   const nominationFormUrl = 'https://forms.gle/4khjou6rWyKZMpGm7'
-
-  const toggleCategory = (id: string) => {
-    setExpandedId(prev => (prev === id ? null : id))
-  }
 
   return (
     <section
@@ -195,100 +171,33 @@ export default function AwardsSection() {
 
         </div>
 
-        {/* 4 Award Categories Grid (2x2 on Desktop, 1 Column on Mobile) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {AWARD_CATEGORIES.map((award) => {
-            const isExpanded = expandedId === award.id
-
-            return (
-              <div
-                key={award.id}
-                onClick={() => toggleCategory(award.id)}
-                className={`group relative rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
-                  isExpanded
-                    ? 'bg-gradient-to-br from-[#1F041B] via-[#140212] to-[#0A0108] border-glc-magenta shadow-[0_15px_45px_-10px_rgba(244,81,151,0.35)]'
-                    : 'bg-[#12030F]/90 border-wine-800/80 hover:border-wine-600 hover:bg-[#160413]'
-                } border`}
-              >
-                {/* Card Top: Number & Category Title */}
-                <div>
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <span className="text-xs font-mono font-bold tracking-widest text-glc-orange uppercase">
-                      Category {award.number}
-                    </span>
-                    <Award
-                      className={`w-5 h-5 transition-colors ${
-                        isExpanded ? 'text-glc-magenta' : 'text-cream-400 group-hover:text-cream-200'
-                      }`}
-                    />
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-bold text-cream-50 group-hover:text-white leading-snug tracking-tight">
-                    {award.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-cream-300/90 mt-2 leading-relaxed">
-                    {award.tagline}
-                  </p>
+        {/* 4 Minimalist Award Category Cards (Revamped & Minimal) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-8 max-w-5xl mx-auto">
+          {AWARD_CATEGORIES.map((award) => (
+            <a
+              key={award.id}
+              href={nominationFormUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative rounded-2xl p-7 sm:p-9 bg-[#130310]/85 hover:bg-gradient-to-br hover:from-[#1d0419] hover:via-[#150312] hover:to-[#0d020b] border border-wine-800/70 hover:border-glc-magenta/70 transition-all duration-300 hover:shadow-[0_12px_40px_-10px_rgba(244,81,151,0.3)] flex flex-col justify-center min-h-[140px] sm:min-h-[160px] cursor-pointer"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-cream-50 group-hover:text-white tracking-tight leading-snug transition-colors">
+                  {award.title}
+                </h3>
+                <div className="w-8 h-8 rounded-full bg-wine-900/80 border border-wine-700/60 group-hover:border-glc-magenta/70 group-hover:bg-glc-magenta/15 flex items-center justify-center shrink-0 transition-all duration-300">
+                  <ArrowUpRight className="w-4 h-4 text-cream-400 group-hover:text-glc-magenta group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
                 </div>
-
-                {/* Expanded Drawer: Details, Focus Areas & Direct Link */}
-                {isExpanded && (
-                  <div className="mt-6 pt-5 border-t border-wine-800/80 animate-fadeIn">
-                    <p className="text-xs sm:text-sm text-cream-200/95 leading-relaxed font-normal">
-                      {award.description}
-                    </p>
-
-                    {/* Focus Criteria Tags */}
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {award.focusAreas.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] sm:text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-md bg-wine-950 border border-wine-700/80 text-cream-300"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Direct Nomination Link */}
-                    <div className="mt-5 pt-3 flex items-center justify-between">
-                      <a
-                        href={nominationFormUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-glc-orange hover:text-white transition-colors"
-                      >
-                        <span>Nominate for this Category</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {/* Card Bottom: Plus / Minus Interactive Trigger */}
-                <div className="mt-6 pt-4 border-t border-wine-900/60 flex items-center justify-between">
-                  <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-cream-400">
-                    {isExpanded ? 'Click to collapse details' : 'Click to view criteria & details'}
-                  </span>
-
-                  <button
-                    type="button"
-                    aria-label={isExpanded ? `Collapse ${award.title}` : `Expand ${award.title}`}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                      isExpanded
-                        ? 'bg-glc-magenta text-white shadow-md'
-                        : 'bg-wine-900/80 text-cream-300 group-hover:bg-wine-800 group-hover:text-white'
-                    }`}
-                  >
-                    {isExpanded ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                  </button>
-                </div>
-
               </div>
-            )
-          })}
+
+              {/* Subheading smoothly revealed on hover (always accessible) */}
+              <div className="overflow-hidden transition-all duration-300 max-h-24 opacity-100 sm:max-h-0 sm:opacity-0 group-hover:sm:max-h-24 group-hover:sm:opacity-100">
+                <p className="text-xs sm:text-sm text-cream-300/90 mt-3 leading-relaxed font-normal">
+                  {award.subheading}
+                </p>
+              </div>
+            </a>
+          ))}
         </div>
 
       </div>
