@@ -1,8 +1,40 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
-import { Plus, Minus, ArrowUpRight, Award, Sparkles, ExternalLink } from 'lucide-react'
+import { Plus, Minus, ArrowUpRight, Award, ExternalLink } from 'lucide-react'
+
+function TapmiBlruWordmark({ className = 'h-5 sm:h-6 md:h-7 w-auto text-[#ffc5b6]' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="401 0 323 35"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="TAPMI B'LRU"
+    >
+      {/* T */}
+      <path d="M410.813 34.2807V8.96561H401.191V0.00683594H431.491V8.96561H421.876V34.2807H410.813Z" />
+      {/* A */}
+      <path d="M458.602 34.2807H470.415L457.182 0.00683594H447.151L433.917 34.2807H445.556L446.682 30.9705H457.476L458.602 34.2807Z" />
+      {/* P */}
+      <path d="M503.047 6.05069C501.774 4.1075 499.972 2.61325 497.64 1.56795C495.308 0.522651 492.541 0 489.345 0H472.841V34.2738H484.393V25.8511H489.338C492.534 25.8511 495.301 25.3218 497.633 24.2631C499.965 23.2044 501.768 21.7101 503.041 19.7803C504.314 17.8572 504.95 15.5723 504.95 12.9256C504.95 10.2788 504.314 7.98718 503.041 6.04399L503.047 6.05069Z" />
+      {/* M */}
+      <path d="M536.021 34.2807H548.505L548.411 0.00683594H536.015L528.041 17.261L519.846 0.00683594H507.376V34.2807H519.859V22.0319L527.887 34.2807L535.954 21.5695L536.021 34.2807Z" />
+      {/* I */}
+      <path d="M550.93 34.2807V0.00683594H562.482V34.2807H550.93Z" />
+      {/* B */}
+      <path d="M608.179 19.5419C609.26 21.115 609.796 22.8191 609.796 24.6543C609.796 27.9314 608.704 30.4624 606.532 32.2674C604.359 34.0723 601.125 34.9697 596.839 34.9697H578.138V0H596.502C600.688 0 603.714 0.847018 605.589 2.55114C607.454 4.25526 608.387 6.36272 608.387 8.88361C608.387 12.3523 606.889 14.7926 603.893 16.2043C605.669 16.8597 607.087 17.9689 608.169 19.5419" />
+      {/* Triangle flourish / divider */}
+      <path d="M611.542 0V16.2547H617.395L623.259 0H611.542Z" />
+      {/* L */}
+      <path d="M653.775 21.4477V34.9697H625.471V0H638.993V21.4477H653.775Z" />
+      {/* R */}
+      <path d="M682.913 23.8375C686.515 21.4679 688.32 17.7571 688.32 13.2901C688.32 5.79804 683.26 0.322674 673.091 0.0201671V0H657.029V34.9697H671.077V24.6039L675.661 34.9798H688.33L682.913 23.8476V23.8375Z" />
+      {/* U */}
+      <path d="M709.145 20.9536V0H722.191V21.5889C722.191 25.8139 720.871 29.1011 718.232 31.4708C715.554 33.8101 711.754 34.9798 706.813 34.9798C701.873 34.9798 698.053 33.8101 695.434 31.4708C692.755 29.1415 691.426 25.8441 691.426 21.5889V0H704.472V20.9536C704.472 22.2645 705.514 23.3232 706.803 23.3232C708.093 23.3232 709.135 22.2645 709.135 20.9536" />
+    </svg>
+  )
+}
 
 interface AwardCategory {
   id: string
@@ -79,103 +111,86 @@ export default function AwardsSection() {
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-glc-magenta/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 left-0 w-[450px] h-[450px] bg-glc-orange/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Floating 3D Ribbon Accent (Right side, desktop only) */}
-      <div className="hidden xl:block absolute -top-8 -right-16 w-80 h-96 pointer-events-none opacity-85 z-0 select-none">
-        <img
-          src="/images/awards-3d-ribbon.png"
-          alt="GLC 3D Ribbon Graphic"
-          className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(244,81,151,0.35)]"
-        />
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Top Header Grid: Title, Co-presenting Partner, Schedule & Submit CTA */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 pb-12 border-b border-wine-800/80">
+        {/* Centered Brand Header Lockup (Matching Reference Artwork) */}
+        <div className="flex flex-col items-center text-center mb-16 pb-12 border-b border-wine-800/80">
           
-          {/* Left Column: Brand Typography & Event Metadata */}
-          <div className="max-w-2xl">
-            
-            {/* Institution Wordmark */}
-            <div className="text-xs sm:text-sm font-extrabold tracking-[0.28em] text-[#ffc5b6] uppercase mb-2">
-              TAPMI B&apos;LRU
-            </div>
-
-            {/* Main Title with Stylized Ribbon X */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="font-tektype text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-none">
-                BUSINESS
-              </span>
-              <span className="inline-flex items-center font-tektype text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-none">
-                <span>E</span>
-                <span className="relative inline-flex items-center justify-center mx-1 h-9 sm:h-12 lg:h-14 w-auto">
-                  <img
-                    src="/images/ribbon-x.png"
-                    alt="X"
-                    className="h-full w-auto object-contain brightness-110 drop-shadow-[0_0_15px_rgba(244,81,151,0.6)]"
-                  />
-                </span>
-                <span>CELLENCE</span>
-              </span>
-            </div>
-
-            {/* Hairline Rule with AWARDS 2026 */}
-            <div className="flex items-center gap-4 my-4 max-w-md">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-wine-600 to-wine-600" />
-              <div className="text-sm sm:text-base font-medium tracking-[0.3em] uppercase text-cream-200">
-                AWARDS 2026
-              </div>
-              <div className="h-px flex-1 bg-gradient-to-r from-wine-600 via-wine-600 to-transparent" />
-            </div>
-
-            {/* Date & Venue Coordinates */}
-            <div className="mt-3">
-              <div className="text-sm sm:text-base font-bold text-glc-orange tracking-wide uppercase">
-                10 October 2026
-              </div>
-              <div className="text-xs sm:text-sm text-cream-300 mt-0.5">
-                Dr. Ramdas M. Pai Auditorium, MAHE Bengaluru
-              </div>
-            </div>
-
+          {/* Top Line: TAPMI B'LRU official SVG wordmark in pink */}
+          <div className="mb-4 sm:mb-5">
+            <TapmiBlruWordmark className="h-5 sm:h-6 md:h-7 w-auto text-[#ffc5b6]" />
           </div>
 
-          {/* Right Column: Co-presenting Partner Lockup & Submit Nomination CTA */}
-          <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-6">
-            
-            {/* Co-presenting Partner: Plugscale */}
-            <div className="flex flex-col lg:items-end">
-              <div className="text-[11px] uppercase tracking-widest text-cream-400 font-semibold mb-2">
-                Co-presenting Partner
-              </div>
-              <a
-                href="https://plugscale.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 p-3 rounded-xl bg-wine-900/50 border border-wine-800/80 hover:border-glc-magenta/60 transition-all hover:scale-[1.02]"
-                aria-label="Plugscale - Co-presenting Partner"
-              >
+          {/* Main Title: BUSINESS EXCELLENCE in Helvetica bold, with stylized ribbon X */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 my-1 sm:my-2">
+            <span className="font-sans text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-none">
+              BUSINESS
+            </span>
+            <span className="inline-flex items-center font-sans text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-none">
+              <span>E</span>
+              <span className="relative inline-flex items-center justify-center mx-1 sm:mx-1.5 h-7 sm:h-10 md:h-12 lg:h-14 w-auto">
                 <img
-                  src="/logos/plugscale-horizontal-white.png"
-                  alt="PLUGSCALE Logo"
-                  className="h-8 sm:h-9 w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity"
+                  src="/images/ribbon-x.png"
+                  alt="X"
+                  className="h-full w-auto object-contain brightness-110 drop-shadow-[0_0_18px_rgba(244,81,151,0.65)]"
                 />
-              </a>
+              </span>
+              <span>CELLENCE</span>
+            </span>
+          </div>
+
+          {/* Hairline Divider with AWARDS 2026 in Helvetica */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 my-4 w-full max-w-xl mx-auto">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-wine-700 to-wine-600" />
+            <div className="font-sans text-xs sm:text-base md:text-lg font-medium tracking-[0.3em] sm:tracking-[0.35em] uppercase text-cream-200 shrink-0">
+              AWARDS 2026
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-wine-700 to-wine-600" />
+          </div>
+
+          {/* Co-presenting Partner: Plugscale Logo Lockup */}
+          <div className="mt-4 flex flex-col items-center justify-center">
+            <div className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-cream-400 font-medium mb-2">
+              Co presenting Partner
+            </div>
+            <a
+              href="https://plugscale.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center p-2 rounded-xl transition-all hover:scale-105"
+              aria-label="Plugscale - Co presenting Partner"
+            >
+              <img
+                src="/logos/plugscale-horizontal-white.png"
+                alt="PLUGSCALE Logo"
+                className="h-7 sm:h-8 md:h-9 w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </div>
+
+          {/* Date, Venue Coordinates & Submit Nomination CTA */}
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <div className="text-center">
+              <span className="text-xs sm:text-sm font-bold text-glc-orange tracking-widest uppercase">
+                10 October 2026
+              </span>
+              <span className="text-cream-500 mx-2">·</span>
+              <span className="text-xs sm:text-sm text-cream-300">
+                Dr. Ramdas M. Pai Auditorium, MAHE Bengaluru
+              </span>
             </div>
 
-            {/* Submit Nomination CTA Button */}
-            <div className="mt-2">
+            <div className="mt-1">
               <a
                 href={nominationFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group shadow-xl"
+                className="inline-flex items-center justify-center px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group shadow-xl"
               >
                 <span>Submit Nomination</span>
                 <ArrowUpRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
             </div>
-
           </div>
 
         </div>
