@@ -35,14 +35,14 @@ export async function POST(request: Request) {
       )
     }
 
-    let resolvedCategory: AttendeeCategory = 'executive'
-    let resolvedPassType = 'Executive Delegate'
+    let resolvedCategory: AttendeeCategory = 'delegate'
+    let resolvedPassType = 'Delegate Pass'
     let resolvedAffiliation = ''
     let resolvedRoleOrProgram = ''
 
     if (registrationType === 'student') {
       resolvedCategory = 'student'
-      resolvedPassType = 'Student Delegate'
+      resolvedPassType = 'Student Pass'
       resolvedAffiliation = 'TAPMI Bengaluru, MAHE'
       const yearLabel = year?.trim() || 'Student'
       resolvedRoleOrProgram = `${yearLabel}${studentId ? ` (${studentId.trim()})` : ''}`
@@ -53,18 +53,10 @@ export async function POST(request: Request) {
           { status: 400 }
         )
       }
-      if (passType?.toLowerCase().includes('corporate')) {
-        resolvedCategory = 'corporate'
-        resolvedPassType = 'Corporate Delegation'
-      } else if (passType?.toLowerCase().includes('academic')) {
-        resolvedCategory = 'academic'
-        resolvedPassType = 'Academic Fellow'
-      } else {
-        resolvedCategory = 'executive'
-        resolvedPassType = 'Executive Delegate'
-      }
+      resolvedCategory = 'delegate'
+      resolvedPassType = 'Delegate Pass'
       resolvedAffiliation = organization.trim()
-      resolvedRoleOrProgram = designation?.trim() || 'Industry Delegate'
+      resolvedRoleOrProgram = designation?.trim() || 'Delegate'
     }
 
     // Allocate Auditorium Seat

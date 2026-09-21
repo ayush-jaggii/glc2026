@@ -1,12 +1,12 @@
-export type AttendeeCategory = 'student' | 'executive' | 'corporate' | 'academic'
+export type AttendeeCategory = 'student' | 'delegate' | 'executive' | 'corporate' | 'academic'
 
 export interface SeatAllocation {
   seatNumber: string          // e.g. "Row B-14"
   zone: string                // e.g. "Executive Stalls"
   row: string                 // e.g. "Row B"
   seatIndex: string           // e.g. "Seat 14"
-  gate: string                // e.g. "Gate 1 · VIP & Executive Desk"
-  fullSeatString: string      // e.g. "Executive Stalls · Row B-14"
+  gate: string                // e.g. "Gate 1 · Main Delegate Desk"
+  fullSeatString: string      // e.g. "Delegate Stalls · Row B-14"
 }
 
 /**
@@ -30,7 +30,7 @@ export function allocateAuditoriumSeat(category: AttendeeCategory, seed?: string
       const seatPad = seatNum.toString().padStart(2, '0')
       return {
         seatNumber: `Row ${row}-${seatPad}`,
-        zone: 'Balcony · Student Tier',
+        zone: 'Balcony · Student Seating',
         row: `Row ${row}`,
         seatIndex: `Seat ${seatPad}`,
         gate: 'Gate 3 · Student Check-In',
@@ -38,49 +38,20 @@ export function allocateAuditoriumSeat(category: AttendeeCategory, seed?: string
       }
     }
 
-    case 'executive': {
-      const execRows = ['A', 'B', 'C', 'D']
+    case 'delegate':
+    case 'executive':
+    default: {
+      const execRows = ['A', 'B', 'C', 'D', 'E', 'F']
       const row = execRows[positiveHash % execRows.length]
       const seatNum = ((positiveHash >> 3) % 28) + 1
       const seatPad = seatNum.toString().padStart(2, '0')
       return {
         seatNumber: `Row ${row}-${seatPad}`,
-        zone: 'Executive Stalls',
+        zone: 'Executive & Delegate Stalls',
         row: `Row ${row}`,
         seatIndex: `Seat ${seatPad}`,
-        gate: 'Gate 1 · VIP & Executive Desk',
-        fullSeatString: `Executive Stalls · Row ${row}-${seatPad}`
-      }
-    }
-
-    case 'corporate': {
-      const corpRows = ['E', 'F', 'G']
-      const row = corpRows[positiveHash % corpRows.length]
-      const seatNum = ((positiveHash >> 3) % 30) + 1
-      const seatPad = seatNum.toString().padStart(2, '0')
-      return {
-        seatNumber: `Row ${row}-${seatPad}`,
-        zone: 'Prime Center Stalls',
-        row: `Row ${row}`,
-        seatIndex: `Seat ${seatPad}`,
-        gate: 'Gate 2 · Corporate Relations',
-        fullSeatString: `Center Stalls · Row ${row}-${seatPad}`
-      }
-    }
-
-    case 'academic':
-    default: {
-      const acadRows = ['G', 'H']
-      const row = acadRows[positiveHash % acadRows.length]
-      const seatNum = ((positiveHash >> 3) % 30) + 1
-      const seatPad = seatNum.toString().padStart(2, '0')
-      return {
-        seatNumber: `Row ${row}-${seatPad}`,
-        zone: 'Academic Delegation Tier',
-        row: `Row ${row}`,
-        seatIndex: `Seat ${seatPad}`,
-        gate: 'Gate 2 · Main Check-In',
-        fullSeatString: `Auditorium · Row ${row}-${seatPad}`
+        gate: 'Gate 1 · Main Delegate Desk',
+        fullSeatString: `Delegate Stalls · Row ${row}-${seatPad}`
       }
     }
   }
@@ -92,9 +63,10 @@ export function allocateAuditoriumSeat(category: AttendeeCategory, seed?: string
 export function generateRegistrationId(category: AttendeeCategory): string {
   const prefixMap: Record<AttendeeCategory, string> = {
     student: 'GLC26-STU',
-    executive: 'GLC26-EXEC',
-    corporate: 'GLC26-CORP',
-    academic: 'GLC26-ACAD'
+    delegate: 'GLC26-DEL',
+    executive: 'GLC26-DEL',
+    corporate: 'GLC26-DEL',
+    academic: 'GLC26-DEL'
   }
   const prefix = prefixMap[category] || 'GLC26-DEL'
   const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase()

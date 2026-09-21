@@ -20,11 +20,9 @@ import PassDownloadActions from '@/components/pass/PassDownloadActions'
 import { generateQrDataUrl } from '@/lib/qrGenerator'
 
 type StreamType = 'delegate' | 'student'
-type PassTier = 'executive' | 'corporate' | 'academic'
 
 export default function RegistrationSection() {
   const [stream, setStream] = useState<StreamType>('delegate')
-  const [passTier, setPassTier] = useState<PassTier>('executive')
 
   // Common fields
   const [fullName, setFullName] = useState('')
@@ -70,12 +68,7 @@ export default function RegistrationSection() {
         // Delegate fields
         organization,
         designation,
-        passType:
-          passTier === 'executive'
-            ? 'Executive Delegate'
-            : passTier === 'corporate'
-            ? 'Corporate Delegation'
-            : 'Academic / Research Fellow',
+        passType: stream === 'student' ? 'Student Pass' : 'Delegate Pass',
         trackPreference,
         // Student fields
         year,
@@ -254,37 +247,7 @@ export default function RegistrationSection() {
                 {/* Form */}
                 <form onSubmit={handleRegister} className="space-y-5">
                   
-                  {/* Delegate-Only: Pass Tier Selection */}
-                  {stream === 'delegate' && (
-                    <div>
-                      <label className="block text-xs uppercase tracking-wider text-cream-300 mb-2 font-semibold">
-                        Select Delegate Tier *
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                        {(
-                          [
-                            { id: 'executive', label: 'Executive Pass', desc: 'CXO & Senior Leadership' },
-                            { id: 'corporate', label: 'Corporate Pass', desc: 'Enterprise Delegations' },
-                            { id: 'academic', label: 'Academic Fellow', desc: 'Faculty & Scholars' },
-                          ] as const
-                        ).map((tier) => (
-                          <button
-                            key={tier.id}
-                            type="button"
-                            onClick={() => setPassTier(tier.id)}
-                            className={`p-3 rounded-xl border text-left transition-all ${
-                              passTier === tier.id
-                                ? 'bg-gradient-to-r from-wine-900 to-wine-850 border-glc-magenta text-white shadow-md'
-                                : 'bg-wine-950/60 border-wine-800 text-cream-300 hover:border-wine-700'
-                            }`}
-                          >
-                            <div className="text-xs font-bold text-cream-100">{tier.label}</div>
-                            <div className="text-[10px] text-cream-400 mt-0.5">{tier.desc}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* Delegate Form Fields */}
                   {stream === 'delegate' ? (
@@ -455,6 +418,9 @@ export default function RegistrationSection() {
                             >
                               <option value="1st Year">1st Year</option>
                               <option value="2nd Year">2nd Year</option>
+                              <option value="3rd Year">3rd Year</option>
+                              <option value="4th Year">4th Year</option>
+                              <option value="MBA">MBA</option>
                               <option value="PhD / Research Scholar">PhD / Research Scholar</option>
                             </select>
                           </div>
