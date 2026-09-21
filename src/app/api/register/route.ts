@@ -87,28 +87,32 @@ export async function POST(request: Request) {
       seatGate: seatAllocation.gate,
       fullSeatString: seatAllocation.fullSeatString,
       submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      targetSpreadsheetId: '1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0',
+      targetSpreadsheetId: '15sqfdMeYUw0s57I-4bGBxOXy_eA1HM4YnXT0pSYM7sk',
       source: 'GLC 2026 Official Flagship Portal'
     }
 
-    // Forward to configured Google Sheets webhook (Apps Script / SheetDB) if env var set
-    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || process.env.EXCEL_WEBHOOK_URL
+    // Forward to configured Google Sheets webhook (Apps Script / SheetDB)
+    const webhookUrl =
+      process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
+      process.env.EXCEL_WEBHOOK_URL ||
+      'https://script.google.com/macros/s/AKfycbyBuLVzg4kTc78RHpJ4jg3OOXUYiDGBd43-xinzy9uelua0kbgT4mR53EHJpbSHu7eD/exec'
 
     if (webhookUrl) {
       try {
         const upstream = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          redirect: 'follow'
         })
         if (!upstream.ok) {
           console.error('Google Sheets webhook returned non-OK status:', await upstream.text())
+        } else {
+          console.log('Successfully recorded to Google Sheet:', payload.registrationId)
         }
       } catch (err) {
         console.error('Failed to dispatch to Google Sheets webhook:', err)
       }
-    } else {
-      console.log('Registration logged for Google Sheet (1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0):', payload)
     }
 
     return NextResponse.json(
