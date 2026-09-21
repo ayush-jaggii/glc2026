@@ -102,7 +102,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
       {/* 2. Top-Left Track Tag Pill */}
       <div className="absolute top-3.5 left-3.5 z-20">
         <span
-          className={`inline-block text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-md ${badgeBg} ${badgeBorder} ${badgeText} border shadow-lg backdrop-blur-md`}
+          className="inline-block text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-md bg-black/60 border border-white/20 text-white shadow-lg backdrop-blur-md"
         >
           {shortTitle}
         </span>
