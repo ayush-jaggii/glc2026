@@ -103,15 +103,11 @@ export default function AwardsSection() {
               BUSINESS
             </span>
             <span className="inline-flex items-center font-sans text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-none">
-              <span>E</span>
-              <span className="relative inline-flex items-center justify-center mx-1 sm:mx-1.5 h-7 sm:h-10 md:h-12 lg:h-14 w-auto">
-                <img
+              <span>E</span><span className="relative inline-flex items-center justify-center ml-[0.05em] mr-[0.02em] h-[0.72em] w-auto shrink-0 select-none"><img
                   src="/images/ribbon-x.png"
                   alt="X"
                   className="h-full w-auto object-contain brightness-110 drop-shadow-[0_0_18px_rgba(244,81,151,0.65)]"
-                />
-              </span>
-              <span>CELLENCE</span>
+                /></span><span>CELLENCE</span>
             </span>
           </div>
 
