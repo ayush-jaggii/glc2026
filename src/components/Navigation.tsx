@@ -20,7 +20,6 @@ export default function Navigation() {
     { label: 'Speakers', href: '#speakers' },
     { label: 'Panels', href: '#panels' },
     { label: 'Awards', href: '#awards' },
-    { label: 'Past Editions', href: '#previous-editions' },
     { label: 'Venue', href: '#venue' },
   ]
 
@@ -47,7 +46,7 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Navigation Links - Breathable, elegant, perfectly kerned */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] tracking-[0.14em] uppercase font-medium text-cream-300" aria-label="Main Navigation">
+          <nav className="hidden lg:flex items-center gap-7 xl:gap-9 text-[11px] tracking-[0.14em] uppercase font-medium text-cream-300" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -59,13 +58,13 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* Right: Accreditations & Streamlined Action Buttons */}
-          <div className="flex items-center gap-3 xl:gap-3.5 flex-shrink-0">
-            <div className="hidden xl:flex items-center">
-              <AccredationsLogo className="h-4 sm:h-4.5 w-auto opacity-75 hover:opacity-100 transition-opacity" variant="light" />
+          {/* Right: Prominent Accreditations & Streamlined Action Buttons */}
+          <div className="flex items-center gap-3.5 xl:gap-5 flex-shrink-0">
+            <div className="hidden lg:flex items-center">
+              <AccredationsLogo className="h-6 sm:h-6.5 xl:h-7 w-auto opacity-90 hover:opacity-100 transition-opacity" variant="light" />
             </div>
 
-            <div className="hidden xl:block h-4 w-px bg-wine-700/60" />
+            <div className="hidden lg:block h-5 w-px bg-wine-700/60" />
 
             <a
               href={nominationFormUrl}
@@ -117,6 +116,7 @@ export default function Navigation() {
             </div>
             {[
               ...navLinks,
+              { label: 'Past Editions', href: '#previous-editions' },
               { label: 'Delegate Benefits', href: '#delegate-benefits' }
             ].map((link) => (
               <a
