@@ -59,8 +59,14 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* Right: Streamlined Action Buttons */}
-          <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+          {/* Right: Accreditations & Streamlined Action Buttons */}
+          <div className="flex items-center gap-3 xl:gap-3.5 flex-shrink-0">
+            <div className="hidden xl:flex items-center">
+              <AccredationsLogo className="h-4 sm:h-4.5 w-auto opacity-75 hover:opacity-100 transition-opacity" variant="light" />
+            </div>
+
+            <div className="hidden xl:block h-4 w-px bg-wine-700/60" />
+
             <a
               href={nominationFormUrl}
               target="_blank"
