@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react'
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-between pt-24 sm:pt-28 pb-8 sm:pb-12 overflow-hidden bg-wine-950">
+    <section className="relative min-h-[100dvh] sm:min-h-screen flex flex-col justify-between pt-20 sm:pt-28 pb-6 sm:pb-12 overflow-hidden bg-wine-950">
       
       {/* 1. Base Dark Wine Radial Atmospheric Glows */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,#3D0D30_0%,#0B0207_70%)] opacity-85 pointer-events-none" />
@@ -36,20 +36,20 @@ export default function HeroSection() {
           </h1>
 
           {/* GLC 2026 below campaign title in Helvetica font */}
-          <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[#ffc5b6] mb-3 sm:mb-4">
+          <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[#ffc5b6] mb-2.5 sm:mb-4">
             GLC 2026
           </div>
 
           {/* Official Tagline */}
-          <p className="text-base sm:text-lg md:text-xl font-medium tracking-wide text-cream-200/90 max-w-xl mb-7 sm:mb-9 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl font-medium tracking-wide text-cream-200/90 max-w-xl mb-6 sm:mb-9 leading-relaxed">
             Different Perspectives. A Brighter Tomorrow.
           </p>
 
           {/* CTA Group */}
-          <div className="flex flex-wrap items-center gap-3.5 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full max-w-md sm:max-w-none">
             <a
               href="#register"
-              className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group text-center shadow-lg"
             >
               <span>Register For Delegate Pass</span>
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
@@ -57,7 +57,7 @@ export default function HeroSection() {
 
             <a
               href="#panels"
-              className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-[#ffc5b6] hover:text-white rounded-full border border-wine-700 hover:border-glc-magenta/60 bg-wine-900/60 transition-all duration-200"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-7 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-[#ffc5b6] hover:text-white rounded-full border border-wine-700 hover:border-glc-magenta/60 bg-wine-900/60 transition-all duration-200 text-center"
             >
               <span>Explore Panels</span>
             </a>
@@ -68,11 +68,11 @@ export default function HeroSection() {
 
       {/* 6. Executive Baseline Logistics Strip (Date & Venue) */}
       <div className="relative z-20 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 w-full pt-4 pb-2 sm:pb-4 mt-auto">
-        <div className="border-t border-wine-800/80 pt-5 sm:pt-6 flex flex-wrap items-start gap-8 sm:gap-14">
+        <div className="border-t border-wine-800/80 pt-4 sm:pt-6 flex flex-wrap items-start gap-5 sm:gap-14">
           
           {/* Date & Schedule */}
           <div>
-            <div className="text-xl sm:text-2xl font-bold text-glc-orange tracking-wide uppercase">
+            <div className="text-lg sm:text-2xl font-bold text-glc-orange tracking-wide uppercase">
               10 OCTOBER 2026
             </div>
             <div className="text-xs sm:text-sm text-cream-200/80 mt-0.5 font-medium">
@@ -85,7 +85,7 @@ export default function HeroSection() {
 
           {/* Venue */}
           <div>
-            <div className="text-base sm:text-lg font-bold text-cream-100">
+            <div className="text-sm sm:text-lg font-bold text-cream-100">
               Dr. Ramdas M. Pai Auditorium
             </div>
             <div className="text-xs sm:text-sm text-cream-200/80 mt-0.5">

@@ -69,8 +69,8 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
     <article
       className={`group relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#180415] to-[#0A0207] border border-wine-800/80 hover:border-glc-magenta transition-all duration-500 shadow-xl hover:shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)] flex flex-col justify-end text-left hover:scale-[1.03] hover:z-30 cursor-pointer ${
         isCarousel
-          ? 'w-[280px] sm:w-[300px] h-[410px] sm:h-[440px] flex-shrink-0 snap-start'
-          : 'h-[410px] sm:h-[440px] w-full'
+          ? 'w-[250px] sm:w-[300px] h-[370px] sm:h-[440px] flex-shrink-0 snap-start'
+          : 'h-[370px] sm:h-[440px] w-full'
       }`}
     >
       {/* 1. Background Speaker Portrait or Monogram Avatar */}

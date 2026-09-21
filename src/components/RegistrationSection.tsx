@@ -212,27 +212,29 @@ export default function RegistrationSection() {
                     <button
                       type="button"
                       onClick={() => setStream('delegate')}
-                      className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
+                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
                         stream === 'delegate'
                           ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
                           : 'text-cream-300 hover:text-white'
                       }`}
                     >
-                      <Briefcase className="w-4 h-4" />
-                      <span>Delegate Registration</span>
+                      <Briefcase className="w-4 h-4 shrink-0" />
+                      <span className="sm:hidden">Delegate</span>
+                      <span className="hidden sm:inline">Delegate Registration</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setStream('student')}
-                      className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
+                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
                         stream === 'student'
                           ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
                           : 'text-cream-300 hover:text-white'
                       }`}
                     >
-                      <GraduationCap className="w-4 h-4" />
-                      <span>Student Registration</span>
+                      <GraduationCap className="w-4 h-4 shrink-0" />
+                      <span className="sm:hidden">Student</span>
+                      <span className="hidden sm:inline">Student Registration</span>
                     </button>
                   </div>
                 </div>
@@ -259,14 +261,14 @@ export default function RegistrationSection() {
                             Full Name *
                           </label>
                           <div className="relative">
-                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
                               required
                               value={fullName}
                               onChange={(e) => setFullName(e.target.value)}
                               placeholder="e.g. Dr. Rajesh Sharma"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -276,14 +278,14 @@ export default function RegistrationSection() {
                             Official / Corporate Email *
                           </label>
                           <div className="relative">
-                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="email"
                               required
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               placeholder="name@company.com"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -296,14 +298,14 @@ export default function RegistrationSection() {
                             Organization / Company *
                           </label>
                           <div className="relative">
-                            <Building className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Building className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
                               required
                               value={organization}
                               onChange={(e) => setOrganization(e.target.value)}
                               placeholder="e.g. Global Tech Solutions"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -313,13 +315,13 @@ export default function RegistrationSection() {
                             Designation / Role
                           </label>
                           <div className="relative">
-                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
                               value={designation}
                               onChange={(e) => setDesignation(e.target.value)}
                               placeholder="e.g. VP Global Strategy"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -332,14 +334,14 @@ export default function RegistrationSection() {
                             Contact Phone / WhatsApp *
                           </label>
                           <div className="relative">
-                            <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="tel"
                               required
                               value={phone}
                               onChange={(e) => setPhone(e.target.value)}
                               placeholder="+91 98765 43210"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -351,7 +353,7 @@ export default function RegistrationSection() {
                           <select
                             value={trackPreference}
                             onChange={(e) => setTrackPreference(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
+                            className="w-full px-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
                           >
                             <option value="IT & Enterprise Tech">Ctrl + Alt + Global (IT & Enterprise Tech)</option>
                             <option value="Automobile & EV">Shifting Gears (Automobile & Clean-Tech)</option>
@@ -373,14 +375,14 @@ export default function RegistrationSection() {
                             Full Name *
                           </label>
                           <div className="relative">
-                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
                               required
                               value={fullName}
                               onChange={(e) => setFullName(e.target.value)}
                               placeholder="e.g. Ananya Rao"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -390,14 +392,14 @@ export default function RegistrationSection() {
                             College / Learner Email *
                           </label>
                           <div className="relative">
-                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="email"
                               required
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               placeholder="name@learner.manipal.edu"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -410,11 +412,11 @@ export default function RegistrationSection() {
                             Year *
                           </label>
                           <div className="relative">
-                            <GraduationCap className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <GraduationCap className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <select
                               value={year}
                               onChange={(e) => setYear(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
                             >
                               <option value="1st Year">1st Year</option>
                               <option value="2nd Year">2nd Year</option>
@@ -431,13 +433,13 @@ export default function RegistrationSection() {
                             Roll No. / Student ID
                           </label>
                           <div className="relative">
-                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
                               value={studentId}
                               onChange={(e) => setStudentId(e.target.value)}
                               placeholder="e.g. 24MBATM042"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                             />
                           </div>
                         </div>
@@ -449,14 +451,14 @@ export default function RegistrationSection() {
                           Contact Phone / WhatsApp *
                         </label>
                         <div className="relative">
-                          <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                          <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                           <input
                             type="tel"
                             required
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder="+91 98765 43210"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
                           />
                         </div>
                       </div>

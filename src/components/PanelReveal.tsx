@@ -32,7 +32,7 @@ export default function PanelReveal() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-7 flex-1 min-w-0">
               
               {/* Panel Image Thumbnail */}
-              <div className="relative w-full sm:w-44 md:w-56 h-28 sm:h-28 md:h-32 rounded-lg overflow-hidden shrink-0 bg-wine-950 border border-wine-800/80 group-hover:border-glc-magenta/70 shadow-lg group-hover:shadow-[0_0_24px_-6px_rgba(244,81,151,0.35)] transition-all duration-300">
+              <div className="relative w-full sm:w-44 md:w-56 aspect-[16/9] sm:aspect-auto sm:h-28 md:h-32 rounded-lg overflow-hidden shrink-0 bg-wine-950 border border-wine-800/80 group-hover:border-glc-magenta/70 shadow-lg group-hover:shadow-[0_0_24px_-6px_rgba(244,81,151,0.35)] transition-all duration-300">
                 <Image
                   src={panel.image}
                   alt={panel.title}

@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useRef, useMemo, useCallback, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -198,6 +198,8 @@ function GalleryScene({
 	scrollProgress,
 	autoPlay: initialAutoPlay = false,
 }: Omit<InfiniteGalleryProps, 'className' | 'style'>) {
+	const { size } = useThree();
+	const isMobile = size.width < 768;
 	const [scrollVelocity, setScrollVelocity] = useState(0);
 	const isScrollControlled = scrollProgress !== undefined;
 	const [autoPlay, setAutoPlay] = useState(isScrollControlled ? false : initialAutoPlay);
@@ -228,14 +230,17 @@ function GalleryScene({
 	// Total travel so that the furthest plane (starts at -(totalImages)*spacing) flies all the way through to +6
 	const totalTravel = (totalImages + 0.8) * spacing;
 
+	const xMultiplier = isMobile ? 0.38 : 1.0;
+	const yMultiplier = isMobile ? 0.85 : 1.0;
+
 	// Initial planes setup
 	const planesData = useRef<PlaneData[]>(
 		Array.from({ length: effectiveCount }, (_, i) => ({
 			index: i,
 			z: -(i + 1) * spacing,
 			imageIndex: i % totalImages,
-			x: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].x,
-			y: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].y,
+			x: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].x * xMultiplier,
+			y: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].y * yMultiplier,
 		}))
 	);
 
@@ -244,10 +249,10 @@ function GalleryScene({
 			index: i,
 			z: -(i + 1) * spacing,
 			imageIndex: i % totalImages,
-			x: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].x,
-			y: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].y,
+			x: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].x * xMultiplier,
+			y: SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length].y * yMultiplier,
 		}));
-	}, [effectiveCount, totalImages, spacing]);
+	}, [effectiveCount, totalImages, spacing, xMultiplier, yMultiplier]);
 
 	// Standalone wheel/keyboard (disabled when controlled by page scroll)
 	const handleWheel = useCallback(
@@ -329,8 +334,8 @@ function GalleryScene({
 			plane.z = worldZ;
 
 			const offset = SEQUENTIAL_OFFSETS[i % SEQUENTIAL_OFFSETS.length];
-			plane.x = offset.x;
-			plane.y = offset.y;
+			plane.x = offset.x * xMultiplier;
+			plane.y = offset.y * yMultiplier;
 
 			// Opacity curve:
 			// Fully visible while approaching camera from distance (-65 to -1)
@@ -361,6 +366,8 @@ function GalleryScene({
 
 	if (normalizedImages.length === 0) return null;
 
+	const baseScale = isMobile ? 1.5 : 2.5;
+
 	return (
 		<>
 			{planesData.current.map((plane, i) => {
@@ -374,7 +381,7 @@ function GalleryScene({
 					: 1.5;
 				// Clean, high-impact photo scale
 				const scale: [number, number, number] =
-					aspect > 1 ? [2.5 * aspect, 2.5, 1] : [2.5, 2.5 / aspect, 1];
+					aspect > 1 ? [baseScale * aspect, baseScale, 1] : [baseScale, baseScale / aspect, 1];
 
 				return (
 					<ImagePlane

@@ -152,12 +152,12 @@ export default function AwardsSection() {
               </span>
             </div>
 
-            <div className="mt-1">
+            <div className="mt-1 w-full flex justify-center">
               <a
                 href={nominationFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group shadow-xl"
+                className="inline-flex items-center justify-center w-full max-w-xs sm:max-w-none sm:w-auto px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold tracking-widest uppercase text-white rounded-full bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_28px_-5px_rgba(244,81,151,0.65)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group shadow-xl text-center"
               >
                 <span>Submit Nomination</span>
                 <ArrowUpRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -78,7 +78,7 @@ export default function PastGlcGallery3D() {
     <section
       ref={containerRef}
       id="past-glc-gallery"
-      className="relative w-full h-[300vh] bg-wine-950"
+      className="relative w-full h-[220vh] sm:h-[300vh] bg-wine-950"
     >
       {/* Sticky full-viewport frame pinned while scrolling through the 3D photo journey */}
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
@@ -86,20 +86,20 @@ export default function PastGlcGallery3D() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,81,151,0.09)_0%,transparent_75%)] pointer-events-none z-10" />
 
         {/* 3D Photography Canvas driven smoothly by bidirectional scrollProgress */}
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
           <InfiniteGallery
             images={GLC_PAST_PHOTOS}
             scrollProgress={scrollProgress}
             speed={1.0}
             zSpacing={3.2}
             visibleCount={10}
-            className="w-full h-full"
+            className="w-full h-full pointer-events-none"
           />
         </div>
 
         {/* Prominent GLC in Hero Pink (#ffc5b6) with Negative Photo Inversion Effect */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-center px-4 mix-blend-exclusion z-20 select-none">
-          <h2 className="font-tektype text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none">
+          <h2 className="font-tektype text-7xl xs:text-8xl sm:text-[11rem] md:text-[14rem] lg:text-[17rem] font-bold tracking-tight text-[#ffc5b6] leading-none">
             GLC
           </h2>
         </div>
