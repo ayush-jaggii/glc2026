@@ -95,7 +95,8 @@ export async function POST(request: Request) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
-          redirect: 'follow'
+          redirect: 'follow',
+          signal: AbortSignal.timeout(6000)
         })
         if (!upstream.ok) {
           console.error('Google Sheets webhook returned non-OK status:', await upstream.text())
