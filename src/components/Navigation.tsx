@@ -25,6 +25,8 @@ export default function Navigation() {
     { label: 'Venue', href: '#venue' },
   ]
 
+  const nominationFormUrl = 'https://forms.gle/4khjou6rWyKZMpGm7'
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -46,7 +48,7 @@ export default function Navigation() {
           </div>
 
           {/* Desktop Navigation Links - Single line, perfectly aligned, no wrapping */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-7 text-xs tracking-wider uppercase font-medium text-cream-200" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -58,11 +60,21 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* Right: Institutional Accreditation Logos & Register Button */}
-          <div className="flex items-center gap-4 xl:gap-6 flex-shrink-0">
-            <div className="hidden md:flex items-center">
+          {/* Right: Institutional Accreditation Logos, Submit Nomination & Register Button */}
+          <div className="flex items-center gap-2.5 sm:gap-3 xl:gap-4 flex-shrink-0">
+            <div className="hidden xl:flex items-center">
               <AccredationsLogo className="h-5 sm:h-6 w-auto" variant="light" />
             </div>
+
+            <a
+              href={nominationFormUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-cream-100 hover:text-white rounded-full border border-wine-700/80 hover:border-glc-orange bg-wine-900/50 hover:bg-wine-850/80 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-glc-orange group"
+            >
+              <span>Submit Nomination</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-glc-orange transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
 
             <a
               href="#register"
@@ -112,13 +124,26 @@ export default function Navigation() {
                 {link.label}
               </a>
             ))}
-            <a
-              href="#register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="mt-2 text-center py-2.5 px-4 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange shadow-md"
-            >
-              Register For Pass →
-            </a>
+            <div className="flex flex-col gap-2.5 mt-2">
+              <a
+                href={nominationFormUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-semibold tracking-wider uppercase text-cream-100 border border-wine-700/80 bg-wine-900/60 hover:bg-wine-850/80 transition-all"
+              >
+                <span>Submit Nomination</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-glc-orange" />
+              </a>
+
+              <a
+                href="#register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-center py-2.5 px-4 rounded-full text-xs font-semibold tracking-wider uppercase text-white bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange shadow-md"
+              >
+                Register For Pass →
+              </a>
+            </div>
           </div>
         </div>
       )}
