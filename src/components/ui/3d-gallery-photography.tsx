@@ -307,8 +307,8 @@ function GalleryScene({
 				initializedRef.current = true;
 			}
 			const deltaDiff = targetTravel - currentZOffset.current;
-			// Smooth physics lerp
-			currentZOffset.current += deltaDiff * 0.16;
+			// Smooth physics lerp (snappier on mobile for immediate finger response)
+			currentZOffset.current += deltaDiff * (isMobile ? 0.28 : 0.18);
 			currentVelocity = deltaDiff * 6.0;
 		} else {
 			if (autoPlay) {
