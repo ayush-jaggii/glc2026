@@ -64,20 +64,23 @@ export async function POST(request: Request) {
     const seatAllocation = allocateAuditoriumSeat(resolvedCategory, registrationId)
 
     const payload = {
-      registrationId,
-      registrationType,
+      // For delegates: omit delegate ID, registration type, pass type, seat, and entry
+      registrationId: resolvedCategory === 'student' ? registrationId : '',
+      registrationType: resolvedCategory === 'student' ? registrationType : '',
       category: resolvedCategory,
-      passType: resolvedPassType,
+      passType: resolvedCategory === 'student' ? resolvedPassType : '',
       fullName: fullName.trim(),
       email: email.trim().toLowerCase(),
       phone: phone?.trim() || 'N/A',
       affiliation: resolvedAffiliation,
+      company: resolvedAffiliation,
       roleOrProgram: resolvedRoleOrProgram,
-      trackPreference: trackPreference || 'General Plenary Track',
-      seatNumber: seatAllocation.seatNumber,
-      seatZone: seatAllocation.zone,
-      seatGate: seatAllocation.gate,
-      fullSeatString: seatAllocation.fullSeatString,
+      designation: resolvedRoleOrProgram,
+      trackPreference: trackPreference || 'General Delegate',
+      seatNumber: resolvedCategory === 'student' ? seatAllocation.seatNumber : '',
+      seatZone: resolvedCategory === 'student' ? seatAllocation.zone : '',
+      seatGate: resolvedCategory === 'student' ? seatAllocation.gate : '',
+      fullSeatString: resolvedCategory === 'student' ? seatAllocation.fullSeatString : '',
       submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       targetSpreadsheetId: '15sqfdMeYUw0s57I-4bGBxOXy_eA1HM4YnXT0pSYM7sk',
       source: 'GLC 2026 Official Flagship Portal'
