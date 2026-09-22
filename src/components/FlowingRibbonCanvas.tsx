@@ -53,34 +53,44 @@ export default function FlowingRibbonCanvas() {
       uniform float u_time;
       uniform vec2 u_mouse;
       uniform vec2 u_resolution;
+      uniform float u_texAspect;
+      uniform vec2 u_nexusPos;
+      uniform float u_isMobile;
 
       void main() {
         // Screen space coordinates [0, 1]
         vec2 st = v_uv;
         st.y = 1.0 - st.y; // Invert Y so (0,0) is top-left, matching image coordinates
 
-        // Texture aspect ratio (1674 / 940 = 1.78085)
-        float texAspect = 1674.0 / 940.0;
         float screenAspect = u_resolution.x / max(u_resolution.y, 1.0);
 
-        // Aspect-ratio cover mapping: completely eliminates horizontal squeezing on mobile!
         vec2 uv = st;
-        vec2 nexusPos = vec2(0.7312, 0.5936);
-        vec2 stNexus = nexusPos;
+        vec2 stNexus = u_nexusPos;
 
-        if (screenAspect < texAspect) {
-          // Mobile / Portrait: Screen is narrower than the texture
-          // Scale X to preserve exact 1:1 physical aspect ratio
-          float scale = screenAspect / texAspect;
-          // Smoothly bias focus toward the focal nexus (0.62) on mobile screens
-          float focusX = mix(0.5, 0.62, clamp((1.0 - screenAspect) * 1.4, 0.0, 1.0));
-          uv.x = (st.x - 0.5) * scale + focusX;
-          stNexus.x = (nexusPos.x - focusX) / scale + 0.5;
+        if (u_isMobile > 0.5) {
+          // Dedicated Mobile Portrait Asset: 9:16 native aspect ratio
+          // Covers vertical viewport with 1:1 physical aspect ratio
+          if (screenAspect < u_texAspect) {
+            float scale = screenAspect / u_texAspect;
+            uv.x = (st.x - 0.5) * scale + 0.5;
+            stNexus.x = (u_nexusPos.x - 0.5) / scale + 0.5;
+          } else {
+            float scale = u_texAspect / screenAspect;
+            uv.y = (st.y - 0.5) * scale + 0.5;
+            stNexus.y = (u_nexusPos.y - 0.5) / scale + 0.5;
+          }
         } else {
-          // Desktop / Ultrawide: Screen is wider than the texture
-          float scale = texAspect / screenAspect;
-          uv.y = (st.y - 0.5) * scale + 0.5;
-          stNexus.y = (nexusPos.y - 0.5) / scale + 0.5;
+          // Standard Desktop / Ultrawide mapping (100% untouched)
+          if (screenAspect < u_texAspect) {
+            float scale = screenAspect / u_texAspect;
+            float focusX = mix(0.5, 0.62, clamp((1.0 - screenAspect) * 1.4, 0.0, 1.0));
+            uv.x = (st.x - 0.5) * scale + focusX;
+            stNexus.x = (u_nexusPos.x - focusX) / scale + 0.5;
+          } else {
+            float scale = u_texAspect / screenAspect;
+            uv.y = (st.y - 0.5) * scale + 0.5;
+            stNexus.y = (u_nexusPos.y - 0.5) / scale + 0.5;
+          }
         }
 
         float t = u_time * 0.38;
@@ -205,6 +215,18 @@ export default function FlowingRibbonCanvas() {
     const timeLoc = gl.getUniformLocation(program, 'u_time')
     const mouseLoc = gl.getUniformLocation(program, 'u_mouse')
     const texLoc = gl.getUniformLocation(program, 'u_texture')
+    const texAspectLoc = gl.getUniformLocation(program, 'u_texAspect')
+    const nexusPosLoc = gl.getUniformLocation(program, 'u_nexusPos')
+    const isMobileLoc = gl.getUniformLocation(program, 'u_isMobile')
+
+    const DESKTOP_ASPECT = 1674.0 / 940.0
+    const MOBILE_ASPECT = 768.0 / 1376.0
+    const DESKTOP_NEXUS = [0.7312, 0.5936]
+    const MOBILE_NEXUS = [0.4349, 0.6286]
+    const DESKTOP_SRC = '/images/ribbons/brand-ribbon-flow.png'
+    const MOBILE_SRC = '/images/ribbons/hero-ribbon-mobile.jpg'
+
+    let currentLoadedIsMobile: boolean | null = null
 
     function drawFrame(nowSec: number) {
       if (!canvas || !gl || !texture) return
@@ -212,9 +234,16 @@ export default function FlowingRibbonCanvas() {
       mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05
       mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05
 
+      const isMobile = window.innerWidth < 768 || (window.innerWidth / Math.max(window.innerHeight, 1) < 1.05)
+      const texAspect = isMobile ? MOBILE_ASPECT : DESKTOP_ASPECT
+      const nexus = isMobile ? MOBILE_NEXUS : DESKTOP_NEXUS
+
       gl.uniform2f(resLoc, canvas.width, canvas.height)
       gl.uniform1f(timeLoc, nowSec)
       gl.uniform2f(mouseLoc, mouseRef.current.x, mouseRef.current.y)
+      gl.uniform1f(texAspectLoc, texAspect)
+      gl.uniform2f(nexusPosLoc, nexus[0], nexus[1])
+      gl.uniform1f(isMobileLoc, isMobile ? 1.0 : 0.0)
 
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, texture)
@@ -246,7 +275,7 @@ export default function FlowingRibbonCanvas() {
       }
     }
 
-    // Handle Resize
+    // Handle Resize & Dynamic Mobile Asset Switch
     const handleResize = () => {
       if (!canvas || !containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
@@ -258,6 +287,13 @@ export default function FlowingRibbonCanvas() {
         canvas.height = newHeight
         gl.viewport(0, 0, canvas.width, canvas.height)
       }
+
+      // Check if viewport transitioned between mobile and desktop mode
+      const isMobile = window.innerWidth < 768 || (window.innerWidth / Math.max(window.innerHeight, 1) < 1.05)
+      if (currentLoadedIsMobile !== null && isMobile !== currentLoadedIsMobile) {
+        loadTexture()
+      }
+
       if (textureLoaded) {
         const now = (performance.now() - startTime) * 0.001
         drawFrame(now)
@@ -309,32 +345,41 @@ export default function FlowingRibbonCanvas() {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
-    // Load texture
-    texture = gl.createTexture()
-    const img = new window.Image()
-    img.crossOrigin = 'anonymous'
-    img.src = '/images/ribbons/brand-ribbon-flow.png'
+    // Dynamic texture loader based on viewport mode (desktop vs mobile)
+    const loadTexture = () => {
+      const isMobile = window.innerWidth < 768 || (window.innerWidth / Math.max(window.innerHeight, 1) < 1.05)
+      currentLoadedIsMobile = isMobile
 
-    img.onload = () => {
-      gl.bindTexture(gl.TEXTURE_2D, texture)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
-      textureLoaded = true
+      const src = isMobile ? MOBILE_SRC : DESKTOP_SRC
+      const img = new window.Image()
+      img.crossOrigin = 'anonymous'
+      img.src = src
 
-      handleResize()
-      if (prefersReducedMotion) {
-        drawFrame(0)
-      } else if (isVisible) {
-        startAnimation()
+      img.onload = () => {
+        if (!gl || !texture) return
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+        textureLoaded = true
+
+        handleResize()
+        if (prefersReducedMotion) {
+          drawFrame(0)
+        } else if (isVisible) {
+          startAnimation()
+        }
+      }
+
+      img.onerror = () => {
+        setWebglSupported(false)
       }
     }
 
-    img.onerror = () => {
-      setWebglSupported(false)
-    }
+    texture = gl.createTexture()
+    loadTexture()
 
     return () => {
       window.removeEventListener('resize', handleResize)
@@ -349,11 +394,19 @@ export default function FlowingRibbonCanvas() {
     return (
       <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90 mix-blend-screen overflow-hidden">
         <Image
-          src="/images/ribbons/brand-ribbon-flow.png"
-          alt="Business Beyond Borders Ribbon Flow"
+          src="/images/ribbons/hero-ribbon-mobile.jpg"
+          alt="Business Beyond Borders Ribbon Flow Mobile"
           fill
           priority
-          className="object-cover object-[62%_50%]"
+          className="sm:hidden object-cover object-center"
+          sizes="100vw"
+        />
+        <Image
+          src="/images/ribbons/brand-ribbon-flow.png"
+          alt="Business Beyond Borders Ribbon Flow Desktop"
+          fill
+          priority
+          className="hidden sm:block object-cover object-[62%_50%]"
           sizes="100vw"
         />
       </div>
