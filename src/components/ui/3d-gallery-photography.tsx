@@ -227,8 +227,8 @@ function GalleryScene({
 
 	// Spacing and range for sequential scroll journey
 	const spacing = 7.0;
-	// Total travel calibrated so the final highlight photo (conclave assembly) remains proudly visible in frame
-	const totalTravel = (totalImages - 0.15) * spacing;
+	// Total travel so all images (including the final photo) fly all the way past the camera and completely exit view
+	const totalTravel = (totalImages + 1.0) * spacing;
 
 	const xMultiplier = isMobile ? 0.38 : 1.0;
 	const yMultiplier = isMobile ? 0.85 : 1.0;
