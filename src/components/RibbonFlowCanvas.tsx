@@ -97,12 +97,14 @@ export default function RibbonFlowCanvas() {
       const texAspect = 1674 / 940
       const isMobile = screenAspect < 1.0
 
-      // Dynamic nexus focal point aligned with ribbon intersection in both mobile cover and desktop
+      // Dynamic nexus focal point aligned with ribbon intersection in both mobile fit and desktop
       let nexusX: number
       let nexusY: number
 
-      if (screenAspect < texAspect) {
-        // Match FlowingRibbonCanvas mobile cover projection
+      if (isMobile) {
+        nexusX = width * 0.52 + (mouseRef.current.x - 0.5) * 15
+        nexusY = height * 0.54 + (mouseRef.current.y - 0.5) * 12
+      } else if (screenAspect < texAspect) {
         const scale = screenAspect / texAspect
         const focusX = 0.5 + (0.63 - 0.5) * Math.min(Math.max((1.0 - screenAspect) * 1.4, 0), 1)
         const stX = (0.7312 - focusX) / scale + 0.5
@@ -118,7 +120,7 @@ export default function RibbonFlowCanvas() {
         p.t += p.speed
         if (p.t > 1) {
           p.t = 0
-          p.offsetY = (Math.random() - 0.5) * (isMobile ? 30 : 45)
+          p.offsetY = (Math.random() - 0.5) * (isMobile ? 25 : 45)
         }
 
         let px = 0
@@ -127,9 +129,9 @@ export default function RibbonFlowCanvas() {
         if (p.stream === 'magenta') {
           // Magenta stream enters from left, sweeping smoothly into the nexus
           const startX = 0
-          const startY = height * (isMobile ? 0.35 : 0.32) + p.offsetY
-          const cpX = nexusX * 0.44
-          const cpY = height * (isMobile ? 0.50 : 0.58) + Math.sin(time * 0.6 + p.offsetY) * 14 + p.offsetY
+          const startY = height * (isMobile ? 0.44 : 0.32) + p.offsetY
+          const cpX = nexusX * 0.45
+          const cpY = height * (isMobile ? 0.48 : 0.58) + Math.sin(time * 0.6 + p.offsetY) * 12 + p.offsetY
 
           // Quadratic Bezier interpolation
           const u = 1 - p.t
@@ -144,9 +146,9 @@ export default function RibbonFlowCanvas() {
         } else {
           // Orange stream leaves nexus and sweeps toward right edge
           const endX = width
-          const endY = height * (isMobile ? 0.72 : 0.68) + p.offsetY
+          const endY = height * (isMobile ? 0.62 : 0.68) + p.offsetY
           const cpX = nexusX + (width - nexusX) * 0.52
-          const cpY = height * (isMobile ? 0.60 : 0.52) + Math.cos(time * 0.6 + p.offsetY) * 14 + p.offsetY
+          const cpY = height * (isMobile ? 0.58 : 0.52) + Math.cos(time * 0.6 + p.offsetY) * 12 + p.offsetY
 
           const u = 1 - p.t
           const tt = p.t * p.t

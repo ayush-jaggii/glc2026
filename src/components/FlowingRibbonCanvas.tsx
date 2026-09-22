@@ -63,25 +63,36 @@ export default function FlowingRibbonCanvas() {
         float texAspect = 1674.0 / 940.0;
         float screenAspect = u_resolution.x / max(u_resolution.y, 1.0);
 
-        // Aspect-ratio cover mapping: completely eliminates horizontal squeezing on mobile!
-        vec2 uv = st;
+        // Desktop projection
+        vec2 desktopUV = st;
         vec2 nexusPos = vec2(0.7312, 0.5936);
-        vec2 stNexus = nexusPos;
+        vec2 desktopNexus = nexusPos;
 
-        if (screenAspect < texAspect) {
-          // Mobile / Portrait: Screen is narrower than the texture
-          // Scale X to preserve exact 1:1 physical aspect ratio
-          float scale = screenAspect / texAspect;
-          // Smoothly bias focus toward the focal nexus (0.62) on mobile screens
-          float focusX = mix(0.5, 0.62, clamp((1.0 - screenAspect) * 1.4, 0.0, 1.0));
-          uv.x = (st.x - 0.5) * scale + focusX;
-          stNexus.x = (nexusPos.x - focusX) / scale + 0.5;
-        } else {
+        if (screenAspect >= texAspect) {
           // Desktop / Ultrawide: Screen is wider than the texture
           float scale = texAspect / screenAspect;
-          uv.y = (st.y - 0.5) * scale + 0.5;
-          stNexus.y = (nexusPos.y - 0.5) / scale + 0.5;
+          desktopUV.y = (st.y - 0.5) * scale + 0.5;
+          desktopNexus.y = (nexusPos.y - 0.5) / scale + 0.5;
+        } else {
+          // Standard Desktop / Laptop
+          float scale = screenAspect / texAspect;
+          float focusX = mix(0.5, 0.62, clamp((1.0 - screenAspect) * 1.4, 0.0, 1.0));
+          desktopUV.x = (st.x - 0.5) * scale + focusX;
+          desktopNexus.x = (nexusPos.x - focusX) / scale + 0.5;
         }
+
+        // Mobile / Portrait Fit Projection:
+        // On phones/portrait viewports, fit the entire horizontal ribbon across the screen!
+        vec2 mobileUV;
+        mobileUV.x = (st.x - 0.5) * 1.05 + 0.52;
+        mobileUV.y = (st.y - 0.54) * 2.2 + 0.51;
+        vec2 mobileNexus = vec2(0.52, 0.54);
+
+        // Smooth transition factor: 0.0 on desktop (aspect >= 1.2), 1.0 on mobile (aspect <= 0.95)
+        float mobileFactor = smoothstep(1.2, 0.95, screenAspect);
+
+        vec2 uv = mix(desktopUV, mobileUV, mobileFactor);
+        vec2 stNexus = mix(desktopNexus, mobileNexus, mobileFactor);
 
         float t = u_time * 0.38;
 
@@ -139,6 +150,10 @@ export default function FlowingRibbonCanvas() {
         // Edge vignetting in screen space to maintain deep contrast
         float vig = 1.0 - smoothstep(0.75, 1.5, length(st - 0.5));
         texCol.rgb *= vig;
+
+        // Soft vertical edge fade on mobile so ribbon top and bottom melt cleanly into dark background
+        float mobileVertFade = smoothstep(0.0, 0.10, uv.y) * smoothstep(1.0, 0.90, uv.y);
+        texCol.rgb *= mix(1.0, mobileVertFade, mobileFactor);
 
         gl_FragColor = texCol;
       }
