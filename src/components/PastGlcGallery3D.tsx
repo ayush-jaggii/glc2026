@@ -78,7 +78,7 @@ export default function PastGlcGallery3D() {
     <section
       ref={containerRef}
       id="past-glc-gallery"
-      className="relative w-full h-[150vh] sm:h-[280vh] bg-wine-950"
+      className="relative w-full h-[140vh] sm:h-[200vh] bg-wine-950"
     >
       {/* Sticky full-viewport frame pinned while scrolling through the 3D photo journey */}
       <div className="sticky top-0 w-full h-[100dvh] sm:h-screen overflow-hidden flex items-center justify-center">

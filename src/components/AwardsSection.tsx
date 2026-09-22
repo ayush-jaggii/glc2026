@@ -71,7 +71,7 @@ export default function AwardsSection() {
   return (
     <section
       id="awards"
-      className="relative pt-8 sm:pt-24 pb-16 sm:pb-32 bg-wine-950 overflow-hidden border-t border-wine-900/70 scroll-mt-24"
+      className="relative z-30 pt-6 sm:pt-10 pb-16 sm:pb-32 bg-wine-950 overflow-hidden border-t border-wine-900/70 scroll-mt-24 -mt-[30dvh] sm:-mt-[35vh]"
     >
       {/* Subtle Background Grid Texture matching GLC brand identity */}
       <div
@@ -90,7 +90,7 @@ export default function AwardsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Centered Brand Header Lockup (Matching Reference Artwork) */}
-        <div className="flex flex-col items-center text-center mb-8 sm:mb-16 pb-8 sm:pb-12 border-b border-wine-800/80">
+        <div className="flex flex-col items-center text-center mb-6 sm:mb-12 pb-6 sm:pb-10 border-b border-wine-800/80">
           
           {/* Top Line: TAPMI B'LRU official SVG wordmark in pink */}
           <div className="mb-4 sm:mb-5">

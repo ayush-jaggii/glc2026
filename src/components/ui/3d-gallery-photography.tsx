@@ -227,8 +227,8 @@ function GalleryScene({
 
 	// Spacing and range for sequential scroll journey
 	const spacing = 7.0;
-	// Total travel so that the furthest plane (starts at -(totalImages)*spacing) flies all the way through to +6
-	const totalTravel = (totalImages + 0.8) * spacing;
+	// Total travel calibrated so the final highlight photo (conclave assembly) remains proudly visible in frame
+	const totalTravel = (totalImages - 0.15) * spacing;
 
 	const xMultiplier = isMobile ? 0.38 : 1.0;
 	const yMultiplier = isMobile ? 0.85 : 1.0;
