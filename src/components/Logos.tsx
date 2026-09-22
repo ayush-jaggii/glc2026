@@ -17,8 +17,7 @@ export function TapmiLogo({ className = "h-11 w-auto", variant = "light" }: Logo
       alt="TAPMI Logo - T. A. Pai Management Institute"
       width={183}
       height={40}
-      className={`object-contain block transition-opacity duration-200 ${variant === 'light' ? 'brightness-0 invert opacity-95 hover:opacity-100' : 'opacity-100'} ${className}`}
-      style={{ minHeight: '34px', minWidth: '110px' }}
+      className={`object-contain block shrink-0 ${variant === 'light' ? 'brightness-0 invert opacity-95' : 'opacity-100'} ${className}`}
     />
   )
 }
@@ -33,8 +32,7 @@ export function MaheLogo({ className = "h-11 w-auto", variant = "light" }: LogoP
       alt="Manipal Academy of Higher Education (MAHE), Bengaluru"
       width={240}
       height={72}
-      className={`object-contain block transition-opacity duration-200 ${variant === 'light' ? 'brightness-0 invert opacity-95 hover:opacity-100' : 'opacity-100'} ${className}`}
-      style={{ minHeight: '34px', minWidth: '110px' }}
+      className={`object-contain block shrink-0 ${variant === 'light' ? 'brightness-0 invert opacity-95' : 'opacity-100'} ${className}`}
     />
   )
 }

@@ -16,18 +16,6 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Lock body scroll when mobile drawer is open to prevent background scrolling
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [mobileMenuOpen])
-
   const navLinks = [
     { label: 'Speakers', href: '#speakers' },
     { label: 'Panels', href: '#panels' },
@@ -39,9 +27,9 @@ export default function Navigation() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-wine-950/95 backdrop-blur-md border-b border-wine-800/80 shadow-2xl py-2 sm:py-3'
+      className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
+        isScrolled || mobileMenuOpen
+          ? 'bg-wine-950/98 backdrop-blur-md border-b border-wine-800/80 shadow-2xl py-2 sm:py-3'
           : 'bg-gradient-to-b from-wine-950/95 via-wine-950/50 to-transparent py-2.5 sm:py-4'
       }`}
     >
@@ -51,9 +39,9 @@ export default function Navigation() {
           {/* Left: TAPMI Logo + LEADXAI in Tektype */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <a href="#" className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
-              <TapmiLogo className="h-7 sm:h-9 w-auto" variant="light" />
-              <div className="h-4 sm:h-5 w-px bg-wine-700/80" />
-              <LeadxaiLogo className="h-4.5 sm:h-6 w-auto" />
+              <TapmiLogo className="h-7 sm:h-9 w-auto shrink-0" variant="light" />
+              <div className="h-4 sm:h-5 w-px bg-wine-700/80 shrink-0" />
+              <LeadxaiLogo className="h-4.5 sm:h-6 w-auto shrink-0" />
             </a>
           </div>
 
@@ -103,7 +91,7 @@ export default function Navigation() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="lg:hidden p-1.5 sm:p-2 text-cream-200 hover:text-white hover:bg-wine-800/60 rounded-md focus:outline-none focus:ring-2 focus:ring-glc-magenta"
+              className="lg:hidden p-1.5 sm:p-2 text-cream-200 hover:text-white hover:bg-wine-800/60 rounded-md focus:outline-none focus:ring-2 focus:ring-glc-magenta shrink-0"
               aria-expanded={mobileMenuOpen}
               aria-label="Toggle navigation menu"
             >
@@ -116,15 +104,14 @@ export default function Navigation() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-wine-950/98 backdrop-blur-xl border-b border-wine-800 px-5 sm:px-6 py-5 sm:py-6 transition-all duration-300">
+        <div className="lg:hidden bg-wine-950 border-b border-wine-800 px-5 sm:px-6 py-5 sm:py-6 shadow-2xl">
           <div className="flex flex-col gap-4">
+            {/* Accreditations Lockup (Cleanly displayed without duplicating top header logos) */}
             <div className="flex items-center justify-between pb-3 border-b border-wine-800/80">
-              <div className="flex items-center gap-2">
-                <TapmiLogo className="h-6 sm:h-7 w-auto" variant="light" />
-                <div className="h-3.5 w-px bg-wine-700/80" />
-                <LeadxaiLogo className="h-4 sm:h-5 w-auto" />
-              </div>
-              <AccredationsLogo className="h-4.5 sm:h-5 w-auto" variant="light" />
+              <span className="text-[10px] uppercase tracking-widest text-cream-300/80 font-semibold">
+                Accreditations
+              </span>
+              <AccredationsLogo className="h-5 w-auto" variant="light" />
             </div>
             {[
               ...navLinks,
