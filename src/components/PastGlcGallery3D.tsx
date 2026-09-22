@@ -78,7 +78,7 @@ export default function PastGlcGallery3D() {
     <section
       ref={containerRef}
       id="past-glc-gallery"
-      className="relative w-full h-[140vh] sm:h-[200vh] bg-wine-950"
+      className="relative w-full h-[220vh] sm:h-[320vh] bg-wine-950"
     >
       {/* Sticky full-viewport frame pinned while scrolling through the 3D photo journey */}
       <div className="sticky top-0 w-full h-[100dvh] sm:h-screen overflow-hidden flex items-center justify-center">
@@ -106,7 +106,7 @@ export default function PastGlcGallery3D() {
 
         {/* Top and Bottom Feathering Gradients for seamless section blending */}
         <div className="absolute top-0 left-0 right-0 h-16 sm:h-24 bg-gradient-to-b from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
-        <div className="absolute bottom-0 left-0 right-0 h-12 sm:h-24 bg-gradient-to-t from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
+        <div className="absolute bottom-0 left-0 right-0 h-10 sm:h-14 bg-gradient-to-t from-wine-950 via-wine-950/80 to-transparent pointer-events-none z-20" />
       </div>
     </section>
   )
