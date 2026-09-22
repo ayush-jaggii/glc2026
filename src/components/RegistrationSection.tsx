@@ -32,7 +32,6 @@ export default function RegistrationSection() {
   // Delegate specific fields
   const [organization, setOrganization] = useState('')
   const [designation, setDesignation] = useState('')
-  const [trackPreference, setTrackPreference] = useState('IT & Enterprise Tech')
 
   // Student specific fields (only our college - TAPMI Bengaluru, MAHE)
   const [year, setYear] = useState('1st Year')
@@ -69,7 +68,6 @@ export default function RegistrationSection() {
         organization,
         designation,
         passType: stream === 'student' ? 'Student Pass' : 'Delegate Pass',
-        trackPreference,
         // Student fields
         year,
         studentId
@@ -327,41 +325,21 @@ export default function RegistrationSection() {
                         </div>
                       </div>
 
-                      {/* Phone & Panel Interest */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Contact Phone / WhatsApp *
-                          </label>
-                          <div className="relative">
-                            <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
-                            <input
-                              type="tel"
-                              required
-                              value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              placeholder="+91 98765 43210"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Primary Panel Interest
-                          </label>
-                          <select
-                            value={trackPreference}
-                            onChange={(e) => setTrackPreference(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
-                          >
-                            <option value="IT & Enterprise Tech">Ctrl + Alt + Global (IT & Enterprise Tech)</option>
-                            <option value="Automobile & EV">Shifting Gears (Automobile & Clean-Tech)</option>
-                            <option value="FMCG & Supply Chain">Aisle Be There (Global Supply & FMCG)</option>
-                            <option value="Executive Roundtable / CGD">Beyond The Bottomline (Roundtable)</option>
-                            <option value="BFSI & Fintech">Capital Without Borders (BFSI & Liquidity)</option>
-                            <option value="Media & Branding">Going Viral, Staying Local (Media)</option>
-                          </select>
+                      {/* Contact Phone / WhatsApp */}
+                      <div>
+                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                          Contact Phone / WhatsApp *
+                        </label>
+                        <div className="relative">
+                          <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                          <input
+                            type="tel"
+                            required
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="+91 98765 43210"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                          />
                         </div>
                       </div>
                     </>

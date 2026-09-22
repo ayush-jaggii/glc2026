@@ -83,13 +83,14 @@ export async function POST(request: Request) {
       source: 'GLC 2026 Official Flagship Portal'
     }
 
-    // Forward to configured Google Sheets webhook (Apps Script / SheetDB)
+    // Forward ONLY delegate registrations to configured Google Sheets webhook
+    // (Student registrations will be handled separately via Supabase for the QR attendance system and are NOT recorded in this Google Sheet)
     const webhookUrl =
       process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
       process.env.EXCEL_WEBHOOK_URL ||
       'https://script.google.com/macros/s/AKfycbyBuLVzg4kTc78RHpJ4jg3OOXUYiDGBd43-xinzy9uelua0kbgT4mR53EHJpbSHu7eD/exec'
 
-    if (webhookUrl) {
+    if (resolvedCategory === 'delegate' && webhookUrl) {
       try {
         const upstream = await fetch(webhookUrl, {
           method: 'POST',
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
         if (!upstream.ok) {
           console.error('Google Sheets webhook returned non-OK status:', await upstream.text())
         } else {
-          console.log('Successfully recorded to Google Sheet:', payload.registrationId)
+          console.log('Successfully recorded delegate to Google Sheet:', payload.registrationId)
         }
       } catch (err) {
         console.error('Failed to dispatch to Google Sheets webhook:', err)
