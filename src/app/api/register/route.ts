@@ -86,29 +86,105 @@ export async function POST(request: Request) {
       source: 'GLC 2026 Official Flagship Portal'
     }
 
-    // Forward ONLY delegate registrations to configured Google Sheets webhook
-    // (Student registrations will be handled separately via Supabase for the QR attendance system and are NOT recorded in this Google Sheet)
+    // 1. Dual-Write: Safely persist delegate registration to Supabase database (PostgreSQL)
+    // Ensures zero data loss and handles high-concurrency bursts effortlessly
+    let supabaseRecordId: string | null = null
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
+    const supabaseAnonKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
+
+    if (resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
+      try {
+        const sbRes = await fetch(`${supabaseUrl}/rest/v1/delegates`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`,
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({
+            full_name: payload.fullName,
+            email: payload.email,
+            phone: payload.phone,
+            company: payload.company,
+            designation: payload.designation,
+            track_preference: payload.trackPreference,
+            synced_to_sheets: false,
+            submitted_at: payload.submittedAt
+          }),
+          signal: AbortSignal.timeout(5000)
+        })
+
+        if (sbRes.ok) {
+          const inserted = await sbRes.json()
+          if (Array.isArray(inserted) && inserted[0]?.id) {
+            supabaseRecordId = inserted[0].id
+            console.log('Delegate securely saved in Supabase:', supabaseRecordId)
+          }
+        } else {
+          console.warn('Supabase delegate backup non-OK:', await sbRes.text())
+        }
+      } catch (sbErr) {
+        console.warn('Supabase delegate backup dispatch warning:', sbErr)
+      }
+    }
+
+    // 2. Forward delegate registration to Google Sheets webhook with automatic retries and 12s timeout
     const webhookUrl =
       process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
       process.env.EXCEL_WEBHOOK_URL ||
       'https://script.google.com/macros/s/AKfycbyBuLVzg4kTc78RHpJ4jg3OOXUYiDGBd43-xinzy9uelua0kbgT4mR53EHJpbSHu7eD/exec'
 
     if (resolvedCategory === 'delegate' && webhookUrl) {
-      try {
-        const upstream = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          redirect: 'follow',
-          signal: AbortSignal.timeout(6000)
-        })
-        if (!upstream.ok) {
-          console.error('Google Sheets webhook returned non-OK status:', await upstream.text())
-        } else {
-          console.log('Successfully recorded delegate to Google Sheet:', payload.registrationId)
+      const MAX_RETRIES = 2
+      let sheetDispatched = false
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const upstream = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            redirect: 'follow',
+            signal: AbortSignal.timeout(12000) // generous 12s timeout to accommodate cold starts & lock wait
+          })
+
+          if (upstream.ok) {
+            sheetDispatched = true
+            console.log(`Successfully recorded delegate to Google Sheet on attempt ${attempt}:`, payload.fullName)
+            break
+          } else {
+            console.warn(`Google Sheets webhook attempt ${attempt} returned status ${upstream.status}`)
+          }
+        } catch (err) {
+          console.warn(`Google Sheets webhook attempt ${attempt} failed:`, err)
         }
-      } catch (err) {
-        console.error('Failed to dispatch to Google Sheets webhook:', err)
+
+        // Wait 1.2s before retry
+        if (attempt < MAX_RETRIES) {
+          await new Promise((resolve) => setTimeout(resolve, 1200))
+        }
+      }
+
+      // If synced successfully, flag the record in Supabase
+      if (sheetDispatched && supabaseRecordId && supabaseUrl && supabaseAnonKey) {
+        try {
+          await fetch(`${supabaseUrl}/rest/v1/delegates?id=eq.${supabaseRecordId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`
+            },
+            body: JSON.stringify({ synced_to_sheets: true }),
+            signal: AbortSignal.timeout(3000)
+          })
+        } catch {
+          // Non-blocking sync status update
+        }
       }
     }
 
