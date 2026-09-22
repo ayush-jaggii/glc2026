@@ -189,23 +189,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Baseline Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-5 text-[11px] text-cream-400">
-          <div>
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-cream-400">
+          <div className="text-center md:text-left text-cream-400/90">
             © {new Date().getFullYear()} TAPMI Bengaluru · MAHE Bengaluru. All rights reserved.
           </div>
 
           {/* Nexora IT Club Signature Credit */}
-          <div className="flex items-center gap-2 text-cream-400">
-            <span>Designed & Engineered by</span>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wine-900/80 border border-wine-700/80 shadow-md hover:border-glc-magenta/70 transition-all">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm text-cream-300 font-medium">
+            <span className="tracking-wide">Designed & Engineered by</span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-full bg-gradient-to-r from-wine-950/95 via-wine-900/90 to-wine-950/95 border border-wine-600/80 shadow-lg shadow-black/40 hover:border-glc-magenta hover:shadow-[0_0_20px_rgba(235,16,134,0.35)] hover:scale-105 transition-all duration-300 group/nexora cursor-default">
               <Image
                 src="/logos/nexora-emblem-bright.png"
                 alt="Nexora IT Club"
-                width={20}
-                height={20}
-                className="w-4 h-auto object-contain"
+                width={28}
+                height={28}
+                className="w-5 sm:w-6 h-auto object-contain transition-transform duration-300 group-hover/nexora:scale-110 drop-shadow"
               />
-              <span className="text-xs font-bold text-cream-100 tracking-wide">
+              <span className="text-xs sm:text-sm font-bold tracking-wider text-cream-100 group-hover/nexora:text-white transition-colors">
                 NEXORA IT CLUB
               </span>
             </div>
@@ -215,11 +215,11 @@ export default function Footer() {
           <button
             onClick={scrollToTop}
             type="button"
-            className="flex items-center gap-1.5 text-cream-300 hover:text-glc-magenta transition-colors p-1"
+            className="flex items-center gap-1.5 text-xs text-cream-300 hover:text-glc-magenta transition-colors p-1 group"
             aria-label="Scroll back to top"
           >
-            <span>Back to top</span>
-            <ArrowUp className="w-3.5 h-3.5" />
+            <span className="group-hover:underline">Back to top</span>
+            <ArrowUp className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5" />
           </button>
         </div>
 
