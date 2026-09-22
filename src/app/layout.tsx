@@ -9,8 +9,8 @@ const tektype = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://glc.tapmi.edu.in"),
-  title: "GLC 2026 | BUSINESS BEYOND BORDERS — Global Leadership Colloquium",
+  metadataBase: new URL("https://www.tapmiblrglc.in"),
+  title: "GLC 2026 | BUSINESS BEYOND BORDERS — Global Leadership Conference",
   description: "Global Leadership Conference 4.0 hosted by TAPMI Bengaluru (MAHE Bengaluru). Navigating enterprise strategy, cross-border supply chains, geopolitics, and capital convergence across international borders.",
   keywords: [
     "GLC 2026",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "Business Beyond Borders",
     "TAPMI Bengaluru",
     "MAHE Bengaluru",
-    "Leadership Colloquium",
+    "Leadership Conference",
     "Enterprise Tech",
     "BFSI",
     "Global Trade"
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   authors: [{ name: "TAPMI - PACE Committee & MAHE Bengaluru" }],
   openGraph: {
     title: "GLC 2026 — BUSINESS BEYOND BORDERS",
-    description: "TAPMI Bengaluru Flagship Global Leadership Colloquium · 10 October 2026",
-    url: "https://glc.tapmi.edu.in",
+    description: "TAPMI Bengaluru Flagship Global Leadership Conference · 10 October 2026",
+    url: "https://www.tapmiblrglc.in",
     siteName: "GLC 2026",
     images: [
       {
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "GLC 2026 — BUSINESS BEYOND BORDERS",
-    description: "TAPMI Bengaluru Flagship Global Leadership Colloquium · 10 October 2026",
+    description: "TAPMI Bengaluru Flagship Global Leadership Conference · 10 October 2026",
     images: ["/images/ribbons/hero-ribbon-confluence.jpg"],
   },
   icons: {
