@@ -78,12 +78,12 @@ export default function Navigation() {
 
             <a
               href="#register"
-              className="relative inline-flex items-center justify-center px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_18px_-3px_rgba(244,81,151,0.5)]"
+              className="hidden sm:inline-flex relative items-center justify-center px-4 py-1.5 text-[11px] font-semibold tracking-wider uppercase text-white rounded-full overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-glc-magenta group shadow-md hover:shadow-[0_0_18px_-3px_rgba(244,81,151,0.5)]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange opacity-95 group-hover:opacity-100 transition-opacity" />
               <span className="relative flex items-center gap-1">
                 <span>Register</span>
-                <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
             </a>
 
