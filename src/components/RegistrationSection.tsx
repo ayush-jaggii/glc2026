@@ -246,7 +246,7 @@ export default function RegistrationSection() {
                 <div className="text-cream-400 space-y-2.5">
                   {EVENT_DETAILS.contacts.leads.map((lead) => (
                     <div key={lead.name} className="flex items-center justify-between gap-2">
-                      <span>{lead.name} ({lead.role})</span>
+                      <span>{lead.name}</span>
                       <a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-200 hover:text-glc-orange font-medium">
                         {lead.phone}
                       </a>

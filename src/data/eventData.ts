@@ -61,8 +61,8 @@ export const EVENT_DETAILS = {
   contacts: {
     email: "engage.tapmiblr@manipal.edu",
     leads: [
-      { name: "Deepan G", phone: "+91 97900 83446", role: "PACE Committee Lead" },
-      { name: "Johnson P", phone: "+91 960 601 3114", role: "Corporate Relations Lead" },
+      { name: "Deepan G", phone: "+91 97900 83446" },
+      { name: "Johnson P", phone: "+91 960 601 3114" },
     ],
   },
   registrationSheetId: "1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0",
