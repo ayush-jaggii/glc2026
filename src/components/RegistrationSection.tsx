@@ -234,7 +234,7 @@ export default function RegistrationSection() {
                 <p className="text-sm sm:text-base text-cream-200/80 leading-relaxed mb-6">
                   {stream === 'student'
                     ? 'Register for your official student pass and reserved auditorium seating at TAPMI, MAHE Bengaluru.'
-                    : 'Register for executive access, reserved auditorium seating, and networking at GLC 2026.'}
+                    : 'Register for executive access and participation at GLC 2026. Our team will review your registration and get in touch.'}
                 </p>
               </div>
 
@@ -515,11 +515,15 @@ export default function RegistrationSection() {
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Generating Official Pass...</span>
+                          <span>
+                            {stream === 'delegate' ? 'Submitting Registration...' : 'Generating Student Pass...'}
+                          </span>
                         </>
                       ) : (
                         <>
-                          <span>Complete Registration & Generate Pass</span>
+                          <span>
+                            {stream === 'delegate' ? 'Complete Registration' : 'Complete Registration & Generate Pass'}
+                          </span>
                           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </>
                       )}
