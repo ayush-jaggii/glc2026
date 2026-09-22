@@ -71,7 +71,7 @@ export default function AwardsSection() {
   return (
     <section
       id="awards"
-      className="relative z-30 pt-6 sm:pt-6 pb-16 sm:pb-32 bg-wine-950 overflow-hidden border-t border-wine-900/70 scroll-mt-24 -mt-[30dvh] sm:-mt-[55vh]"
+      className="relative z-30 pt-10 sm:pt-16 pb-16 sm:pb-32 bg-wine-950 overflow-hidden border-t border-wine-900/70 scroll-mt-24"
     >
       {/* Subtle Background Grid Texture matching GLC brand identity */}
       <div
