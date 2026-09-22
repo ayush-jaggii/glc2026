@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     siteName: "GLC 2026",
     images: [
       {
-        url: "/images/ribbons/hero-ribbon-confluence.jpg",
-        width: 2087,
-        height: 753,
-        alt: "GLC 2026 Business Beyond Borders Visual Identity",
+        url: "/images/glc-social-banner.jpg",
+        width: 1024,
+        height: 576,
+        alt: "GLC 2026 Business Beyond Borders — TAPMI Bengaluru & MAHE Bengaluru",
       },
     ],
     locale: "en_US",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GLC 2026 — BUSINESS BEYOND BORDERS",
     description: "TAPMI Bengaluru Flagship Global Leadership Conference · 10 October 2026",
-    images: ["/images/ribbons/hero-ribbon-confluence.jpg"],
+    images: ["/images/glc-social-banner.jpg"],
   },
   icons: {
     icon: [
