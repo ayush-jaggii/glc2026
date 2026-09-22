@@ -41,6 +41,7 @@ export default function RegistrationSection() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [generatedPass, setGeneratedPass] = useState<PassDetails | null>(null)
+  const [delegateSuccess, setDelegateSuccess] = useState(false)
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,14 +81,18 @@ export default function RegistrationSection() {
       })
 
       const data = await res.json()
-      if (res.ok && data.success && data.passDetails) {
-        // Generate high-resolution QR code data URL
-        const qrUrl = await generateQrDataUrl(data.passDetails)
-        const completePass: PassDetails = {
-          ...data.passDetails,
-          qrDataUrl: qrUrl
+      if (res.ok && data.success) {
+        if (stream === 'delegate') {
+          setDelegateSuccess(true)
+        } else if (data.passDetails) {
+          // Generate high-resolution QR code data URL for student pass
+          const qrUrl = await generateQrDataUrl(data.passDetails)
+          const completePass: PassDetails = {
+            ...data.passDetails,
+            qrDataUrl: qrUrl
+          }
+          setGeneratedPass(completePass)
         }
-        setGeneratedPass(completePass)
       } else {
         setErrorMsg(data.error || 'Failed to submit registration. Please try again.')
       }
@@ -100,6 +105,7 @@ export default function RegistrationSection() {
 
   const handleReset = () => {
     setGeneratedPass(null)
+    setDelegateSuccess(false)
     setFullName('')
     setEmail('')
     setPhone('')
@@ -118,8 +124,64 @@ export default function RegistrationSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Generated Pass State */}
-        {generatedPass ? (
+        {/* Delegate Thank You State */}
+        {delegateSuccess ? (
+          <div className="flex flex-col items-center justify-center animate-fadeIn py-8 px-4 max-w-2xl mx-auto text-center">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-glc-magenta/20 to-glc-orange/20 border border-glc-magenta/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(244,81,151,0.25)]">
+              <CheckCircle2 className="w-8 h-8 text-glc-magenta" />
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-wine-900/80 text-glc-orange border border-glc-orange/40 mb-4 shadow-lg">
+              <span>Registration Confirmed</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white uppercase mb-4 leading-tight">
+              Thank You for Registering
+            </h2>
+
+            <p className="text-base sm:text-lg text-cream-200/90 leading-relaxed mb-8">
+              We will get in touch with you shortly with further details and conference updates.
+            </p>
+
+            {/* Delegate Info Summary Card */}
+            <div className="w-full p-6 rounded-2xl bg-[#13030F] border border-wine-800 shadow-xl text-left mb-8 space-y-3">
+              <div className="text-xs uppercase tracking-wider text-cream-400 font-semibold border-b border-wine-800/80 pb-2">
+                Registration Summary
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                <div>
+                  <span className="text-cream-400 block text-[11px] uppercase tracking-wider">Delegate Name</span>
+                  <span className="font-semibold text-white">{fullName}</span>
+                </div>
+                <div>
+                  <span className="text-cream-400 block text-[11px] uppercase tracking-wider">Email</span>
+                  <span className="font-semibold text-white">{email}</span>
+                </div>
+                {organization && (
+                  <div>
+                    <span className="text-cream-400 block text-[11px] uppercase tracking-wider">Organization</span>
+                    <span className="font-semibold text-white">{organization}</span>
+                  </div>
+                )}
+                {designation && (
+                  <div>
+                    <span className="text-cream-400 block text-[11px] uppercase tracking-wider">Designation</span>
+                    <span className="font-semibold text-white">{designation}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cream-200 hover:text-white transition-colors py-2.5 px-6 rounded-xl bg-wine-900/60 hover:bg-wine-900 border border-wine-800 shadow-md"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Register Another Attendee</span>
+            </button>
+          </div>
+        ) : generatedPass ? (
           <div className="flex flex-col items-center justify-center animate-fadeIn">
             
             <div className="text-center max-w-2xl mx-auto mb-8">
