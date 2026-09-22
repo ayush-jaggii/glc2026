@@ -63,8 +63,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${tektype.variable} overflow-x-hidden w-full`}>
-      <body className="bg-wine-950 text-cream-50 font-sans antialiased min-h-screen selection:bg-glc-magenta selection:text-white overflow-x-hidden w-full">
+    <html lang="en" className={`${tektype.variable} overflow-x-clip w-full`}>
+      <body className="bg-wine-950 text-cream-50 font-sans antialiased min-h-screen selection:bg-glc-magenta selection:text-white overflow-x-clip w-full">
         {children}
       </body>
     </html>
