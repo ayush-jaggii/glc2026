@@ -38,7 +38,15 @@ export default function Navigation() {
           
           {/* Left: TAPMI Logo + LEADXAI in Tektype */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <a href="#" className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-glc-magenta rounded-xs" aria-label="GLC 2026 Home">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className="flex items-center gap-2 sm:gap-3 group outline-none focus:outline-none focus:ring-0 active:outline-none select-none cursor-pointer"
+              aria-label="GLC 2026 Home"
+            >
               <TapmiLogo className="h-7 sm:h-9 w-auto shrink-0" variant="light" />
               <div className="h-4 sm:h-5 w-px bg-wine-700/80 shrink-0" />
               <LeadxaiLogo className="h-4.5 sm:h-6 w-auto shrink-0" />
