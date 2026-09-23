@@ -1,7 +1,7 @@
 "use client";
 
 import * as React2 from "react";
-import { useEffect, useRef as useRef2, forwardRef, useState } from "react";
+import { useEffect, useRef as useRef2, forwardRef, useState, memo } from "react";
 
 var vertexShaderSource = `#version 300 es
 precision mediump float;
@@ -190,6 +190,13 @@ var ShaderMount = class {
     }
     const canvasElement = document.createElement("canvas");
     this.canvasElement = canvasElement;
+    canvasElement.style.position = "absolute";
+    canvasElement.style.inset = "0";
+    canvasElement.style.width = "100%";
+    canvasElement.style.height = "100%";
+    canvasElement.style.display = "block";
+    canvasElement.style.pointerEvents = "none";
+    canvasElement.style.zIndex = "1";
     this.parentElement.prepend(canvasElement);
     this.fragmentShader = fragmentShader;
     this.providedUniforms = uniforms;
@@ -210,6 +217,12 @@ var ShaderMount = class {
     this.setupUniforms();
     this.setUniformValues(this.providedUniforms);
     this.setupResizeObserver();
+    if (typeof window !== "undefined") {
+      const rect = this.parentElement.getBoundingClientRect();
+      this.parentWidth = rect.width || this.parentElement.clientWidth || 741;
+      this.parentHeight = rect.height || this.parentElement.clientHeight || 425;
+      this.handleResize();
+    }
     if (typeof visualViewport !== "undefined") {
       visualViewport?.addEventListener("resize", this.handleVisualViewportChange);
     }
@@ -321,19 +334,17 @@ var ShaderMount = class {
   render = (currentTime: number) => {
     if (this.hasBeenDisposed) return;
     if (this.program === null) return;
-    const dt = currentTime - this.lastRenderTime;
+    const dt = this.lastRenderTime > 0 ? Math.min(currentTime - this.lastRenderTime, 100) : 16;
     this.lastRenderTime = currentTime;
     if (this.currentSpeed !== 0) {
       this.currentFrame += dt * this.currentSpeed;
     }
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
     this.gl.uniform1f(this.uniformLocations.u_time, this.currentFrame * 1e-3);
-    if (this.resolutionChanged) {
-      this.gl.uniform2f(this.uniformLocations.u_resolution, this.gl.canvas.width, this.gl.canvas.height);
-      this.gl.uniform1f(this.uniformLocations.u_pixelRatio, this.renderScale);
-      this.resolutionChanged = false;
-    }
+    this.gl.uniform2f(this.uniformLocations.u_resolution, this.gl.canvas.width, this.gl.canvas.height);
+    this.gl.uniform1f(this.uniformLocations.u_pixelRatio, this.renderScale);
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     if (this.currentSpeed !== 0) {
       this.requestRender();
@@ -552,23 +563,21 @@ function createProgram(gl: any, vertexShaderSource2: string, fragmentShaderSourc
   return program;
 }
 
-var defaultStyle = `@layer paper-shaders {
-  :where([data-paper-shader]) {
-    isolation: isolate;
+var defaultStyle = `
+  [data-paper-shader] {
     position: relative;
-
-    & canvas {
-      contain: strict;
-      display: block;
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      width: 100%;
-      height: 100%;
-      border-radius: inherit;
-    }
+    overflow: hidden;
   }
-}`;
+  [data-paper-shader] canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
 
 function isSafari() {
   if (typeof navigator === "undefined") return false;
@@ -1198,8 +1207,6 @@ var ShaderMount2 = forwardRef(
 );
 ShaderMount2.displayName = "ShaderMount";
 
-import { memo } from "react";
-
 var defaultPreset = {
   name: "Default",
   params: {
@@ -1293,14 +1300,14 @@ var TICKET_TEXTURE = {
   colorHighlight: "#F58232",
   shape: "warp",
   type: "random",
-  size: 0.55,
+  size: 1.0,
   colorSteps: 4,
   originalColors: true,
   scale: 1.15,
   rotation: 12,
   offsetX: 0,
   offsetY: 0,
-  speed: 0.35
+  speed: 0.5
 };
 
 var TICKET_GRADIENT = {
@@ -1410,7 +1417,7 @@ function TicketCard({
       className={`relative select-none ${className ?? ""}`}
       style={{ width, height, clipPath: `path('${ticketClipPath(width, height, geometry)}')` }}
     >
-      <div className="absolute inset-0" style={{ background: texture.colorBack }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: texture.colorBack, zIndex: 0 }} />
       <Dithering
         colorBack={texture.colorBack}
         colorFront={texture.colorFront}
@@ -1422,13 +1429,14 @@ function TicketCard({
         rotation={texture.rotation}
         offsetX={texture.offsetX}
         offsetY={texture.offsetY}
-        speed={texture.speed || 0.35}
-        style={shaderStyle}
+        speed={texture.speed || 0.5}
+        style={{ ...shaderStyle, zIndex: 1 }}
       />
       <div
-        className="absolute top-0 bottom-0"
+        className="absolute top-0 bottom-0 pointer-events-none"
         style={{
           left: perfX,
+          zIndex: 5,
           width: Math.max(1, 22e-4 * width),
           backgroundImage: `repeating-linear-gradient(to bottom, ${layout.inkColor}55 0 ${0.012 * width}px, transparent ${0.012 * width}px ${0.024 * width}px)`
         }}
@@ -1438,6 +1446,7 @@ function TicketCard({
         style={{
           left: perfX,
           top: 0,
+          zIndex: 5,
           width: width - perfX,
           height,
           color: layout.watermarkColor,
@@ -1455,7 +1464,7 @@ function TicketCard({
           {watermark}
         </span>
       </div>
-      <div className="absolute inset-0" style={{ color: layout.inkColor }}>
+      <div className="absolute inset-0 pointer-events-auto" style={{ color: layout.inkColor, zIndex: 10 }}>
         <div
           className="absolute uppercase flex flex-col"
           style={{
