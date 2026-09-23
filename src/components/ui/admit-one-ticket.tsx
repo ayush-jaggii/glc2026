@@ -1515,12 +1515,11 @@ function TicketCard({
         >
           <div className="mb-2">
             <img
-              src="/logos/tapmi-logo.svg"
+              src="/logos/tapmi-logo-white.svg"
               alt="TAPMI"
               style={{
                 height: `${24 * (width / REF)}px`,
-                width: "auto",
-                filter: "brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.9))",
+                width: `${111 * (width / REF)}px`,
                 opacity: 0.95,
                 display: "block"
               }}
