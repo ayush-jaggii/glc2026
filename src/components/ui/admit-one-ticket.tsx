@@ -381,7 +381,7 @@ var ShaderMount = class {
     }
   };
 
-  areUniformValuesEqual = (a: any, b: any) => {
+  areUniformValuesEqual = (a: any, b: any): boolean => {
     if (a === b) return true;
     if (Array.isArray(a) && Array.isArray(b) && a.length === b.length) {
       return a.every((val, i) => this.areUniformValuesEqual(val, b[i]));
