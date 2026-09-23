@@ -7,7 +7,7 @@ export interface PassQrPayload {
   affiliation: string
   roleOrProgram: string
   seat: string
-  gate: string
+  gate?: string
   venue: string
   date: string
   checkInUrl?: string

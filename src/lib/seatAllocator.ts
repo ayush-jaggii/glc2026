@@ -5,7 +5,7 @@ export interface SeatAllocation {
   zone: string                // e.g. "Executive Stalls"
   row: string                 // e.g. "Row B"
   seatIndex: string           // e.g. "Seat 14"
-  gate: string                // e.g. "Gate 1 · Main Delegate Desk"
+  gate?: string               // Optional gate reference
   fullSeatString: string      // e.g. "Delegate Stalls · Row B-14"
 }
 

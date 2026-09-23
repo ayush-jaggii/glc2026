@@ -1,31 +1,22 @@
 'use client'
 
 import React, { useRef, useState, useCallback } from 'react'
-import {
-  Calendar,
-  MapPin,
-  Armchair,
-  DoorOpen,
-  ShieldCheck,
-  Sparkles,
-  Ticket
-} from 'lucide-react'
 
 export interface PassDetails {
   regId: string
   name: string
   category: string
   categoryKey?: 'student' | 'executive' | 'corporate' | 'academic'
-  affiliation: string
-  roleOrProgram: string
+  affiliation?: string
+  roleOrProgram?: string
   seat: string
-  zone: string
-  gate: string
+  zone?: string
+  gate?: string
   fullSeatString?: string
   date: string
   time: string
   venue: string
-  campus: string
+  campus?: string
   qrDataUrl?: string
   submittedAt?: string
 }
@@ -36,7 +27,7 @@ interface DelegatePassCardProps {
   tilt?: boolean
 }
 
-// 3D Tilt Wrapper with dynamic ambient glare
+// Interactive 3D Tilt Wrapper with dynamic ambient glare
 function TiltWrapper({
   children,
   enabled = true
@@ -54,15 +45,15 @@ function TiltWrapper({
     const dx = (e.clientX - rect.left) / rect.width - 0.5
     const dy = (e.clientY - rect.top) / rect.height - 0.5
 
-    const maxTilt = 7
+    const maxTilt = 6
     cardRef.current.style.transform = `perspective(1200px) rotateX(${
       -(dy * 2) * maxTilt
-    }deg) rotateY(${dx * 2 * maxTilt}deg) scale(1.015)`
+    }deg) rotateY(${dx * 2 * maxTilt}deg) scale(1.01)`
 
     if (glareRef.current) {
-      glareRef.current.style.background = `radial-gradient(45% 65% at ${
+      glareRef.current.style.background = `radial-gradient(40% 60% at ${
         (dx + 0.5) * 100
-      }% ${(dy + 0.5) * 100}%, rgba(255,255,255,0.14) 0%, transparent 75%)`
+      }% ${(dy + 0.5) * 100}%, rgba(255,255,255,0.12) 0%, transparent 70%)`
     }
   }, [])
 
@@ -101,7 +92,7 @@ function TiltWrapper({
       <div
         ref={glareRef}
         aria-hidden={true}
-        className="pointer-events-none absolute inset-0 rounded-[28px] z-30 transition-opacity"
+        className="pointer-events-none absolute inset-0 rounded-2xl z-30 transition-opacity"
         style={{
           transition: hovering ? 'none' : 'background 400ms ease-out'
         }}
@@ -115,253 +106,144 @@ export default function DelegatePassCard({
   id = 'conference-pass-card',
   tilt = true
 }: DelegatePassCardProps) {
-  const isStudent =
-    pass.categoryKey === 'student' ||
-    pass.category.toLowerCase().includes('student')
-
   return (
     <TiltWrapper enabled={tilt}>
       {/* 
-        The core pass card element targeted by html2canvas (#conference-pass-card).
-        Features:
-        - Admit-One ticket silhouette with top and bottom semi-circular perforation notches
-        - Vertical perforated tear line dividing Main Body (Left) and Ticket Stub (Right)
-        - Rich Deep Wine, Obsidian, and Gold-foiled aesthetic
-        - Scannable high-res QR code framed on the ticket stub
+        Minimal, High-Fashion Conference Ticket
+        - Authentic cut-out notches and perforation line
+        - Uncluttered, bold typography inspired by the Admit One ticket layout
+        - Official GLC Theme: Deep Wine, Warm Amber / Gold (#FFC591), Crisp White
       */}
       <div
         id={id}
-        className="relative w-full max-w-[880px] bg-gradient-to-br from-[#180315] via-[#0E020C] to-[#070106] rounded-[28px] border-2 border-[#D4AF37]/50 shadow-[0_25px_70px_-15px_rgba(244,81,151,0.35),0_0_35px_rgba(212,175,55,0.15)] text-cream-50 font-sans select-none overflow-hidden"
+        className="relative w-full max-w-[820px] bg-gradient-to-br from-[#1C0518] via-[#10020E] to-[#070006] rounded-2xl border border-[#FFC591]/25 shadow-[0_20px_60px_-15px_rgba(244,81,151,0.25)] text-cream-50 font-sans select-none overflow-hidden"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 85% 20%, rgba(244,81,151,0.18) 0%, transparent 45%), radial-gradient(circle at 20% 80%, rgba(212,175,55,0.14) 0%, transparent 45%)'
+            'radial-gradient(circle at 80% 20%, rgba(244,81,151,0.12) 0%, transparent 45%), radial-gradient(circle at 20% 80%, rgba(255,197,145,0.08) 0%, transparent 45%)'
         }}
       >
-        {/* Top Gold Foil Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#D4AF37] via-[#F45197] to-[#F58232]" />
-
-        {/* Top Notch Cutout (Semi-Circle at perforation line ~68% on desktop) */}
+        {/* Top Semi-Circular Cutout Notch */}
         <div
           aria-hidden={true}
-          className="hidden md:block absolute -top-4 right-[32%] translate-x-1/2 w-8 h-8 rounded-full bg-[#0B0207] border-2 border-[#D4AF37]/50 z-20 shadow-inner"
+          className="absolute -top-3.5 right-[28%] translate-x-1/2 w-7 h-7 rounded-full bg-[#0B0207] border border-[#FFC591]/25 z-20"
         />
 
-        {/* Bottom Notch Cutout (Semi-Circle at perforation line ~68% on desktop) */}
+        {/* Bottom Semi-Circular Cutout Notch */}
         <div
           aria-hidden={true}
-          className="hidden md:block absolute -bottom-4 right-[32%] translate-x-1/2 w-8 h-8 rounded-full bg-[#0B0207] border-2 border-[#D4AF37]/50 z-20 shadow-inner"
+          className="absolute -bottom-3.5 right-[28%] translate-x-1/2 w-7 h-7 rounded-full bg-[#0B0207] border border-[#FFC591]/25 z-20"
         />
 
-        {/* Main Grid: Ticket Body (Left 68%) + Stub (Right 32%) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 min-h-[440px]">
+        {/* Ticket Container: Main Body (Left ~72%) + Perforated Stub (Right ~28%) */}
+        <div className="flex flex-col sm:flex-row min-h-[380px] sm:min-h-[400px]">
           
           {/* ================= LEFT: MAIN TICKET BODY ================= */}
-          <div className="md:col-span-8 p-6 sm:p-8 flex flex-col justify-between relative border-b md:border-b-0 md:border-r-2 md:border-dashed border-[#D4AF37]/40">
+          <div className="flex-1 p-6 sm:p-9 lg:p-11 flex flex-col justify-between relative border-b sm:border-b-0 sm:border-r border-dashed border-[#FFC591]/25">
             
-            {/* Top Row: Logos & Category Badge */}
+            {/* Top Presenter / Event Title */}
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-wine-800/80">
-                {/* Institutional Logos */}
-                <div className="flex items-center gap-3">
-                  <img
-                    src="/logos/tapmi-logo.svg"
-                    alt="TAPMI"
-                    className="h-8 w-auto object-contain brightness-0 invert opacity-95"
-                  />
-                  <div className="h-4 w-px bg-[#D4AF37]/60" />
-                  <div className="flex flex-col">
-                    <span className="text-[11px] sm:text-xs font-bold tracking-widest text-[#FFD7BA] uppercase leading-none">
-                      MAHE BENGALURU
-                    </span>
-                    <span className="text-[9px] text-cream-300 font-medium tracking-wider uppercase mt-0.5">
-                      AACSB · AMBA · NBA
-                    </span>
-                  </div>
-                </div>
-
-                {/* Admit-One Badge */}
-                <div className="flex items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-widest uppercase bg-gradient-to-r from-[#D4AF37]/20 to-[#F45197]/20 border border-[#D4AF37]/80 text-[#FFD7BA] shadow-sm">
-                    <Ticket className="w-3 h-3 text-[#D4AF37]" />
-                    <span>ADMIT ONE</span>
-                  </div>
-
-                  <div
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase ${
-                      isStudent
-                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/70'
-                        : 'bg-glc-magenta/20 text-white border border-glc-magenta/70'
-                    }`}
-                  >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isStudent ? 'bg-emerald-400' : 'bg-glc-orange'
-                      } animate-pulse`}
-                    />
-                    <span>{pass.category}</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logos/tapmi-logo.svg"
+                  alt="TAPMI"
+                  className="h-6 sm:h-7 w-auto object-contain brightness-0 invert opacity-90"
+                />
+                <div className="h-4 w-px bg-[#FFC591]/30" />
+                <span className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] text-[#FFC591] uppercase">
+                  TAPMI BENGALURU PRESENTS
+                </span>
               </div>
 
-              {/* Conference Title Banner */}
-              <div className="mt-4">
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold tracking-[0.28em] uppercase text-[#F58232]">
-                  <Sparkles className="w-3 h-3 text-[#D4AF37]" />
-                  <span>Global Leadership Colloquium 4.0</span>
+              <div className="mt-3">
+                <div className="text-xs sm:text-sm font-bold tracking-[0.22em] text-cream-200 uppercase">
+                  Global Leadership Colloquium 2026
                 </div>
-                <h1 className="font-tektype text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#FFD7BA] leading-none mt-1 uppercase">
-                  BUSINESS BEYOND BORDERS
-                </h1>
-              </div>
-
-              {/* Attendee Full Name */}
-              <div className="mt-5 pt-4 border-t border-wine-800/60">
-                <div className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
-                  Official Pass Issued To
-                </div>
-                <div className="text-2xl sm:text-3xl lg:text-[34px] font-black text-cream-50 tracking-tight leading-tight mt-0.5 uppercase drop-shadow-sm">
-                  {pass.name}
-                </div>
-                <div className="text-xs sm:text-sm font-semibold text-glc-orange mt-1 flex flex-wrap items-center gap-2">
-                  <span className="font-mono bg-wine-900/60 px-2 py-0.5 rounded border border-wine-700/80 text-[#FFD7BA]">
-                    {pass.roleOrProgram}
-                  </span>
-                  <span className="text-wine-400">•</span>
-                  <span className="text-cream-200">{pass.affiliation}</span>
+                <div className="text-sm sm:text-base font-extrabold tracking-[0.15em] text-[#FFC591] uppercase mt-0.5">
+                  Business Beyond Borders
                 </div>
               </div>
             </div>
 
-            {/* Bottom Badges: Seat, Gate, Date, Venue */}
-            <div className="mt-6 pt-4 border-t border-wine-800/80">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                
-                {/* Highlighted Gold-Foiled Seat Stamp */}
-                <div className="col-span-2 sm:col-span-1 rounded-2xl p-3 bg-gradient-to-br from-[#D4AF37]/25 via-wine-900/70 to-[#F45197]/20 border-2 border-[#D4AF37]/80 shadow-[inset_0_1px_10px_rgba(212,175,55,0.25)] flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#FFD7BA]">
-                    <Armchair className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>Assigned Seat</span>
-                  </div>
-                  <div className="text-xl sm:text-2xl font-black text-white tracking-tight mt-0.5">
-                    {pass.seat}
-                  </div>
-                  <div className="text-[10px] font-medium text-cream-200/90 truncate mt-0.5">
-                    {pass.zone}
-                  </div>
-                </div>
+            {/* Centerpiece: Attendee Full Name & Details */}
+            <div className="my-6 sm:my-8">
+              <h1 className="text-2xl sm:text-4xl lg:text-[44px] font-black text-white tracking-tight leading-tight uppercase">
+                {pass.name}
+              </h1>
 
-                {/* Gate & Entry Access */}
-                <div className="rounded-2xl p-3 bg-wine-950/90 border border-wine-800/90 flex flex-col justify-center">
-                  <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cream-300">
-                    <DoorOpen className="w-3 h-3 text-[#D4AF37]" />
-                    <span>Gate Access</span>
-                  </div>
-                  <div className="text-xs sm:text-sm font-bold text-cream-100 mt-1 truncate">
-                    {pass.gate}
-                  </div>
-                  <div className="text-[9px] text-cream-400 mt-0.5">
-                    Registration Opens: 08:30 AM
-                  </div>
-                </div>
-
-                {/* Schedule & Date */}
-                <div className="col-span-2 sm:col-span-1 rounded-2xl p-3 bg-wine-950/90 border border-wine-800/90 flex flex-col justify-center">
-                  <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cream-300">
-                    <Calendar className="w-3 h-3 text-[#D4AF37]" />
-                    <span>Date & Time</span>
-                  </div>
-                  <div className="text-xs sm:text-sm font-bold text-[#FFD7BA] mt-1">
-                    10 Oct 2026
-                  </div>
-                  <div className="text-[9px] text-cream-400 mt-0.5">
-                    09:00 AM – 06:00 PM IST
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Venue Footnote */}
-              <div className="flex items-center gap-1.5 text-[11px] text-cream-300/90 mt-3 pt-2.5 border-t border-wine-900/80">
-                <MapPin className="w-3.5 h-3.5 text-[#F45197] shrink-0" />
-                <span>
-                  <strong>Dr. Ramdas M. Pai Auditorium</strong> · TAPMI, MAHE Bengaluru Campus
+              <div className="mt-2.5 text-xs sm:text-sm font-medium text-[#FFC591]/90 flex flex-wrap items-center gap-2">
+                {pass.roleOrProgram && <span>{pass.roleOrProgram}</span>}
+                <span className="text-wine-500">•</span>
+                <span className="text-white">
+                  Seat: <strong className="font-bold text-[#FFD7BA]">{pass.seat}</strong>
                 </span>
+                {pass.zone && pass.zone !== 'Allocated at Check-in' && (
+                  <>
+                    <span className="text-wine-500">•</span>
+                    <span className="text-cream-300 text-xs">{pass.zone}</span>
+                  </>
+                )}
               </div>
+            </div>
+
+            {/* Bottom Venue, Date & Schedule */}
+            <div className="pt-4 border-t border-[#FFC591]/15 text-[11px] sm:text-xs text-[#FFC591]/80 font-medium flex flex-wrap items-center gap-2 tracking-wide uppercase">
+              <span>Dr. Ramdas M. Pai Auditorium</span>
+              <span className="text-wine-500">•</span>
+              <span>Saturday, 10 October 2026</span>
+              <span className="text-wine-500">•</span>
+              <span>09:00 AM IST</span>
             </div>
 
           </div>
 
           {/* ================= RIGHT: THE TICKET STUB ================= */}
-          <div className="md:col-span-4 p-6 sm:p-7 bg-[#0A0108]/95 flex flex-col items-center justify-between text-center relative overflow-hidden">
+          <div className="w-full sm:w-[28%] p-6 sm:p-7 flex flex-col items-center justify-between text-center relative overflow-hidden bg-[#0A0108]/90">
             
-            {/* Watermark in stub background */}
+            {/* Large Subtle Vertical 2026 Watermark */}
             <div
               aria-hidden={true}
-              className="pointer-events-none absolute inset-0 flex items-center justify-center select-none opacity-10 overflow-hidden"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center select-none overflow-hidden"
             >
-              <span className="text-[120px] font-black text-[#D4AF37] tracking-tighter rotate-90 leading-none">
+              <span className="text-[100px] sm:text-[140px] font-black text-[#FFC591]/[0.06] tracking-tighter rotate-90 leading-none">
                 2026
               </span>
             </div>
 
-            {/* Vertical Perforation Tear Line Label (Desktop) */}
-            <div className="hidden md:flex absolute left-2 top-0 bottom-0 items-center justify-center pointer-events-none">
-              <span
-                style={{ writingMode: 'vertical-rl' }}
-                className="text-[8px] font-mono uppercase tracking-[0.3em] text-[#D4AF37]/50 rotate-180"
-              >
-                ✂ TICKET STUB · PERFORATION LINE
+            {/* Stub Header / Type */}
+            <div className="w-full text-center relative z-10">
+              <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.25em] text-[#FFC591]/80 uppercase">
+                AUDITORIUM
               </span>
             </div>
 
-            {/* Stub Header: Reg / Token ID */}
-            <div className="w-full flex items-center justify-between text-[10px] text-cream-300 font-mono uppercase tracking-wider pb-2.5 border-b border-wine-800/70 relative z-10">
-              <span className="font-bold text-[#FFD7BA]">AUDITORIUM</span>
-              <span className="text-[#D4AF37] font-bold">{pass.regId}</span>
-            </div>
-
-            {/* Scannable High-Contrast QR Code */}
+            {/* High-Contrast Scannable QR Code */}
             <div className="my-auto py-3 flex flex-col items-center relative z-10">
-              <div className="p-3 rounded-2xl bg-white shadow-2xl ring-4 ring-[#D4AF37]/40 border-2 border-white">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-white shadow-xl ring-2 ring-[#FFC591]/30">
                 {pass.qrDataUrl ? (
                   <img
                     src={pass.qrDataUrl}
-                    alt="Delegate QR Code"
-                    className="w-36 h-36 sm:w-40 sm:h-40 object-contain block"
+                    alt="GLC Pass QR Code"
+                    className="w-32 h-32 sm:w-36 sm:h-36 object-contain block"
                   />
                 ) : (
-                  <div className="w-36 h-36 sm:w-40 sm:h-40 bg-gray-100 rounded-lg flex items-center justify-center text-black text-xs font-mono">
-                    Generating QR...
+                  <div className="w-32 h-32 sm:w-36 sm:h-36 bg-gray-100 rounded-lg flex items-center justify-center text-black text-xs font-mono">
+                    Generating...
                   </div>
                 )}
               </div>
-
-              <div className="mt-2.5 text-[10px] text-cream-200 font-semibold tracking-wider flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span className="uppercase">Scan at Entrance</span>
-              </div>
             </div>
 
-            {/* Stub Footer: Seat & Security Reference */}
-            <div className="w-full pt-2.5 border-t border-wine-800/70 flex flex-col items-center gap-0.5 relative z-10">
-              <div className="text-[10px] font-mono tracking-widest text-[#FFD7BA] uppercase font-bold">
-                SEAT: <span className="text-white bg-wine-900/80 px-2 py-0.5 rounded border border-[#D4AF37]/50">{pass.seat}</span>
-              </div>
-              <div className="text-[8px] text-cream-400 tracking-wider uppercase mt-1">
-                NON-TRANSFERABLE · MAHE ID REQUIRED
-              </div>
+            {/* Stub Footer: Token ID */}
+            <div className="w-full text-center relative z-10">
+              <span className="font-mono text-[9px] sm:text-[10px] text-[#FFC591]/75 tracking-widest uppercase">
+                {pass.regId}
+              </span>
             </div>
 
           </div>
 
         </div>
 
-        {/* Bottom Golden Security Ribbon */}
-        <div className="px-6 py-2 bg-black/60 border-t border-wine-900/90 flex flex-wrap items-center justify-between text-[9px] text-[#FFD7BA]/80 tracking-wider uppercase">
-          <span>T. A. Pai Management Institute (TAPMI)</span>
-          <span className="hidden sm:inline">Nexora IT Club · PACE Committee</span>
-          <span>LeadXAI · Official GLC 2026 Pass</span>
-        </div>
       </div>
     </TiltWrapper>
   )
