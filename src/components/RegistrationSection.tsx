@@ -184,16 +184,12 @@ export default function RegistrationSection() {
         ) : generatedPass ? (
           <div className="flex flex-col items-center justify-center animate-fadeIn">
             
-            <div className="text-center max-w-2xl mx-auto mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 mb-4 shadow-lg">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Registration Confirmed · Official Pass Issued</span>
-              </div>
+            <div className="text-center max-w-2xl mx-auto mb-6">
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream-50 uppercase">
                 Welcome to GLC 2026
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
-                Your auditorium seat has been reserved and your official delegate pass is ready.
+                Official pass issued. You may download and use it for attendance on event day.
               </p>
             </div>
 
