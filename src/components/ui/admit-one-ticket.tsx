@@ -871,7 +871,8 @@ void main() {
   float res = step(.5, shape + dithering);
 
   // Blend our signature GLC brand colors (Magenta -> Rose -> Orange) across the pass
-  float tGrad = clamp(uv.x * 0.85 + uv.y * 0.15 + (shape - 0.5) * 0.15, 0.0, 1.0);
+  vec2 screenUV = gl_FragCoord.xy / u_resolution;
+  float tGrad = clamp(screenUV.x * 0.85 + (1.0 - screenUV.y) * 0.15 + (shape - 0.5) * 0.15, 0.0, 1.0);
   vec3 fgColorRgb = mix(u_colorFront.rgb, u_colorHighlight.rgb, tGrad);
 
   vec3 fgColor = fgColorRgb * u_colorFront.a;
