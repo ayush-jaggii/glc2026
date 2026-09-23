@@ -197,7 +197,10 @@ var ShaderMount = class {
     this.currentFrame = frame;
     this.minPixelRatio = minPixelRatio;
     this.maxPixelCount = maxPixelCount;
-    const gl = canvasElement.getContext("webgl2", webGlContextAttributes);
+    const gl = canvasElement.getContext("webgl2", {
+      ...webGlContextAttributes,
+      preserveDrawingBuffer: true
+    });
     if (!gl) {
       throw new Error("Paper Shaders: WebGL is not supported in this browser");
     }
@@ -1254,42 +1257,43 @@ var TICKET_GEOMETRY = {
 };
 
 var TICKET_LAYOUT = {
-  padding: 57 / REF,
-  labelTop: 58 / REF,
-  labelSize: 19.72 / REF,
-  labelLead: 28 / REF,
-  labelTracking: 0.016,
-  nameTop: 185 / REF,
-  nameSize: 64.79 / REF,
-  nameLead: 65 / REF,
+var TICKET_LAYOUT = {
+  padding: 52 / REF,
+  labelTop: 48 / REF,
+  labelSize: 18 / REF,
+  labelLead: 24 / REF,
+  labelTracking: 0.04,
+  nameTop: 165 / REF,
+  nameSize: 58 / REF,
+  nameLead: 58 / REF,
   nameTracking: -0.01,
   footerTop: 348 / REF,
-  footerSize: 19.72 / REF,
-  footerTracking: 0.016,
+  footerSize: 16 / REF,
+  footerTracking: 0.02,
   stubSize: 67.61 / REF,
   stubTracking: 0,
   stubOpacity: 0.88,
-  watermarkSize: 144 / REF,
-  watermarkOpacity: 0.6,
-  watermarkColor: "#ffdcbe",
-  inkColor: "#5a3520"
+  watermarkSize: 140 / REF,
+  watermarkOpacity: 0.15,
+  watermarkColor: "#FFC591",
+  inkColor: "#FFF0E2"
 };
 
 var TICKET_TEXTURE = {
   engine: "generative",
-  colorBack: "#ef671c",
-  colorFront: "#ffc691",
-  colorHighlight: "#fe9046",
+  colorBack: "#1C0518",
+  colorFront: "#FFC591",
+  colorHighlight: "#F58232",
   shape: "warp",
   type: "random",
-  size: 0.5,
+  size: 0.55,
   colorSteps: 4,
   originalColors: true,
-  scale: 1,
-  rotation: 0,
+  scale: 1.15,
+  rotation: 12,
   offsetX: 0,
   offsetY: 0,
-  speed: 0.4
+  speed: 0.35
 };
 
 var TICKET_GRADIENT = {
@@ -1358,13 +1362,17 @@ function fitScale(lines: string[], opts: any) {
 }
 
 function TicketCard({
+  id,
   name,
   presenter,
   event,
+  subMeta,
   venue,
   dates,
   stubText,
   watermark,
+  qrDataUrl,
+  regId,
   width = REF,
   geometry = TICKET_GEOMETRY,
   layout = TICKET_LAYOUT,
@@ -1391,6 +1399,7 @@ function TicketCard({
 
   return (
     <div
+      id={id}
       className={`relative select-none ${className ?? ""}`}
       style={{ width, height, clipPath: `path('${ticketClipPath(width, height, geometry)}')` }}
     >
@@ -1405,7 +1414,7 @@ function TicketCard({
         rotation={texture.rotation}
         offsetX={texture.offsetX}
         offsetY={texture.offsetY}
-        speed={0}
+        speed={texture.speed || 0.35}
         style={shaderStyle}
       />
       <div
@@ -1440,7 +1449,7 @@ function TicketCard({
       </div>
       <div className="absolute inset-0" style={{ color: layout.inkColor }}>
         <div
-          className="absolute whitespace-pre uppercase font-semibold"
+          className="absolute whitespace-pre uppercase font-semibold flex flex-col"
           style={{
             left: layout.padding * width,
             top: layout.labelTop * width,
@@ -1449,9 +1458,21 @@ function TicketCard({
             letterSpacing: `${layout.labelTracking}em`
           }}
         >
-          {presenter}
-          {"\n"}
-          {event}
+          <div className="flex items-center gap-2 mb-0.5">
+            <img
+              src="/logos/tapmi-logo.svg"
+              alt="TAPMI"
+              style={{
+                height: `${layout.labelSize * width * 1.15}px`,
+                width: "auto",
+                filter: "brightness(0) invert(1)",
+                opacity: 0.95,
+                display: "inline-block"
+              }}
+            />
+            <span style={{ opacity: 0.9 }}>{presenter}</span>
+          </div>
+          <div>{event}</div>
         </div>
         <div
           className="absolute font-bold"
@@ -1467,6 +1488,20 @@ function TicketCard({
             <div key={i}>{line}</div>
           ))}
         </div>
+        {subMeta && (
+          <div
+            className="absolute whitespace-nowrap font-medium"
+            style={{
+              left: layout.padding * width,
+              top: layout.nameTop * width + lines.length * layout.nameLead * width * scale + 10 * (width / REF),
+              fontSize: 16 * (width / REF),
+              letterSpacing: "0.02em",
+              opacity: 0.95
+            }}
+          >
+            {subMeta}
+          </div>
+        )}
         <div
           className="absolute whitespace-nowrap uppercase font-medium"
           style={{
@@ -1478,20 +1513,70 @@ function TicketCard({
         >
           {venue} · {dates}
         </div>
-        <div
-          className="absolute grid place-items-center font-bold whitespace-nowrap uppercase"
-          style={{
-            left: perfX,
-            top: 0,
-            width: width - perfX,
-            height,
-            fontSize: layout.stubSize * width,
-            letterSpacing: `${layout.stubTracking}em`,
-            opacity: layout.stubOpacity
-          }}
-        >
-          <span style={{ writingMode: "vertical-rl" }}>{stubText}</span>
-        </div>
+        {qrDataUrl ? (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-between"
+            style={{
+              left: perfX,
+              top: 0,
+              width: width - perfX,
+              height,
+              padding: `${0.045 * width}px 0`
+            }}
+          >
+            <div
+              className="text-center font-bold tracking-[0.2em] uppercase"
+              style={{
+                fontSize: 12 * (width / REF),
+                color: layout.inkColor,
+                opacity: 0.9
+              }}
+            >
+              AUDITORIUM
+            </div>
+
+            <div
+              className="p-1.5 sm:p-2 rounded-xl bg-white shadow-xl ring-2 ring-[#FFC591]/40"
+            >
+              <img
+                src={qrDataUrl}
+                alt="Ticket QR"
+                style={{
+                  width: 0.155 * width,
+                  height: 0.155 * width,
+                  display: "block",
+                  objectFit: "contain"
+                }}
+              />
+            </div>
+
+            <div
+              className="font-mono text-center tracking-widest uppercase font-semibold"
+              style={{
+                fontSize: 10 * (width / REF),
+                color: layout.inkColor,
+                opacity: 0.8
+              }}
+            >
+              {regId || stubText}
+            </div>
+          </div>
+        ) : (
+          <div
+            className="absolute grid place-items-center font-bold whitespace-nowrap uppercase"
+            style={{
+              left: perfX,
+              top: 0,
+              width: width - perfX,
+              height,
+              fontSize: layout.stubSize * width,
+              letterSpacing: `${layout.stubTracking}em`,
+              opacity: layout.stubOpacity
+            }}
+          >
+            <span style={{ writingMode: "vertical-rl" }}>{stubText}</span>
+          </div>
+        )}
       </div>
     </div>
   );
