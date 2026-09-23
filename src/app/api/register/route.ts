@@ -88,35 +88,33 @@ export async function POST(request: Request) {
         `GLC26-STU-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
       if (studentRecord) {
-        // Update contact details and ensure qr_token is active
-        try {
-          const updateRes = await fetch(
-            `${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`,
-            {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                apikey: supabaseAnonKey,
-                Authorization: `Bearer ${supabaseAnonKey}`,
-                Prefer: 'return=representation'
-              },
-              body: JSON.stringify({
-                full_name: fullName.trim() || studentRecord.full_name,
-                email: email.trim().toLowerCase() || studentRecord.email,
-                phone: phone?.trim() || studentRecord.phone,
-                year_of_study: yearLabel || studentRecord.year_of_study,
-                qr_token: qrToken
-              })
+        // Record is immutable once created. If qr_token was somehow missing, attach it only.
+        if (!studentRecord.qr_token) {
+          try {
+            const updateRes = await fetch(
+              `${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`,
+              {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  apikey: supabaseAnonKey,
+                  Authorization: `Bearer ${supabaseAnonKey}`,
+                  Prefer: 'return=representation'
+                },
+                body: JSON.stringify({
+                  qr_token: qrToken
+                })
+              }
+            )
+            if (updateRes.ok) {
+              const updated = await updateRes.json()
+              if (Array.isArray(updated) && updated.length > 0) {
+                studentRecord = updated[0]
+              }
             }
-          )
-          if (updateRes.ok) {
-            const updated = await updateRes.json()
-            if (Array.isArray(updated) && updated.length > 0) {
-              studentRecord = updated[0]
-            }
+          } catch (patchErr) {
+            console.warn('Supabase student qr_token initialization warning:', patchErr)
           }
-        } catch (patchErr) {
-          console.warn('Supabase student record update warning:', patchErr)
         }
       } else {
         // PACE hasn't pre-loaded this student yet, insert with PACE pending seat

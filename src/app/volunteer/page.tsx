@@ -5,7 +5,6 @@ import Image from 'next/image'
 import {
   ShieldCheck,
   Camera,
-  Search,
   CheckCircle2,
   AlertTriangle,
   XCircle,
@@ -41,7 +40,6 @@ export default function VolunteerScannerPage() {
     student?: StudentResult
   } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [manualInput, setManualInput] = useState('')
   const [sessionCount, setSessionCount] = useState(0)
 
   const html5QrCodeRef = useRef<any>(null)
@@ -206,7 +204,7 @@ export default function VolunteerScannerPage() {
       setScannerActive(false)
       setScanResult({
         type: 'error',
-        message: 'Camera access denied or unavailable. You can use manual Roll Number search below.'
+        message: 'Camera access denied or unavailable. Please enable camera permissions in your mobile browser.'
       })
     }
   }
@@ -433,37 +431,6 @@ export default function VolunteerScannerPage() {
               </div>
             </div>
           )}
-
-          {/* Manual Roll Number Search (Backup) */}
-          <div className="p-4 rounded-2xl bg-wine-900/40 border border-wine-800/80">
-            <div className="text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-2">
-              Manual Check-In by Roll Number
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (manualInput.trim()) {
-                  processToken(manualInput.trim())
-                }
-              }}
-              className="flex gap-2"
-            >
-              <input
-                type="text"
-                value={manualInput}
-                onChange={(e) => setManualInput(e.target.value)}
-                placeholder="Enter Roll No. (e.g. 2401042)"
-                className="flex-1 px-3.5 py-2 rounded-xl bg-wine-950 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta uppercase font-mono"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-wine-800 hover:bg-wine-700 text-white text-xs font-semibold flex items-center gap-1 transition-colors"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span>Verify</span>
-              </button>
-            </form>
-          </div>
 
           {/* Verification Protocol Notice */}
           <div className="p-3 text-center text-[10px] text-cream-400/80 leading-relaxed border-t border-wine-900/80">
