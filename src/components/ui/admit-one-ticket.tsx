@@ -1482,6 +1482,29 @@ function TicketCard({
           zIndex: 6
         }}
       />
+      {/* Ticket Silhouette Border & Notches Outline */}
+      <svg
+        className="pointer-events-none absolute inset-0 overflow-visible"
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        style={{ zIndex: 15 }}
+      >
+        <defs>
+          <linearGradient id="ticketBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#F45197" stopOpacity="0.85" />
+            <stop offset="45%" stopColor="#FFC5B6" stopOpacity="0.55" />
+            <stop offset="85%" stopColor="#F58232" stopOpacity="0.85" />
+          </linearGradient>
+        </defs>
+        <path
+          d={ticketClipPath(width, height, geometry)}
+          fill="none"
+          stroke="url(#ticketBorderGrad)"
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
       <div className="absolute inset-0 pointer-events-auto" style={{ color: layout.inkColor, zIndex: 10 }}>
         <div
           className="absolute uppercase flex flex-col"
@@ -1503,17 +1526,43 @@ function TicketCard({
               }}
             />
           </div>
-          <div
-            className="whitespace-pre font-bold"
-            style={{
-              fontSize: layout.labelSize * width,
-              lineHeight: `${layout.labelLead * width}px`,
-              letterSpacing: `${layout.labelTracking}em`,
-              textShadow: "0 2px 8px rgba(0,0,0,0.95)"
-            }}
-          >
-            {event}
-          </div>
+          {typeof event === "string" && event.includes("BUSINESS BEYOND BORDERS") ? (
+            <div className="flex flex-col">
+              <span
+                className="font-bold tracking-[0.06em] text-cream-50 uppercase"
+                style={{
+                  fontSize: layout.labelSize * width,
+                  lineHeight: `${layout.labelLead * width}px`,
+                  textShadow: "0 2px 8px rgba(0,0,0,0.95)"
+                }}
+              >
+                {event.split("\n")[0] || "GLC 2026"}
+              </span>
+              <span
+                className="font-tektype text-[#ffc5b6] uppercase font-bold tracking-tight"
+                style={{
+                  fontFamily: "var(--font-tektype), sans-serif",
+                  fontSize: 16 * (width / REF),
+                  lineHeight: `${21 * (width / REF)}px`,
+                  textShadow: "0 2px 10px rgba(0,0,0,0.95)"
+                }}
+              >
+                BUSINESS BEYOND BORDERS
+              </span>
+            </div>
+          ) : (
+            <div
+              className="whitespace-pre font-bold"
+              style={{
+                fontSize: layout.labelSize * width,
+                lineHeight: `${layout.labelLead * width}px`,
+                letterSpacing: `${layout.labelTracking}em`,
+                textShadow: "0 2px 8px rgba(0,0,0,0.95)"
+              }}
+            >
+              {event}
+            </div>
+          )}
         </div>
         <div
           className="absolute font-bold"
@@ -1691,7 +1740,8 @@ export function TiltCard({
       style={{
         transition: hovering ? "none" : "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)",
         transform: "perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)",
-        transformStyle: "preserve-3d"
+        transformStyle: "preserve-3d",
+        filter: "drop-shadow(0 25px 50px rgba(0,0,0,0.95)) drop-shadow(0 4px 20px rgba(244,81,151,0.25))"
       }}
     >
       {children}

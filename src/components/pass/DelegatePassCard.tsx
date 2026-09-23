@@ -48,7 +48,7 @@ export default function DelegatePassCard({
   }, [])
 
   return (
-    <div ref={containerRef} className="w-full flex justify-center py-2">
+    <div ref={containerRef} className="w-full flex justify-center py-4 px-2">
       <AdmitOneTicket
         id={id}
         name={pass.name}
