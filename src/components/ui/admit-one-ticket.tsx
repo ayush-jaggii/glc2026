@@ -1398,7 +1398,7 @@ function TicketCard({
   const lines = splitName(name || "");
   const scale = fitScale(lines, {
     availableWidth: perfX - layout.padding * width - 0.03 * width,
-    availableHeight: layout.footerTop * width - layout.nameTop * width - 0.02 * width,
+    availableHeight: (layout.footerTop - 18 / REF) * width - layout.nameTop * width - (subMeta ? 38 * (width / REF) : 0),
     fontSize: layout.nameSize * width,
     lineHeight: layout.nameLead * width,
     tracking: layout.nameTracking
@@ -1441,29 +1441,35 @@ function TicketCard({
           backgroundImage: `repeating-linear-gradient(to bottom, ${layout.inkColor}55 0 ${0.012 * width}px, transparent ${0.012 * width}px ${0.024 * width}px)`
         }}
       />
-      <div
-        className="pointer-events-none absolute grid place-items-center font-bold tabular-nums"
-        style={{
-          left: perfX,
-          top: 0,
-          zIndex: 5,
-          width: width - perfX,
-          height,
-          color: layout.watermarkColor,
-          opacity: layout.watermarkOpacity
-        }}
-      >
-        <span
+      {watermark && (
+        <div
+          className="pointer-events-none absolute flex flex-col items-center justify-center font-bold tabular-nums select-none"
           style={{
-            writingMode: "vertical-rl",
-            fontSize: layout.watermarkSize * width,
-            lineHeight: 1,
-            letterSpacing: "-0.04em"
+            left: perfX,
+            top: 0,
+            zIndex: 4,
+            width: width - perfX,
+            height,
+            color: layout.watermarkColor,
+            opacity: layout.watermarkOpacity
           }}
         >
-          {watermark}
-        </span>
-      </div>
+          <div
+            className="flex flex-col items-center justify-center font-bold"
+            style={{
+              fontSize: 84 * (width / REF),
+              lineHeight: 0.82,
+              letterSpacing: "-0.04em"
+            }}
+          >
+            {String(watermark).split("").map((digit, idx) => (
+              <span key={idx} style={{ display: "block", textAlign: "center" }}>
+                {digit}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
       {/* Subtle radial scrim behind typography for 100% crystal-clear readability */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -1564,39 +1570,45 @@ function TicketCard({
           )}
         </div>
         <div
-          className="absolute font-bold"
+          className="absolute flex flex-col items-start"
           style={{
             left: layout.padding * width,
             top: layout.nameTop * width,
-            fontSize: layout.nameSize * width * scale,
-            lineHeight: `${layout.nameLead * width * scale}px`,
-            letterSpacing: `${layout.nameTracking}em`,
-            textShadow: "0 3px 14px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.9)"
+            maxWidth: perfX - layout.padding * width - 0.03 * width,
           }}
         >
-          {lines.map((line: string, i: number) => (
-            <div key={i}>{line}</div>
-          ))}
-        </div>
-        {subMeta && (
           <div
-            className="absolute whitespace-nowrap"
+            className="font-bold uppercase tracking-tight"
             style={{
-              left: layout.padding * width,
-              top: layout.nameTop * width + lines.length * layout.nameLead * width * scale + 10 * (width / REF),
+              fontSize: layout.nameSize * width * scale,
+              lineHeight: `${layout.nameLead * width * scale}px`,
+              letterSpacing: `${layout.nameTracking}em`,
+              textShadow: "0 3px 14px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.9)"
             }}
           >
-            <span
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
+            {lines.map((line: string, i: number) => (
+              <div key={i}>{line}</div>
+            ))}
+          </div>
+          {subMeta && (
+            <div
+              className="whitespace-nowrap"
               style={{
-                fontSize: 13.5 * (width / REF),
-                letterSpacing: "0.02em"
+                marginTop: `${12 * (width / REF)}px`
               }}
             >
-              {subMeta}
-            </span>
-          </div>
-        )}
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
+                style={{
+                  fontSize: 13.5 * (width / REF),
+                  letterSpacing: "0.02em"
+                }}
+              >
+                {subMeta}
+              </span>
+            </div>
+          )}
+        </div>
         <div
           className="absolute uppercase flex flex-col gap-1"
           style={{
