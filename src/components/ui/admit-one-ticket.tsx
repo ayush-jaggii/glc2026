@@ -826,7 +826,7 @@ void main() {
       shapeUV.y += 0.6 / i * cos(i * 1.5 * shapeUV.x + t);
     }
     shape = .15 / max(0.001, abs(sin(t - shapeUV.y - shapeUV.x)));
-    shape = smoothstep(0.02, 1., shape);
+    shape = smoothstep(0.32, 1.25, shape);
   } else if (u_shape < 3.5) {
     shapeUV *= .05;
     float stripeIdx = floor(2. * shapeUV.x / TWO_PI);
@@ -884,7 +884,7 @@ void main() {
   float tGrad = clamp(screenUV.x * 0.85 + (1.0 - screenUV.y) * 0.15 + (shape - 0.5) * 0.15, 0.0, 1.0);
   vec3 fgColorRgb = mix(u_colorFront.rgb, u_colorHighlight.rgb, tGrad);
 
-  vec3 fgColor = fgColorRgb * u_colorFront.a;
+  vec3 fgColor = fgColorRgb * 0.90 * u_colorFront.a;
   float fgOpacity = u_colorFront.a;
   vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
   float bgOpacity = u_colorBack.a;
@@ -1295,19 +1295,19 @@ var TICKET_LAYOUT = {
 
 var TICKET_TEXTURE = {
   engine: "generative",
-  colorBack: "#14040F",
-  colorFront: "#F45197",
-  colorHighlight: "#F58232",
+  colorBack: "#0E020B",
+  colorFront: "#EA3888",
+  colorHighlight: "#EE7427",
   shape: "warp",
   type: "random",
-  size: 1.0,
+  size: 0.85,
   colorSteps: 4,
   originalColors: true,
   scale: 1.15,
   rotation: 12,
   offsetX: 0,
   offsetY: 0,
-  speed: 0.5
+  speed: 0.38
 };
 
 var TICKET_GRADIENT = {
@@ -1464,6 +1464,24 @@ function TicketCard({
           {watermark}
         </span>
       </div>
+      {/* Subtle radial scrim behind typography for 100% crystal-clear readability */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 65% 75% at 26% 50%, rgba(10, 2, 8, 0.58) 0%, rgba(10, 2, 8, 0.22) 65%, transparent 100%)",
+          zIndex: 6
+        }}
+      />
+      {/* Subtle stub backing scrim */}
+      <div
+        className="absolute top-0 bottom-0 pointer-events-none"
+        style={{
+          left: perfX,
+          width: width - perfX,
+          background: "linear-gradient(to right, rgba(10, 2, 8, 0.35) 0%, rgba(10, 2, 8, 0.12) 100%)",
+          zIndex: 6
+        }}
+      />
       <div className="absolute inset-0 pointer-events-auto" style={{ color: layout.inkColor, zIndex: 10 }}>
         <div
           className="absolute uppercase flex flex-col"
@@ -1479,7 +1497,7 @@ function TicketCard({
               style={{
                 height: `${24 * (width / REF)}px`,
                 width: "auto",
-                filter: "brightness(0) invert(1)",
+                filter: "brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.9))",
                 opacity: 0.95,
                 display: "block"
               }}
@@ -1490,7 +1508,8 @@ function TicketCard({
             style={{
               fontSize: layout.labelSize * width,
               lineHeight: `${layout.labelLead * width}px`,
-              letterSpacing: `${layout.labelTracking}em`
+              letterSpacing: `${layout.labelTracking}em`,
+              textShadow: "0 2px 8px rgba(0,0,0,0.95)"
             }}
           >
             {event}
@@ -1503,7 +1522,8 @@ function TicketCard({
             top: layout.nameTop * width,
             fontSize: layout.nameSize * width * scale,
             lineHeight: `${layout.nameLead * width * scale}px`,
-            letterSpacing: `${layout.nameTracking}em`
+            letterSpacing: `${layout.nameTracking}em`,
+            textShadow: "0 3px 14px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.9)"
           }}
         >
           {lines.map((line: string, i: number) => (
@@ -1512,28 +1532,50 @@ function TicketCard({
         </div>
         {subMeta && (
           <div
-            className="absolute whitespace-nowrap font-medium"
+            className="absolute whitespace-nowrap"
             style={{
               left: layout.padding * width,
               top: layout.nameTop * width + lines.length * layout.nameLead * width * scale + 10 * (width / REF),
-              fontSize: 16 * (width / REF),
-              letterSpacing: "0.02em",
-              opacity: 0.95
             }}
           >
-            {subMeta}
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
+              style={{
+                fontSize: 13.5 * (width / REF),
+                letterSpacing: "0.02em"
+              }}
+            >
+              {subMeta}
+            </span>
           </div>
         )}
         <div
-          className="absolute whitespace-nowrap uppercase font-medium"
+          className="absolute uppercase flex flex-col gap-1"
           style={{
             left: layout.padding * width,
-            top: layout.footerTop * width,
-            fontSize: layout.footerSize * width,
-            letterSpacing: `${layout.footerTracking}em`
+            top: (layout.footerTop - 14 / REF) * width,
           }}
         >
-          {venue} · {dates}
+          <div
+            className="font-bold tracking-wider text-cream-50"
+            style={{
+              fontSize: 13.5 * (width / REF),
+              letterSpacing: "0.03em",
+              textShadow: "0 2px 8px rgba(0,0,0,0.95)"
+            }}
+          >
+            {venue}
+          </div>
+          <div
+            className="font-semibold tracking-wide text-cream-200/90"
+            style={{
+              fontSize: 11.5 * (width / REF),
+              letterSpacing: "0.04em",
+              textShadow: "0 2px 6px rgba(0,0,0,0.9)"
+            }}
+          >
+            {dates}
+          </div>
         </div>
         {qrDataUrl ? (
           <div
