@@ -195,18 +195,18 @@ export default function Footer() {
           </div>
 
           {/* Nexora IT Club Signature Credit */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm text-cream-300 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm text-cream-300 font-medium text-center">
             <span className="tracking-wide">Designed & Engineered by</span>
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-full bg-gradient-to-r from-wine-950/95 via-wine-900/90 to-wine-950/95 border border-wine-600/80 shadow-lg shadow-black/40 hover:border-glc-magenta hover:shadow-[0_0_20px_rgba(235,16,134,0.35)] hover:scale-105 transition-all duration-300 group/nexora cursor-default">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 sm:px-4.5 sm:py-2 rounded-full bg-gradient-to-r from-wine-950/95 via-wine-900/90 to-wine-950/95 border border-wine-600/80 shadow-lg shadow-black/40 hover:border-glc-magenta hover:shadow-[0_0_20px_rgba(235,16,134,0.35)] hover:scale-105 transition-all duration-300 group/nexora cursor-default">
               <Image
                 src="/logos/nexora-emblem-bright.png"
-                alt="Nexora IT Club"
+                alt="Nexora – IT Club of TAPMI Bengaluru"
                 width={28}
                 height={28}
-                className="w-5 sm:w-6 h-auto object-contain transition-transform duration-300 group-hover/nexora:scale-110 drop-shadow"
+                className="w-5 sm:w-6 h-auto object-contain transition-transform duration-300 group-hover/nexora:scale-110 drop-shadow shrink-0"
               />
-              <span className="text-xs sm:text-sm font-bold tracking-wider text-cream-100 group-hover/nexora:text-white transition-colors">
-                NEXORA IT CLUB
+              <span className="text-[11px] sm:text-xs md:text-sm font-bold tracking-wide text-cream-100 group-hover/nexora:text-white transition-colors">
+                NEXORA – IT Club of TAPMI Bengaluru
               </span>
             </div>
           </div>
