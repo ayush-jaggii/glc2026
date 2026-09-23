@@ -1277,11 +1277,11 @@ var TICKET_LAYOUT = {
   labelSize: 17 / REF,
   labelLead: 22 / REF,
   labelTracking: 0.04,
-  nameTop: 165 / REF,
-  nameSize: 58 / REF,
-  nameLead: 58 / REF,
+  nameTop: 140 / REF,
+  nameSize: 48 / REF,
+  nameLead: 50 / REF,
   nameTracking: -0.01,
-  footerTop: 348 / REF,
+  footerTop: 344 / REF,
   footerSize: 16 / REF,
   footerTracking: 0.02,
   stubSize: 67.61 / REF,
@@ -1441,7 +1441,7 @@ function TicketCard({
           backgroundImage: `repeating-linear-gradient(to bottom, ${layout.inkColor}55 0 ${0.012 * width}px, transparent ${0.012 * width}px ${0.024 * width}px)`
         }}
       />
-      {watermark && (
+      {!qrDataUrl && watermark && (
         <div
           className="pointer-events-none absolute flex flex-col items-center justify-center font-bold tabular-nums select-none"
           style={{
@@ -1594,13 +1594,15 @@ function TicketCard({
             <div
               className="whitespace-nowrap"
               style={{
-                marginTop: `${12 * (width / REF)}px`
+                marginTop: `${22 * (width / REF)}px`
               }}
             >
               <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
                 style={{
-                  fontSize: 13.5 * (width / REF),
+                  fontSize: 13 * (width / REF),
+                  padding: `${4 * (width / REF)}px ${14 * (width / REF)}px`,
+                  lineHeight: 1.2,
                   letterSpacing: "0.02em"
                 }}
               >
