@@ -449,7 +449,7 @@ export default function RegistrationSection() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Year *
+                            Program & Year of Study *
                           </label>
                           <div className="relative">
                             <GraduationCap className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
@@ -458,28 +458,31 @@ export default function RegistrationSection() {
                               onChange={(e) => setYear(e.target.value)}
                               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
                             >
-                              <option value="1st Year">1st Year</option>
-                              <option value="2nd Year">2nd Year</option>
-                              <option value="3rd Year">3rd Year</option>
-                              <option value="4th Year">4th Year</option>
-                              <option value="MBA">MBA</option>
+                              <option value="BBA - 1st Year">BBA · 1st Year</option>
+                              <option value="BBA - 2nd Year">BBA · 2nd Year</option>
+                              <option value="BBA - 3rd Year">BBA · 3rd Year</option>
+                              <option value="BBA - 4th Year">BBA · 4th Year</option>
+                              <option value="MBA - 1st Year">MBA · 1st Year</option>
+                              <option value="MBA - 2nd Year">MBA · 2nd Year</option>
                               <option value="PhD / Research Scholar">PhD / Research Scholar</option>
+                              <option value="Other Student">Other Student</option>
                             </select>
                           </div>
                         </div>
 
                         <div>
                           <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Roll No. / Student ID
+                            Roll No. / Student ID *
                           </label>
                           <div className="relative">
                             <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                             <input
                               type="text"
+                              required
                               value={studentId}
                               onChange={(e) => setStudentId(e.target.value)}
-                              placeholder="e.g. 24MBATM042"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                              placeholder="e.g. 2401042 / 24MBATM042"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors uppercase font-mono"
                             />
                           </div>
                         </div>

@@ -17,17 +17,11 @@ export interface PassQrPayload {
  * Generates a high-resolution QR code data URL (PNG format)
  */
 export async function generateQrDataUrl(payload: PassQrPayload | string): Promise<string> {
-  const content = typeof payload === 'string' ? payload : JSON.stringify({
-    glc: 'GLC 2026 · BUSINESS BEYOND BORDERS',
-    id: payload.regId,
-    name: payload.name,
-    tier: payload.category,
-    seat: payload.seat,
-    gate: payload.gate,
-    venue: 'Dr. Ramdas M. Pai Auditorium, MAHE Bengaluru',
-    date: '10 October 2026',
-    verify: payload.checkInUrl || `https://glc40.vercel.app/verify?id=${payload.regId}`
-  })
+  const content =
+    typeof payload === 'string'
+      ? payload
+      : payload.checkInUrl ||
+        `https://www.tapmiblrglc.in/verify?token=${payload.regId}`
 
   try {
     const dataUrl = await QRCode.toDataURL(content, {
