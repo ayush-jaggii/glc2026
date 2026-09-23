@@ -52,7 +52,6 @@ export default function DelegatePassCard({
       <AdmitOneTicket
         id={id}
         name={pass.name}
-        presenter="TAPMI BENGALURU"
         event={'GLC 2026\nBUSINESS BEYOND BORDERS'}
         subMeta={`${pass.roleOrProgram || ''} · Seat: ${pass.seat}`}
         venue="DR. RAMDAS M. PAI AUDITORIUM"

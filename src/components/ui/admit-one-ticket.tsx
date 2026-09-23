@@ -688,6 +688,7 @@ uniform float u_offsetY;
 uniform float u_pxSize;
 uniform vec4 u_colorBack;
 uniform vec4 u_colorFront;
+uniform vec4 u_colorHighlight;
 uniform float u_shape;
 uniform float u_type;
 
@@ -869,7 +870,11 @@ void main() {
   dithering -= .5;
   float res = step(.5, shape + dithering);
 
-  vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
+  // Blend our signature GLC brand colors (Magenta -> Rose -> Orange) across the pass
+  float tGrad = clamp(uv.x * 0.85 + uv.y * 0.15 + (shape - 0.5) * 0.15, 0.0, 1.0);
+  vec3 fgColorRgb = mix(u_colorFront.rgb, u_colorHighlight.rgb, tGrad);
+
+  vec3 fgColor = fgColorRgb * u_colorFront.a;
   float fgOpacity = u_colorFront.a;
   vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
   float bgOpacity = u_colorBack.a;
@@ -1214,6 +1219,7 @@ var Dithering = memo(function DitheringImpl({
   frame = defaultPreset.params.frame,
   colorBack = defaultPreset.params.colorBack,
   colorFront = defaultPreset.params.colorFront,
+  colorHighlight = "#F58232",
   shape = defaultPreset.params.shape,
   type = defaultPreset.params.type,
   pxSize,
@@ -1232,6 +1238,7 @@ var Dithering = memo(function DitheringImpl({
   const uniforms = {
     u_colorBack: getShaderColorFromString(colorBack),
     u_colorFront: getShaderColorFromString(colorFront),
+    u_colorHighlight: getShaderColorFromString(colorHighlight),
     u_shape: DitheringShapes[shape],
     u_type: DitheringTypes[type],
     u_pxSize: size,
@@ -1258,9 +1265,9 @@ var TICKET_GEOMETRY = {
 
 var TICKET_LAYOUT = {
   padding: 52 / REF,
-  labelTop: 48 / REF,
-  labelSize: 18 / REF,
-  labelLead: 24 / REF,
+  labelTop: 40 / REF,
+  labelSize: 17 / REF,
+  labelLead: 22 / REF,
   labelTracking: 0.04,
   nameTop: 165 / REF,
   nameSize: 58 / REF,
@@ -1273,15 +1280,15 @@ var TICKET_LAYOUT = {
   stubTracking: 0,
   stubOpacity: 0.88,
   watermarkSize: 140 / REF,
-  watermarkOpacity: 0.15,
-  watermarkColor: "#FFC591",
-  inkColor: "#FFF0E2"
+  watermarkOpacity: 0.12,
+  watermarkColor: "#F45197",
+  inkColor: "#FDFBF9"
 };
 
 var TICKET_TEXTURE = {
   engine: "generative",
-  colorBack: "#1C0518",
-  colorFront: "#FFC591",
+  colorBack: "#14040F",
+  colorFront: "#F45197",
   colorHighlight: "#F58232",
   shape: "warp",
   type: "random",
@@ -1300,9 +1307,9 @@ var TICKET_GRADIENT = {
   centreY: 0.3,
   radius: 0.58,
   midStop: 0.45,
-  colorLight: "#ffc691",
-  colorMid: "#fe9046",
-  colorDark: "#ef671c"
+  colorLight: "#F45197",
+  colorMid: "#FF2D8D",
+  colorDark: "#F58232"
 };
 
 var TICKET_STYLE = {
@@ -1406,6 +1413,7 @@ function TicketCard({
       <Dithering
         colorBack={texture.colorBack}
         colorFront={texture.colorFront}
+        colorHighlight={texture.colorHighlight || "#F58232"}
         shape={texture.shape}
         type={texture.type}
         size={texture.size}
@@ -1448,30 +1456,35 @@ function TicketCard({
       </div>
       <div className="absolute inset-0" style={{ color: layout.inkColor }}>
         <div
-          className="absolute whitespace-pre uppercase font-semibold flex flex-col"
+          className="absolute uppercase flex flex-col"
           style={{
             left: layout.padding * width,
             top: layout.labelTop * width,
-            fontSize: layout.labelSize * width,
-            lineHeight: `${layout.labelLead * width}px`,
-            letterSpacing: `${layout.labelTracking}em`
           }}
         >
-          <div className="flex items-center gap-2 mb-0.5">
+          <div className="mb-2">
             <img
               src="/logos/tapmi-logo.svg"
               alt="TAPMI"
               style={{
-                height: `${layout.labelSize * width * 1.15}px`,
+                height: `${24 * (width / REF)}px`,
                 width: "auto",
                 filter: "brightness(0) invert(1)",
                 opacity: 0.95,
-                display: "inline-block"
+                display: "block"
               }}
             />
-            <span style={{ opacity: 0.9 }}>{presenter}</span>
           </div>
-          <div>{event}</div>
+          <div
+            className="whitespace-pre font-bold"
+            style={{
+              fontSize: layout.labelSize * width,
+              lineHeight: `${layout.labelLead * width}px`,
+              letterSpacing: `${layout.labelTracking}em`
+            }}
+          >
+            {event}
+          </div>
         </div>
         <div
           className="absolute font-bold"
@@ -1535,7 +1548,7 @@ function TicketCard({
             </div>
 
             <div
-              className="p-1.5 sm:p-2 rounded-xl bg-white shadow-xl ring-2 ring-[#FFC591]/40"
+              className="p-1.5 sm:p-2 rounded-xl bg-white shadow-xl ring-2 ring-[#F45197]/40"
             >
               <img
                 src={qrDataUrl}
