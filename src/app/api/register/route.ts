@@ -256,11 +256,6 @@ export async function POST(request: Request) {
     // 1. Dual-Write: Safely persist delegate registration to Supabase database (PostgreSQL)
     // Ensures zero data loss and handles high-concurrency bursts effortlessly
     let supabaseRecordId: string | null = null
-    const supabaseUrl =
-      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
-    const supabaseAnonKey =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
 
     if (resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
       try {
