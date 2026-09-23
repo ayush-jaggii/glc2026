@@ -1257,7 +1257,6 @@ var TICKET_GEOMETRY = {
 };
 
 var TICKET_LAYOUT = {
-var TICKET_LAYOUT = {
   padding: 52 / REF,
   labelTop: 48 / REF,
   labelSize: 18 / REF,
