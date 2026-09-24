@@ -98,7 +98,7 @@ export default function PassDownloadActions({
         const clonedSubmeta = clonedEl.querySelector('[data-submeta-line]') as HTMLElement | null
         if (liveSubmeta && clonedSubmeta) {
           try {
-            const progRoll = liveSubmeta.getAttribute('data-program-roll') || ''
+            const progRoll = (liveSubmeta.getAttribute('data-program-roll') || '').toUpperCase()
             const seat = liveSubmeta.getAttribute('data-seat') || ''
 
             if (seat) {
@@ -203,16 +203,8 @@ export default function PassDownloadActions({
                   }
                   uCtx.fillStyle = '#FFFFFF'
                   uCtx.textAlign = 'center'
-
-                  const sm = uCtx.measureText(seatText)
-                  if (sm.actualBoundingBoxAscent !== undefined && sm.actualBoundingBoxDescent !== undefined) {
-                    uCtx.textBaseline = 'alphabetic'
-                    const glyphCenterY = centerY + (sm.actualBoundingBoxAscent - sm.actualBoundingBoxDescent) / 2
-                    uCtx.fillText(seatText, cursorX + pillW / 2, glyphCenterY)
-                  } else {
-                    uCtx.textBaseline = 'middle'
-                    uCtx.fillText(seatText, cursorX + pillW / 2, centerY)
-                  }
+                  uCtx.textBaseline = 'middle'
+                  uCtx.fillText(seatText, cursorX + pillW / 2, centerY)
                 }
 
                 clonedSubmeta.parentNode?.replaceChild(unifiedCanvas, clonedSubmeta)
