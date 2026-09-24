@@ -1277,11 +1277,11 @@ var TICKET_LAYOUT = {
   labelSize: 17 / REF,
   labelLead: 22 / REF,
   labelTracking: 0.04,
-  nameTop: 140 / REF,
-  nameSize: 48 / REF,
-  nameLead: 50 / REF,
+  nameTop: 145 / REF,
+  nameSize: 44 / REF,
+  nameLead: 46 / REF,
   nameTracking: -0.01,
-  footerTop: 344 / REF,
+  footerTop: 340 / REF,
   footerSize: 16 / REF,
   footerTracking: 0.02,
   stubSize: 67.61 / REF,
@@ -1592,22 +1592,32 @@ function TicketCard({
           </div>
           {subMeta && (
             <div
-              className="whitespace-nowrap"
+              className="uppercase tracking-wider flex items-center flex-wrap gap-2.5"
               style={{
-                marginTop: `${22 * (width / REF)}px`
+                marginTop: `${28 * (width / REF)}px`,
+                fontSize: 13.5 * (width / REF),
+                letterSpacing: "0.04em",
+                textShadow: "0 2px 10px rgba(0,0,0,0.95)"
               }}
             >
-              <span
-                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-cream-100 font-semibold shadow-lg"
-                style={{
-                  fontSize: 13 * (width / REF),
-                  padding: `${4 * (width / REF)}px ${14 * (width / REF)}px`,
-                  lineHeight: 1.2,
-                  letterSpacing: "0.02em"
-                }}
-              >
-                {subMeta}
-              </span>
+              {subMeta.includes(" · Seat: ") ? (
+                <>
+                  <span className="text-cream-100 font-semibold tracking-wide">
+                    {subMeta.split(" · Seat: ")[0]}
+                  </span>
+                  <span className="text-[#F45197] font-bold">·</span>
+                  <span
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-white font-bold tracking-wider shadow-sm"
+                    style={{
+                      fontSize: 12.5 * (width / REF)
+                    }}
+                  >
+                    SEAT: {subMeta.split(" · Seat: ")[1]}
+                  </span>
+                </>
+              ) : (
+                <span className="text-cream-100 font-semibold">{subMeta}</span>
+              )}
             </div>
           )}
         </div>
