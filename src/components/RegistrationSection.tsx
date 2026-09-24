@@ -15,8 +15,8 @@ import {
   Briefcase,
   RotateCcw
 } from 'lucide-react'
-import DelegatePassCard, { PassDetails } from '@/components/pass/DelegatePassCard'
-import PassDownloadActions from '@/components/pass/PassDownloadActions'
+import { PassDetails } from '@/components/pass/DelegatePassCard'
+import TicketPrinterAnimation from '@/components/pass/TicketPrinterAnimation'
 import { generateQrDataUrl } from '@/lib/qrGenerator'
 
 type StreamType = 'delegate' | 'student'
@@ -193,14 +193,9 @@ export default function RegistrationSection() {
               </p>
             </div>
 
-            {/* Visual Conference Pass Card */}
+            {/* Ticket Printer Dispenser Animation, Pass Card, and Actions */}
             <div className="w-full max-w-4xl mx-auto mb-4">
-              <DelegatePassCard pass={generatedPass} />
-            </div>
-
-            {/* Action Buttons: Download PDF, Save PNG, Print */}
-            <div className="w-full max-w-xl mx-auto">
-              <PassDownloadActions pass={generatedPass} />
+              <TicketPrinterAnimation pass={generatedPass} />
             </div>
 
             {/* Reset Action */}
