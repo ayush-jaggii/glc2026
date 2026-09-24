@@ -1592,6 +1592,9 @@ function TicketCard({
           </div>
           {subMeta && (
             <div
+              data-submeta-line="true"
+              data-program-roll={subMeta.includes(" · Seat: ") ? subMeta.split(" · Seat: ")[0] : subMeta}
+              data-seat={subMeta.includes(" · Seat: ") ? subMeta.split(" · Seat: ")[1] : ""}
               className="uppercase tracking-wider flex items-center flex-wrap gap-2.5"
               style={{
                 marginTop: `${26 * (width / REF)}px`,

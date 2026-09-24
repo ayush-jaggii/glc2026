@@ -92,74 +92,134 @@ export default function PassDownloadActions({
           }
         }
 
-        // Ensure the seat pill badge is rendered with 100% mathematically centered text and alignment
-        const livePill = element.querySelector('[data-seat-pill]') as HTMLElement | null
-        const clonedPill = clonedEl.querySelector('[data-seat-pill]') as HTMLElement | null
-        if (livePill && clonedPill) {
+        // Ensure the entire student info row (program, roll number, dot separator, and seat pill)
+        // is rasterized onto a single unified canvas along the EXACT same horizontal center line.
+        const liveSubmeta = element.querySelector('[data-submeta-line]') as HTMLElement | null
+        const clonedSubmeta = clonedEl.querySelector('[data-submeta-line]') as HTMLElement | null
+        if (liveSubmeta && clonedSubmeta) {
           try {
-            const pillRect = livePill.getBoundingClientRect()
-            const pillW = livePill.offsetWidth || Math.round(pillRect.width) || 92
-            const pillH = livePill.offsetHeight || Math.round(pillRect.height) || 22
-            const seatText = livePill.textContent?.trim() || ''
+            const progRoll = liveSubmeta.getAttribute('data-program-roll') || ''
+            const seat = liveSubmeta.getAttribute('data-seat') || ''
 
-            const pillCanvas = clonedDoc.createElement('canvas')
-            pillCanvas.width = Math.round(pillW * scale)
-            pillCanvas.height = Math.round(pillH * scale)
-            pillCanvas.style.width = `${pillW}px`
-            pillCanvas.style.height = `${pillH}px`
-            pillCanvas.style.display = 'inline-block'
-            pillCanvas.style.verticalAlign = 'middle'
+            if (seat) {
+              const seatText = `SEAT: ${seat}`
+              const refScale = currentWidth / 741
+              const fontSize = 13.5 * refScale
+              const pillFontSize = 11.5 * refScale
+              const pillH = Math.round(22 * refScale)
+              const dotGap = Math.round(10 * refScale)
 
-            const pCtx = pillCanvas.getContext('2d')
-            if (pCtx) {
-              pCtx.scale(scale, scale)
-
-              // Draw rounded pill capsule
-              const radius = pillH / 2
-              pCtx.beginPath()
-              if (typeof pCtx.roundRect === 'function') {
-                pCtx.roundRect(0.5, 0.5, pillW - 1, pillH - 1, radius)
-              } else {
-                pCtx.moveTo(radius + 0.5, 0.5)
-                pCtx.lineTo(pillW - radius - 0.5, 0.5)
-                pCtx.arc(pillW - radius - 0.5, radius + 0.5, radius - 0.5, -Math.PI / 2, Math.PI / 2)
-                pCtx.lineTo(radius + 0.5, pillH - 0.5)
-                pCtx.arc(radius + 0.5, radius + 0.5, radius - 0.5, Math.PI / 2, (3 * Math.PI) / 2)
-                pCtx.closePath()
-              }
-              pCtx.fillStyle = 'rgba(255, 255, 255, 0.12)'
-              pCtx.fill()
-              pCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
-              pCtx.lineWidth = 1
-              pCtx.stroke()
-
-              // Draw mathematically centered text
-              pCtx.fillStyle = '#FFFFFF'
-              const computedStyle = window.getComputedStyle(livePill)
-              const fontSize = computedStyle.fontSize || `${11.5 * (pillH / 22)}px`
+              // Compute computed styles from live element for font family
+              const computedStyle = window.getComputedStyle(liveSubmeta)
               const fontFamily = computedStyle.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              pCtx.font = `bold ${fontSize} ${fontFamily}`
-              pCtx.textAlign = 'center'
-              if ('letterSpacing' in pCtx) {
-                // @ts-ignore
-                pCtx.letterSpacing = '0.06em'
-              }
 
-              // Use exact glyph bounding box metrics if supported, with middle fallback
-              const metrics = pCtx.measureText(seatText)
-              if (metrics.actualBoundingBoxAscent !== undefined && metrics.actualBoundingBoxDescent !== undefined) {
-                pCtx.textBaseline = 'alphabetic'
-                const glyphCenterY = pillH / 2 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2
-                pCtx.fillText(seatText, pillW / 2, glyphCenterY)
-              } else {
-                pCtx.textBaseline = 'middle'
-                pCtx.fillText(seatText, pillW / 2, pillH / 2)
+              // Measure components using a temporary canvas context
+              const measureCanvas = document.createElement('canvas')
+              const mCtx = measureCanvas.getContext('2d')
+              if (mCtx) {
+                mCtx.font = `600 ${fontSize}px ${fontFamily}`
+                if ('letterSpacing' in mCtx) {
+                  // @ts-ignore
+                  mCtx.letterSpacing = '0.05em'
+                }
+                const progWidth = mCtx.measureText(progRoll).width
+                const dotWidth = mCtx.measureText('·').width
+
+                mCtx.font = `bold ${pillFontSize}px ${fontFamily}`
+                if ('letterSpacing' in mCtx) {
+                  // @ts-ignore
+                  mCtx.letterSpacing = '0.06em'
+                }
+                const pillPadX = Math.round(10 * refScale)
+                const seatMetrics = mCtx.measureText(seatText)
+                const pillW = Math.round(seatMetrics.width + pillPadX * 2)
+
+                const totalW = Math.round(progWidth + dotGap + dotWidth + dotGap + pillW + 20)
+                const totalH = Math.max(pillH, Math.round(26 * refScale))
+                const centerY = totalH / 2
+
+                const unifiedCanvas = clonedDoc.createElement('canvas')
+                unifiedCanvas.width = Math.round(totalW * scale)
+                unifiedCanvas.height = Math.round(totalH * scale)
+                unifiedCanvas.style.width = `${totalW}px`
+                unifiedCanvas.style.height = `${totalH}px`
+                unifiedCanvas.style.display = 'block'
+                unifiedCanvas.style.marginTop = `${Math.round(26 * refScale)}px`
+
+                const uCtx = unifiedCanvas.getContext('2d')
+                if (uCtx) {
+                  uCtx.scale(scale, scale)
+
+                  // 1. Draw Program & Roll number
+                  uCtx.font = `600 ${fontSize}px ${fontFamily}`
+                  if ('letterSpacing' in uCtx) {
+                    // @ts-ignore
+                    uCtx.letterSpacing = '0.05em'
+                  }
+                  uCtx.textAlign = 'left'
+                  uCtx.textBaseline = 'middle'
+                  uCtx.fillStyle = '#f8f4ec' // text-cream-100
+                  uCtx.shadowColor = 'rgba(0,0,0,0.95)'
+                  uCtx.shadowBlur = 8
+                  uCtx.shadowOffsetY = 2
+                  uCtx.fillText(progRoll, 0, centerY)
+
+                  // 2. Draw pink separator dot
+                  let cursorX = progWidth + dotGap
+                  uCtx.fillStyle = '#F45197'
+                  uCtx.fillText('·', cursorX, centerY)
+                  cursorX += dotWidth + dotGap
+
+                  // Clear shadow for pill container
+                  uCtx.shadowColor = 'transparent'
+                  uCtx.shadowBlur = 0
+                  uCtx.shadowOffsetY = 0
+
+                  // 3. Draw Pill Capsule
+                  const pillY = centerY - pillH / 2
+                  const radius = pillH / 2
+                  uCtx.beginPath()
+                  if (typeof uCtx.roundRect === 'function') {
+                    uCtx.roundRect(cursorX, pillY, pillW, pillH, radius)
+                  } else {
+                    uCtx.moveTo(cursorX + radius, pillY)
+                    uCtx.lineTo(cursorX + pillW - radius, pillY)
+                    uCtx.arc(cursorX + pillW - radius, pillY + radius, radius, -Math.PI / 2, Math.PI / 2)
+                    uCtx.lineTo(cursorX + radius, pillY + pillH)
+                    uCtx.arc(cursorX + radius, pillY + radius, radius, Math.PI / 2, (3 * Math.PI) / 2)
+                    uCtx.closePath()
+                  }
+                  uCtx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+                  uCtx.fill()
+                  uCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+                  uCtx.lineWidth = 1
+                  uCtx.stroke()
+
+                  // 4. Draw Seat Text centered inside the pill
+                  uCtx.font = `bold ${pillFontSize}px ${fontFamily}`
+                  if ('letterSpacing' in uCtx) {
+                    // @ts-ignore
+                    uCtx.letterSpacing = '0.06em'
+                  }
+                  uCtx.fillStyle = '#FFFFFF'
+                  uCtx.textAlign = 'center'
+
+                  const sm = uCtx.measureText(seatText)
+                  if (sm.actualBoundingBoxAscent !== undefined && sm.actualBoundingBoxDescent !== undefined) {
+                    uCtx.textBaseline = 'alphabetic'
+                    const glyphCenterY = centerY + (sm.actualBoundingBoxAscent - sm.actualBoundingBoxDescent) / 2
+                    uCtx.fillText(seatText, cursorX + pillW / 2, glyphCenterY)
+                  } else {
+                    uCtx.textBaseline = 'middle'
+                    uCtx.fillText(seatText, cursorX + pillW / 2, centerY)
+                  }
+                }
+
+                clonedSubmeta.parentNode?.replaceChild(unifiedCanvas, clonedSubmeta)
               }
             }
-
-            clonedPill.parentNode?.replaceChild(pillCanvas, clonedPill)
-          } catch (pillErr) {
-            console.error('Failed to rasterize seat pill for download', pillErr)
+          } catch (lineErr) {
+            console.error('Failed to rasterize submeta line for download', lineErr)
           }
         }
       }
