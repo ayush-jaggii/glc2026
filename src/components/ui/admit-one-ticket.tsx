@@ -1603,11 +1603,37 @@ function TicketCard({
             >
               {subMeta.includes(" · Seat: ") ? (
                 <>
-                  <span className="text-cream-100 font-semibold tracking-wide">
+                  <span
+                    className="text-cream-100 font-semibold tracking-wide"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  >
                     {subMeta.split(" · Seat: ")[0]}
                   </span>
-                  <span className="text-[#F45197] font-bold">·</span>
-                  <span className="text-[#ffc5b6] font-bold tracking-wider">
+                  <span
+                    className="text-[#F45197] font-bold"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  >
+                    ·
+                  </span>
+                  <span
+                    data-seat-pill="true"
+                    className="inline-flex items-center justify-center font-bold tracking-wider text-white"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: `${22 * (width / REF)}px`,
+                      padding: `0 ${10 * (width / REF)}px`,
+                      fontSize: `${11.5 * (width / REF)}px`,
+                      letterSpacing: "0.06em",
+                      backgroundColor: "rgba(255, 255, 255, 0.12)",
+                      border: "1px solid rgba(255, 255, 255, 0.25)",
+                      borderRadius: "9999px",
+                      lineHeight: 1,
+                      verticalAlign: "middle",
+                      boxSizing: "border-box"
+                    }}
+                  >
                     SEAT: {subMeta.split(" · Seat: ")[1]}
                   </span>
                 </>

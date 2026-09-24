@@ -91,6 +91,77 @@ export default function PassDownloadActions({
             }
           }
         }
+
+        // Ensure the seat pill badge is rendered with 100% mathematically centered text and alignment
+        const livePill = element.querySelector('[data-seat-pill]') as HTMLElement | null
+        const clonedPill = clonedEl.querySelector('[data-seat-pill]') as HTMLElement | null
+        if (livePill && clonedPill) {
+          try {
+            const pillRect = livePill.getBoundingClientRect()
+            const pillW = livePill.offsetWidth || Math.round(pillRect.width) || 92
+            const pillH = livePill.offsetHeight || Math.round(pillRect.height) || 22
+            const seatText = livePill.textContent?.trim() || ''
+
+            const pillCanvas = clonedDoc.createElement('canvas')
+            pillCanvas.width = Math.round(pillW * scale)
+            pillCanvas.height = Math.round(pillH * scale)
+            pillCanvas.style.width = `${pillW}px`
+            pillCanvas.style.height = `${pillH}px`
+            pillCanvas.style.display = 'inline-block'
+            pillCanvas.style.verticalAlign = 'middle'
+
+            const pCtx = pillCanvas.getContext('2d')
+            if (pCtx) {
+              pCtx.scale(scale, scale)
+
+              // Draw rounded pill capsule
+              const radius = pillH / 2
+              pCtx.beginPath()
+              if (typeof pCtx.roundRect === 'function') {
+                pCtx.roundRect(0.5, 0.5, pillW - 1, pillH - 1, radius)
+              } else {
+                pCtx.moveTo(radius + 0.5, 0.5)
+                pCtx.lineTo(pillW - radius - 0.5, 0.5)
+                pCtx.arc(pillW - radius - 0.5, radius + 0.5, radius - 0.5, -Math.PI / 2, Math.PI / 2)
+                pCtx.lineTo(radius + 0.5, pillH - 0.5)
+                pCtx.arc(radius + 0.5, radius + 0.5, radius - 0.5, Math.PI / 2, (3 * Math.PI) / 2)
+                pCtx.closePath()
+              }
+              pCtx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+              pCtx.fill()
+              pCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+              pCtx.lineWidth = 1
+              pCtx.stroke()
+
+              // Draw mathematically centered text
+              pCtx.fillStyle = '#FFFFFF'
+              const computedStyle = window.getComputedStyle(livePill)
+              const fontSize = computedStyle.fontSize || `${11.5 * (pillH / 22)}px`
+              const fontFamily = computedStyle.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              pCtx.font = `bold ${fontSize} ${fontFamily}`
+              pCtx.textAlign = 'center'
+              if ('letterSpacing' in pCtx) {
+                // @ts-ignore
+                pCtx.letterSpacing = '0.06em'
+              }
+
+              // Use exact glyph bounding box metrics if supported, with middle fallback
+              const metrics = pCtx.measureText(seatText)
+              if (metrics.actualBoundingBoxAscent !== undefined && metrics.actualBoundingBoxDescent !== undefined) {
+                pCtx.textBaseline = 'alphabetic'
+                const glyphCenterY = pillH / 2 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2
+                pCtx.fillText(seatText, pillW / 2, glyphCenterY)
+              } else {
+                pCtx.textBaseline = 'middle'
+                pCtx.fillText(seatText, pillW / 2, pillH / 2)
+              }
+            }
+
+            clonedPill.parentNode?.replaceChild(pillCanvas, clonedPill)
+          } catch (pillErr) {
+            console.error('Failed to rasterize seat pill for download', pillErr)
+          }
+        }
       }
     })
 
