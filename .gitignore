@@ -36,6 +36,7 @@ yarn-error.log*
 /*.jpg
 /*.webp
 /*.zip
+/*.mp3
 
 
 # Raw assets & dumps
