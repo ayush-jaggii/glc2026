@@ -1592,31 +1592,61 @@ function TicketCard({
           </div>
           {subMeta && (
             <div
-              className="uppercase tracking-wider flex items-center flex-wrap gap-2.5"
+              className="uppercase tracking-wider flex items-center flex-wrap"
               style={{
-                marginTop: `${28 * (width / REF)}px`,
-                fontSize: 13.5 * (width / REF),
+                marginTop: `${26 * (width / REF)}px`,
+                fontSize: `${13.5 * (width / REF)}px`,
+                lineHeight: 1,
+                gap: `${10 * (width / REF)}px`,
                 letterSpacing: "0.04em",
                 textShadow: "0 2px 10px rgba(0,0,0,0.95)"
               }}
             >
               {subMeta.includes(" · Seat: ") ? (
                 <>
-                  <span className="text-cream-100 font-semibold tracking-wide">
+                  <span
+                    className="text-cream-100 font-semibold tracking-wide"
+                    style={{
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      lineHeight: 1
+                    }}
+                  >
                     {subMeta.split(" · Seat: ")[0]}
                   </span>
-                  <span className="text-[#F45197] font-bold">·</span>
                   <span
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-white font-bold tracking-wider shadow-sm"
+                    className="text-[#F45197] font-bold"
                     style={{
-                      fontSize: 12.5 * (width / REF)
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      lineHeight: 1
+                    }}
+                  >
+                    ·
+                  </span>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      height: `${22 * (width / REF)}px`,
+                      lineHeight: `${20 * (width / REF)}px`,
+                      padding: `0 ${10 * (width / REF)}px`,
+                      fontSize: `${11.5 * (width / REF)}px`,
+                      letterSpacing: "0.06em",
+                      fontWeight: 700,
+                      color: "#FFFFFF",
+                      backgroundColor: "rgba(255, 255, 255, 0.12)",
+                      border: "1px solid rgba(255, 255, 255, 0.25)",
+                      borderRadius: "9999px",
+                      boxSizing: "border-box",
+                      textAlign: "center"
                     }}
                   >
                     SEAT: {subMeta.split(" · Seat: ")[1]}
                   </span>
                 </>
               ) : (
-                <span className="text-cream-100 font-semibold">{subMeta}</span>
+                <span className="text-cream-100 font-semibold" style={{ lineHeight: 1 }}>{subMeta}</span>
               )}
             </div>
           )}
