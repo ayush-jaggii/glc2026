@@ -193,23 +193,10 @@ export default function RegistrationSection() {
               </p>
             </div>
 
-            {/* Ticket Printer Dispenser Animation, Pass Card, and Actions */}
+            {/* Ticket Printer Dispenser Animation, Pass Card, and Unified Actions */}
             <div className="w-full max-w-4xl mx-auto mb-4">
-              <TicketPrinterAnimation pass={generatedPass} />
+              <TicketPrinterAnimation pass={generatedPass} onReset={handleReset} />
             </div>
-
-            {/* Reset Action */}
-            <div className="mt-8 text-center">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cream-300 hover:text-white transition-colors py-2 px-4 rounded-lg bg-wine-900/40 hover:bg-wine-900 border border-wine-800/80"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Register Another Attendee</span>
-              </button>
-            </div>
-
           </div>
         ) : (
           /* Registration Form & Context */

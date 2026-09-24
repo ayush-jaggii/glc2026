@@ -8,11 +8,13 @@ import PassDownloadActions from './PassDownloadActions'
 interface TicketPrinterAnimationProps {
   pass: PassDetails
   id?: string
+  onReset?: () => void
 }
 
 export default function TicketPrinterAnimation({
   pass,
-  id = 'conference-pass-card'
+  id = 'conference-pass-card',
+  onReset
 }: TicketPrinterAnimationProps) {
   // Printing states: 'printing' (0 - 2.4s) -> 'dispensed' (2.4s - 3.0s) -> 'ready' (3.0s+)
   const [printState, setPrintState] = useState<'printing' | 'dispensed' | 'ready'>('printing')
@@ -156,36 +158,11 @@ export default function TicketPrinterAnimation({
         }
       `}</style>
 
-      {/* High-Tech Dispenser Slot Housing */}
+      {/* High-Tech Dispenser Slot Housing (Minimalist, text-free metallic aperture) */}
       <div className="w-full max-w-4xl px-2 sm:px-4 relative z-20">
-        <div className="w-full rounded-2xl bg-gradient-to-b from-[#1c0617] via-[#12030f] to-[#080106] border border-wine-700/60 shadow-[0_-8px_30px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.12)] p-3 sm:p-4">
-          
-          {/* Top Chassis Bezel with Branding & LED status */}
-          <div className="flex items-center justify-between mb-2 sm:mb-2.5 px-1">
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-cream-200/90">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F45197] shadow-[0_0_8px_#F45197]" />
-              <span className="text-cream-100 font-extrabold">GLC 2026</span>
-              <span className="text-cream-500">·</span>
-              <span className="text-[#ffc5b6]">OFFICIAL PASS DISPENSER</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {isPrinting ? (
-                <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-wider uppercase text-[#F45197]">
-                  <span className="w-2 h-2 rounded-full bg-[#F45197] animate-ping" />
-                  <span>PRINTING PASS...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-wider uppercase text-emerald-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>TICKET DISPENSED</span>
-                </div>
-              )}
-            </div>
-          </div>
-
+        <div className="w-full rounded-2xl bg-gradient-to-b from-[#1c0617] via-[#12030f] to-[#080106] border border-wine-700/60 shadow-[0_-8px_30px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.12)] p-2.5 sm:p-3">
           {/* Dispenser Aperture / Slot Mouth */}
-          <div className="relative w-full h-2.5 sm:h-3 rounded-full bg-[#020002] border border-wine-800 shadow-[inset_0_3px_6px_rgba(0,0,0,0.95),0_0_15px_rgba(244,81,151,0.2)] overflow-hidden">
+          <div className="relative w-full h-2 sm:h-2.5 rounded-full bg-[#020002] border border-wine-800 shadow-[inset_0_3px_6px_rgba(0,0,0,0.95),0_0_15px_rgba(244,81,151,0.2)] overflow-hidden">
             {isPrinting && (
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F45197] via-[#ffc5b6] to-transparent shadow-[0_0_14px_#F45197] animate-laser-pulse" />
             )}
@@ -229,7 +206,7 @@ export default function TicketPrinterAnimation({
         </div>
       </div>
 
-      {/* Action Controls & Replay Print Button */}
+      {/* Action Controls & Secondary Actions */}
       <div
         className={`w-full max-w-xl mx-auto mt-4 transition-all duration-700 ${
           isPrinting
@@ -239,16 +216,28 @@ export default function TicketPrinterAnimation({
       >
         <PassDownloadActions pass={pass} cardElementId={id} />
 
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div className="mt-4 flex items-center justify-center gap-3.5 flex-wrap">
           <button
             type="button"
             onClick={triggerPrint}
             disabled={isPrinting}
-            className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cream-300 hover:text-white transition-all py-1.5 px-3.5 rounded-full bg-wine-900/40 hover:bg-wine-900/80 border border-wine-800/80 hover:border-glc-pink/50 hover:shadow-[0_0_15px_rgba(244,81,151,0.2)]"
+            className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cream-200 hover:text-white transition-all py-2 px-4 rounded-xl bg-wine-900/50 hover:bg-wine-900 border border-wine-800 hover:border-glc-pink/50 hover:shadow-[0_0_15px_rgba(244,81,151,0.2)] disabled:opacity-50"
           >
             <Printer className="w-3.5 h-3.5 text-[#F45197]" />
-            <span>Replay Print Animation</span>
+            <span>Re-print Pass</span>
           </button>
+
+          {onReset && (
+            <button
+              type="button"
+              onClick={onReset}
+              disabled={isPrinting}
+              className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cream-200 hover:text-white transition-all py-2 px-4 rounded-xl bg-wine-900/50 hover:bg-wine-900 border border-wine-800 hover:border-glc-orange/50 hover:shadow-[0_0_15px_rgba(245,130,50,0.2)] disabled:opacity-50"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-[#f58232]" />
+              <span>Register Another Attendee</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
