@@ -19,29 +19,61 @@ export default function TicketPrinterAnimation({
   // Printing states: 'printing' (0 - 2.4s) -> 'dispensed' (2.4s - 3.0s) -> 'ready' (3.0s+)
   const [printState, setPrintState] = useState<'printing' | 'dispensed' | 'ready'>('printing')
   const [key, setKey] = useState(0) // Used to re-trigger animation
-  // Audio ref for realistic receipt printer sound effect
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   const soundPlayedRef = useRef(false)
 
-  // Play realistic receipt printer sound effect
+  // Play subtle thermal printer sound effect via Web Audio API (zero external assets needed)
   const playPrinterAudio = () => {
     try {
-      if (typeof window === 'undefined') return
-
-      if (!audioRef.current) {
-        audioRef.current = new Audio('/sounds/receipt-printer.mp3')
-        audioRef.current.volume = 0.75
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      if (!AudioCtx) return
+      const ctx = new AudioCtx()
+      if (ctx.state === 'suspended') {
+        ctx.resume()
       }
 
-      audioRef.current.currentTime = 0
-      const playPromise = audioRef.current.play()
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay policy fallback: silent if browser restricts initial autoplay
-        })
+      const now = ctx.currentTime
+
+      // Stepper motor thermal printhead ticks
+      const pulseCount = 14
+      for (let i = 0; i < pulseCount; i++) {
+        const t = now + 0.15 + i * 0.13
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+
+        osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle'
+        osc.frequency.setValueAtTime(160 + (i % 3) * 35, t)
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.04)
+
+        gain.gain.setValueAtTime(0.018, t)
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.045)
+
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+
+        osc.start(t)
+        osc.stop(t + 0.05)
       }
+
+      // Melodic conference crystal chime upon completion
+      const chimeTimes = [1.95, 2.1, 2.25]
+      const freqs = [1046.5, 1318.5, 1567.98] // C6, E6, G6
+      chimeTimes.forEach((ct, idx) => {
+        const cOsc = ctx.createOscillator()
+        const cGain = ctx.createGain()
+        cOsc.type = 'sine'
+        cOsc.frequency.setValueAtTime(freqs[idx], now + ct)
+
+        cGain.gain.setValueAtTime(0.035, now + ct)
+        cGain.gain.exponentialRampToValueAtTime(0.0001, now + ct + 0.7)
+
+        cOsc.connect(cGain)
+        cGain.connect(ctx.destination)
+
+        cOsc.start(now + ct)
+        cOsc.stop(now + ct + 0.8)
+      })
     } catch {
-      // Graceful fallback if audio is unsupported
+      // Audio optional / graceful silent fallback
     }
   }
 
@@ -57,22 +89,17 @@ export default function TicketPrinterAnimation({
       playPrinterAudio()
     }
 
-    // 2.8s feed duration matches printer motor run before cut
     const dispenseTimer = setTimeout(() => {
       setPrintState('dispensed')
-    }, 2800)
+    }, 2200)
 
-    // 3.4s settles ticket after cut & drop bounce
     const readyTimer = setTimeout(() => {
       setPrintState('ready')
-    }, 3400)
+    }, 2800)
 
     return () => {
       clearTimeout(dispenseTimer)
       clearTimeout(readyTimer)
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
     }
   }, [key])
 
@@ -115,7 +142,7 @@ export default function TicketPrinterAnimation({
         }
 
         .animate-ticket-feed {
-          animation: thermalTicketFeed 2.8s cubic-bezier(0.18, 0.8, 0.28, 1) forwards;
+          animation: thermalTicketFeed 2.2s cubic-bezier(0.18, 0.8, 0.28, 1) forwards;
         }
 
         .animate-ticket-tear {
