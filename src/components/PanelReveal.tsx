@@ -202,24 +202,10 @@ export default function PanelReveal() {
                             </div>
 
                             {/* Designation */}
-                            <p className="text-xs text-cream-300/80 leading-snug line-clamp-2 mb-3">
+                            <p className="text-xs text-cream-300/80 leading-snug line-clamp-2">
                               {speaker.designation}
                             </p>
                           </div>
-
-                          {/* Focus Tags */}
-                          {speaker.tags && speaker.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 pt-2.5 border-t border-wine-800/60 mt-auto">
-                              {speaker.tags.slice(0, 2).map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="text-[10px] px-2 py-0.5 rounded-md bg-wine-900/60 text-cream-300/90 border border-wine-800/70"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       ))}
                     </div>
