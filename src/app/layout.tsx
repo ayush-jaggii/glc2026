@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "BFSI",
     "Global Trade"
   ],
-  authors: [{ name: "TAPMI - PACE Committee & MAHE Bengaluru" }],
+  authors: [{ name: "PACE Committee & MAHE Bengaluru" }],
   openGraph: {
     title: "GLC 2026 — BUSINESS BEYOND BORDERS",
     description: "TAPMI Bengaluru Flagship Global Leadership Conference · 10 October 2026",

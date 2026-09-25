@@ -54,7 +54,7 @@ export const EVENT_DETAILS = {
   organizer: {
     institution: "T. A. PAI MANAGEMENT INSTITUTE (TAPMI)",
     campus: "Bengaluru Campus",
-    committee: "TAPMI - PACE Committee",
+    committee: "PACE Committee",
     parentUniversity: "Manipal Academy of Higher Education (MAHE)",
     accreditations: ["AACSB Accredited", "AMBA Accredited", "NBA Accredited", "Institution of Eminence"],
   },

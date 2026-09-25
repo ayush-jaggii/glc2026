@@ -68,7 +68,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-cream-400 max-w-sm leading-relaxed">
-              Global Leadership Conference 4.0 organized by the TAPMI PACE Committee, T. A. Pai Management Institute Bengaluru, a constituent unit of Manipal Academy of Higher Education (MAHE Bengaluru).
+              Global Leadership Conference 4.0 organized by the PACE Committee, T. A. Pai Management Institute Bengaluru, a constituent unit of Manipal Academy of Higher Education (MAHE Bengaluru).
             </p>
 
             <div className="pt-2">
