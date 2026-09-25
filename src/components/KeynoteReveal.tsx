@@ -6,13 +6,6 @@ import { Component as BloimBackground } from '@/components/ui/bloim-animation-ba
 export default function KeynoteReveal() {
   return (
     <section id="keynote" className="relative scroll-mt-24">
-      {/* Section Header */}
-      <div className="max-w-3xl mb-4 sm:mb-8">
-        <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
-          Keynote Speaker
-        </h3>
-      </div>
-
       {/* Seamless Bloim Animated Area - Feathered radially to melt into black background */}
       <div className="relative w-full min-h-[360px] sm:min-h-[480px] flex items-center justify-center">
         
