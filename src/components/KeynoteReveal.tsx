@@ -13,19 +13,14 @@ export default function KeynoteReveal() {
         </h3>
       </div>
 
-      {/* Bloim Animated Background Card in authentic GLC brand colors */}
-      <div className="relative group rounded-3xl overflow-hidden border border-wine-800/80 hover:border-glc-magenta/60 transition-all duration-500 shadow-2xl bg-[#0B0207] min-h-[340px] sm:min-h-[460px] flex items-center justify-center">
+      {/* Bloim Animated Background Card in authentic GLC Brand Colors */}
+      <div className="relative group rounded-3xl overflow-hidden border border-wine-800/80 hover:border-glc-magenta/60 transition-all duration-500 shadow-2xl bg-wine-950 min-h-[340px] sm:min-h-[460px] flex items-center justify-center">
         
-        {/* Bloim WebGL Canvas with GLC Magenta & Amber Orange Shaders */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none">
-          <BloimBackground jsonFilePath="/scenes/glc-bloim.json" className="w-full h-full" />
-        </div>
+        {/* Bloim Canvas in Authentic GLC Magenta & Orange */}
+        <BloimBackground className="absolute inset-0 w-full h-full" />
 
-        {/* Minimal edge vignette to blend with container edges */}
-        <div className="absolute inset-0 bg-gradient-to-t from-wine-950/70 via-transparent to-wine-950/50 pointer-events-none" />
-
-        {/* Text Content: Strictly Keynote Speaker / Revealing Soon */}
-        <div className="relative z-10 text-center px-4 select-none">
+        {/* Minimalist Keynote Text Content */}
+        <div className="relative z-10 text-center px-4 select-none pointer-events-none">
           <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-glc-orange mb-2 sm:mb-3">
             Keynote Speaker
           </p>
