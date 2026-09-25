@@ -58,12 +58,9 @@ export default function PanelReveal() {
 
       {/* Section Header */}
       <div className="max-w-3xl mb-12 sm:mb-16">
-        <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-3">
+        <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
           Panel Discussion Topics
         </h3>
-        <p className="text-xs sm:text-sm text-cream-200/80 leading-relaxed font-normal">
-          Five focused symposia exploring multinational enterprise strategy, market expansion, and cross-border innovation.
-        </p>
       </div>
 
       {/* Minimalist Editorial Panels List */}
