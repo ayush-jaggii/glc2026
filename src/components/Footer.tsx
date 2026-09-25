@@ -109,60 +109,67 @@ export default function Footer() {
           {/* Col 3: Secretariat & Contact */}
           <div className="lg:col-span-4 space-y-3">
             <div className="text-xs uppercase tracking-widest text-glc-orange font-semibold mb-3">
-              Contact
+              Contact Us
             </div>
-            <div className="space-y-2.5 text-xs text-cream-300">
+            <div className="space-y-3 text-xs text-cream-300">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-glc-magenta shrink-0 mt-0.5" />
-                <span className="text-cream-400">
-                  {EVENT_DETAILS.venue.institution}, Thanisandra Main Rd, Chokkanahalli, Bengaluru, Karnataka 560064
-                </span>
+                <div className="text-cream-400 leading-relaxed">
+                  <span className="font-semibold text-cream-200 block">
+                    {EVENT_DETAILS.venue.institution}, {EVENT_DETAILS.venue.campus}
+                  </span>
+                  <span className="text-[11px] text-cream-400 italic block">
+                    (Institution of Eminence Deemed to be University)
+                  </span>
+                  <span className="text-cream-400 block mt-0.5">
+                    {EVENT_DETAILS.venue.address}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2.5">
+
+              <div className="flex items-center gap-2.5 pt-1">
                 <Mail className="w-4 h-4 text-glc-pink shrink-0" />
                 <a href={`mailto:${EVENT_DETAILS.contacts.email}`} className="text-cream-200 hover:text-white transition-colors">
                   {EVENT_DETAILS.contacts.email}
                 </a>
               </div>
-              {EVENT_DETAILS.contacts.leads.map((lead) => (
-                <div key={lead.name} className="flex items-center gap-2.5">
-                  <Phone className="w-4 h-4 text-glc-orange shrink-0" />
-                  <a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-400 hover:text-white transition-colors">
-                    {lead.name}: {lead.phone}
-                  </a>
+
+              <div className="pt-2 border-t border-wine-800/60 space-y-2">
+                <div className="text-[10px] uppercase tracking-wider text-glc-orange font-semibold">
+                  Event Enquiries
                 </div>
-              ))}
+                <div className="space-y-1.5 text-xs">
+                  {EVENT_DETAILS.contacts.leads.map((lead) => (
+                    <div key={lead.name} className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-glc-orange shrink-0" />
+                      <a href={`tel:${lead.phone.replace(/\s+/g, '')}`} className="text-cream-300 hover:text-white transition-colors">
+                        <span className="font-medium text-cream-200">{lead.name}:</span> {lead.phone}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Contact & Social Bar (Inspired by Last Year's Footer) */}
-        <div className="py-6 border-y border-wine-900/80 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Quick Contact Links */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-5 sm:gap-7 text-xs text-cream-300">
-            {EVENT_DETAILS.contacts.leads.map((lead) => (
+        {/* Contact & Social Bar */}
+        <div className="py-6 border-y border-wine-900/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Quick Contact Secretariat */}
+          <div className="flex items-center gap-2.5 text-xs text-cream-300">
+            <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-pink shrink-0">
+              <Mail className="w-3.5 h-3.5" />
+            </div>
+            <span>
+              Official Secretariat:{" "}
               <a
-                key={`bar-${lead.name}`}
-                href={`tel:${lead.phone.replace(/\s+/g, '')}`}
-                className="flex items-center gap-2 hover:text-white transition-colors group"
+                href={`mailto:${EVENT_DETAILS.contacts.email}`}
+                className="text-cream-200 hover:text-white font-medium underline underline-offset-4 decoration-glc-pink/50 hover:decoration-glc-pink transition-colors"
               >
-                <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-orange group-hover:border-glc-orange transition-colors">
-                  <Phone className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-cream-300 group-hover:text-white font-medium">{lead.name}: {lead.phone}</span>
+                {EVENT_DETAILS.contacts.email}
               </a>
-            ))}
-
-            <a
-              href={`mailto:${EVENT_DETAILS.contacts.email}`}
-              className="flex items-center gap-2 hover:text-white transition-colors group"
-            >
-              <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-pink group-hover:border-glc-pink transition-colors">
-                <Mail className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-cream-300 group-hover:text-white font-medium">{EVENT_DETAILS.contacts.email}</span>
-            </a>
+            </span>
           </div>
 
           {/* Social Media Channels with Styled Square Borders */}

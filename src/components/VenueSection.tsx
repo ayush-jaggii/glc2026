@@ -56,7 +56,7 @@ export default function VenueSection() {
                     Campus Address
                   </div>
                   <p className="text-xs sm:text-sm text-cream-200 leading-relaxed">
-                    Thanisandra Main Road, Chokkanahalli, Yelahanka, Bengaluru, Karnataka 560064
+                    Govindapura, Yelahanka, Bengaluru 560063, Karnataka, India
                   </p>
                 </div>
 

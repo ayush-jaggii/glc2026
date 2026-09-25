@@ -48,7 +48,7 @@ export const EVENT_DETAILS = {
     name: "Dr. Ramdas M. Pai Auditorium",
     institution: "Manipal Academy of Higher Education (MAHE)",
     campus: "Bengaluru Campus",
-    address: "Thanisandra Main Rd, Chokkanahalli, Bengaluru, Karnataka 560064",
+    address: "Govindapura, Yelahanka, Bengaluru 560063, Karnataka, India",
     city: "Bengaluru, India",
   },
   organizer: {
