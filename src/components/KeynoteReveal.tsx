@@ -7,17 +7,19 @@ export default function KeynoteReveal() {
   return (
     <section id="keynote" className="relative scroll-mt-24">
       {/* Section Header */}
-      <div className="max-w-3xl mb-8 sm:mb-12">
+      <div className="max-w-3xl mb-4 sm:mb-8">
         <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
           Keynote Speaker
         </h3>
       </div>
 
-      {/* Seamless Bloim Animated Area - No border box, blends directly into the page */}
-      <div className="relative w-full overflow-hidden min-h-[340px] sm:min-h-[440px] flex items-center justify-center">
+      {/* Seamless Bloim Animated Area - Feathered radially to melt into black background */}
+      <div className="relative w-full min-h-[360px] sm:min-h-[480px] flex items-center justify-center">
         
-        {/* Seamless Animated Bloim Canvas */}
-        <BloimBackground className="absolute inset-0 w-full h-full" />
+        {/* Radially Feathered Blooming Glow Canvas */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none [mask-image:radial-gradient(ellipse_65%_55%_at_50%_50%,black_25%,transparent_85%)] [-webkit-mask-image:radial-gradient(ellipse_65%_55%_at_50%_50%,black_25%,transparent_85%)]">
+          <BloimBackground className="w-full h-full" />
+        </div>
 
         {/* Minimalist Keynote Text Content */}
         <div className="relative z-10 text-center px-4 select-none pointer-events-none">

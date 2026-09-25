@@ -78,9 +78,8 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       mouse.x += (mouse.targetX - mouse.x) * 0.05
       mouse.y += (mouse.targetY - mouse.y) * 0.05
 
-      // Base background: Obsidian Wine #0B0207
-      ctx.fillStyle = '#0B0207'
-      ctx.fillRect(0, 0, width, height)
+      // Fully transparent clear - NO opaque rectangular fill!
+      ctx.clearRect(0, 0, width, height)
 
       // Natural organic center coordinates with Lissajous drift
       const driftX = Math.sin(now * 0.5) * (width * 0.08)
@@ -88,14 +87,14 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       const cx = (mouse.x || width * 0.5) * 0.25 + (width * 0.5 + driftX) * 0.75
       const cy = (mouse.y || height * 0.5) * 0.25 + (height * 0.5 + driftY) * 0.75
 
-      const maxR = Math.max(width, height) * 0.65
+      const maxR = Math.max(width, height) * 0.6
 
-      // 1. Base Soft Ambient Breathing Plum/Wine Aura
+      // 1. Soft Ambient Breathing Plum/Wine Aura (#5B0C38 / #3D0D30)
       const breath = 0.85 + 0.15 * Math.sin(now * 1.2)
-      const baseR = maxR * 0.7 * breath
+      const baseR = maxR * 0.65 * breath
       const baseGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseR)
       baseGrad.addColorStop(0, 'rgba(91, 12, 56, 0.75)')
-      baseGrad.addColorStop(0.4, 'rgba(61, 13, 48, 0.4)')
+      baseGrad.addColorStop(0.35, 'rgba(61, 13, 48, 0.4)')
       baseGrad.addColorStop(0.7, 'rgba(27, 6, 21, 0.15)')
       baseGrad.addColorStop(1, 'rgba(11, 2, 7, 0)')
       ctx.fillStyle = baseGrad
@@ -103,7 +102,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       ctx.arc(cx, cy, baseR, 0, Math.PI * 2)
       ctx.fill()
 
-      // 2. Active Continuous Blooming Waves (Concentric expanding pulses)
+      // 2. Continuous Organic Blooming Waves (Concentric expanding pulses)
       const ringCount = 4
       for (let i = 0; i < ringCount; i++) {
         const speed = 0.18
@@ -112,7 +111,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
         
         // Exponential ease expansion like a real bloom
         const easeProgress = Math.sin(progress * (Math.PI / 2))
-        const r = maxR * 0.78 * easeProgress
+        const r = maxR * 0.75 * easeProgress
         
         // Bell-curve opacity
         const opacity = Math.sin(progress * Math.PI) * 0.85
@@ -124,8 +123,8 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
           const outerColor = isMagenta ? '255, 45, 141' : '245, 130, 50'
 
           const ringGrad = ctx.createRadialGradient(
-            cx, cy, Math.max(0, r - 70),
-            cx, cy, r + 50
+            cx, cy, Math.max(0, r - 60),
+            cx, cy, r + 45
           )
           ringGrad.addColorStop(0, `rgba(${innerColor}, 0)`)
           ringGrad.addColorStop(0.45, `rgba(${innerColor}, ${opacity * 0.8})`)
@@ -134,19 +133,19 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
 
           ctx.fillStyle = ringGrad
           ctx.beginPath()
-          ctx.arc(cx, cy, r + 50, 0, Math.PI * 2)
+          ctx.arc(cx, cy, r + 45, 0, Math.PI * 2)
           ctx.fill()
         }
       }
 
       // 3. Central Luminous Core Blobs (Swirling orbit)
-      const orbitR = 40 + Math.sin(now * 1.8) * 15
+      const orbitR = 35 + Math.sin(now * 1.8) * 12
       const angle = now * 0.9
 
       // Magenta Core
       const mX = cx + Math.cos(angle) * orbitR
       const mY = cy + Math.sin(angle) * (orbitR * 0.7)
-      const mR = 110 + Math.sin(now * 2) * 20
+      const mR = 100 + Math.sin(now * 2) * 20
       const mGrad = ctx.createRadialGradient(mX, mY, 0, mX, mY, mR)
       mGrad.addColorStop(0, 'rgba(255, 45, 141, 0.95)')
       mGrad.addColorStop(0.5, 'rgba(244, 81, 151, 0.45)')
@@ -159,7 +158,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       // Orange / Amber Core
       const oX = cx - Math.cos(angle) * orbitR
       const oY = cy - Math.sin(angle) * (orbitR * 0.7)
-      const oR = 105 + Math.cos(now * 1.7) * 20
+      const oR = 95 + Math.cos(now * 1.7) * 20
       const oGrad = ctx.createRadialGradient(oX, oY, 0, oX, oY, oR)
       oGrad.addColorStop(0, 'rgba(255, 122, 0, 0.95)')
       oGrad.addColorStop(0.5, 'rgba(245, 130, 50, 0.5)')
@@ -170,7 +169,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       ctx.fill()
 
       // 4. Specular Peach-Rose Flare Core (#ffc5b6)
-      const flareR = 45 + Math.sin(now * 2.4) * 12
+      const flareR = 40 + Math.sin(now * 2.4) * 10
       const flareGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, flareR)
       flareGrad.addColorStop(0, 'rgba(255, 197, 182, 0.9)')
       flareGrad.addColorStop(0.4, 'rgba(244, 81, 151, 0.45)')
@@ -179,17 +178,6 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       ctx.beginPath()
       ctx.arc(cx, cy, flareR, 0, Math.PI * 2)
       ctx.fill()
-
-      // 5. Seamless Edge Falloff: melts completely into surrounding wine-950 page background
-      const edgeFalloff = ctx.createRadialGradient(
-        width * 0.5, height * 0.5, Math.min(width, height) * 0.22,
-        width * 0.5, height * 0.5, Math.max(width, height) * 0.52
-      )
-      edgeFalloff.addColorStop(0, 'rgba(11, 2, 7, 0)')
-      edgeFalloff.addColorStop(0.65, 'rgba(11, 2, 7, 0.25)')
-      edgeFalloff.addColorStop(1, 'rgba(11, 2, 7, 1)')
-      ctx.fillStyle = edgeFalloff
-      ctx.fillRect(0, 0, width, height)
 
       animationFrameId = requestAnimationFrame(render)
     }
@@ -213,7 +201,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full filter blur-[32px] sm:blur-[44px] scale-110 pointer-events-none select-none"
+        className="absolute inset-0 w-full h-full filter blur-[36px] sm:blur-[50px] scale-105 pointer-events-none select-none"
       />
       {children}
     </div>
