@@ -13,10 +13,10 @@ export default function KeynoteReveal() {
         </h3>
       </div>
 
-      {/* Bloim Animated Background Card in authentic GLC Brand Colors */}
-      <div className="relative group rounded-3xl overflow-hidden border border-wine-800/80 hover:border-glc-magenta/60 transition-all duration-500 shadow-2xl bg-wine-950 min-h-[340px] sm:min-h-[460px] flex items-center justify-center">
+      {/* Seamless Bloim Animated Area - No border box, blends directly into the page */}
+      <div className="relative w-full overflow-hidden min-h-[340px] sm:min-h-[440px] flex items-center justify-center">
         
-        {/* Bloim Canvas in Authentic GLC Magenta & Orange */}
+        {/* Seamless Animated Bloim Canvas */}
         <BloimBackground className="absolute inset-0 w-full h-full" />
 
         {/* Minimalist Keynote Text Content */}

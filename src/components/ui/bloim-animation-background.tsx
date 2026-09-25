@@ -74,7 +74,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
 
       const now = (performance.now() - startTime) * 0.001
 
-      // Mouse smooth interpolation
+      // Smooth mouse interaction
       mouse.x += (mouse.targetX - mouse.x) * 0.05
       mouse.y += (mouse.targetY - mouse.y) * 0.05
 
@@ -82,122 +82,113 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
       ctx.fillStyle = '#0B0207'
       ctx.fillRect(0, 0, width, height)
 
-      // Calculate organic animated center with Lissajous drift (guarantees animation on mobile even without touch!)
-      const driftX = Math.sin(now * 0.6) * (width * 0.12)
-      const driftY = Math.cos(now * 0.7) * (height * 0.1)
-      const cx = (mouse.x || width * 0.5) * 0.4 + (width * 0.5 + driftX) * 0.6
-      const cy = (mouse.y || height * 0.5) * 0.4 + (height * 0.5 + driftY) * 0.6
+      // Natural organic center coordinates with Lissajous drift
+      const driftX = Math.sin(now * 0.5) * (width * 0.08)
+      const driftY = Math.cos(now * 0.6) * (height * 0.06)
+      const cx = (mouse.x || width * 0.5) * 0.25 + (width * 0.5 + driftX) * 0.75
+      const cy = (mouse.y || height * 0.5) * 0.25 + (height * 0.5 + driftY) * 0.75
 
-      // Emitter 1: Deep Burgundy / Wine Ambient Bloom (#5B0C38 / #3D0D30)
-      const maxR = Math.max(width, height) * 0.7
-      const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, maxR)
-      bgGrad.addColorStop(0, 'rgba(91, 12, 56, 0.85)')
-      bgGrad.addColorStop(0.35, 'rgba(61, 13, 48, 0.5)')
-      bgGrad.addColorStop(0.7, 'rgba(27, 6, 21, 0.25)')
-      bgGrad.addColorStop(1, 'rgba(11, 2, 7, 0)')
-      ctx.fillStyle = bgGrad
-      ctx.fillRect(0, 0, width, height)
+      const maxR = Math.max(width, height) * 0.65
 
-      // Emitter 2: Expanding Organic Blooming Rings (Harmonic pulses)
-      // Ring A - GLC Magenta (#F45197)
-      const pulseA = (now * 0.22) % 1
-      const radiusA = maxR * 0.65 * pulseA
-      const alphaA = Math.sin(pulseA * Math.PI) * 0.75
-      if (radiusA > 5) {
-        const gradA = ctx.createRadialGradient(
-          cx - 30 * Math.sin(now),
-          cy + 20 * Math.cos(now),
-          Math.max(0, radiusA - 80),
-          cx,
-          cy,
-          radiusA + 60
-        )
-        gradA.addColorStop(0, 'rgba(244, 81, 151, 0)')
-        gradA.addColorStop(0.5, `rgba(244, 81, 151, ${alphaA * 0.65})`)
-        gradA.addColorStop(0.8, `rgba(255, 45, 141, ${alphaA * 0.35})`)
-        gradA.addColorStop(1, 'rgba(244, 81, 151, 0)')
-        ctx.fillStyle = gradA
-        ctx.beginPath()
-        ctx.arc(cx, cy, radiusA + 60, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      // Ring B - GLC Orange / Amber (#FF7A00 / #F58232)
-      const pulseB = (now * 0.22 + 0.5) % 1
-      const radiusB = maxR * 0.65 * pulseB
-      const alphaB = Math.sin(pulseB * Math.PI) * 0.75
-      if (radiusB > 5) {
-        const gradB = ctx.createRadialGradient(
-          cx + 40 * Math.cos(now * 0.8),
-          cy - 20 * Math.sin(now * 0.8),
-          Math.max(0, radiusB - 70),
-          cx,
-          cy,
-          radiusB + 50
-        )
-        gradB.addColorStop(0, 'rgba(255, 122, 0, 0)')
-        gradB.addColorStop(0.45, `rgba(245, 130, 50, ${alphaB * 0.7})`)
-        gradB.addColorStop(0.75, `rgba(255, 122, 0, ${alphaB * 0.4})`)
-        gradB.addColorStop(1, 'rgba(255, 122, 0, 0)')
-        ctx.fillStyle = gradB
-        ctx.beginPath()
-        ctx.arc(cx, cy, radiusB + 50, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      // Emitter 3: Dual Luminous Organic Blobs orbiting each other
-      const orbitR = 60 + Math.sin(now * 1.5) * 20
-      const orb1X = cx + Math.cos(now * 0.8) * orbitR
-      const orb1Y = cy + Math.sin(now * 0.8) * (orbitR * 0.6)
-      const orb2X = cx - Math.cos(now * 0.8) * orbitR
-      const orb2Y = cy - Math.sin(now * 0.8) * (orbitR * 0.6)
-
-      // Magenta Core Blob (#F45197)
-      const r1 = 120 + Math.sin(now * 2) * 25
-      const gradOrb1 = ctx.createRadialGradient(orb1X, orb1Y, 0, orb1X, orb1Y, r1)
-      gradOrb1.addColorStop(0, 'rgba(255, 45, 141, 0.85)')
-      gradOrb1.addColorStop(0.4, 'rgba(244, 81, 151, 0.45)')
-      gradOrb1.addColorStop(1, 'rgba(244, 81, 151, 0)')
-      ctx.fillStyle = gradOrb1
+      // 1. Base Soft Ambient Breathing Plum/Wine Aura
+      const breath = 0.85 + 0.15 * Math.sin(now * 1.2)
+      const baseR = maxR * 0.7 * breath
+      const baseGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseR)
+      baseGrad.addColorStop(0, 'rgba(91, 12, 56, 0.75)')
+      baseGrad.addColorStop(0.4, 'rgba(61, 13, 48, 0.4)')
+      baseGrad.addColorStop(0.7, 'rgba(27, 6, 21, 0.15)')
+      baseGrad.addColorStop(1, 'rgba(11, 2, 7, 0)')
+      ctx.fillStyle = baseGrad
       ctx.beginPath()
-      ctx.arc(orb1X, orb1Y, r1, 0, Math.PI * 2)
+      ctx.arc(cx, cy, baseR, 0, Math.PI * 2)
       ctx.fill()
 
-      // Orange Core Blob (#F58232 / #FF7A00)
-      const r2 = 110 + Math.cos(now * 1.8) * 25
-      const gradOrb2 = ctx.createRadialGradient(orb2X, orb2Y, 0, orb2X, orb2Y, r2)
-      gradOrb2.addColorStop(0, 'rgba(255, 122, 0, 0.85)')
-      gradOrb2.addColorStop(0.4, 'rgba(245, 130, 50, 0.45)')
-      gradOrb2.addColorStop(1, 'rgba(245, 130, 50, 0)')
-      ctx.fillStyle = gradOrb2
+      // 2. Active Continuous Blooming Waves (Concentric expanding pulses)
+      const ringCount = 4
+      for (let i = 0; i < ringCount; i++) {
+        const speed = 0.18
+        const offset = i / ringCount
+        const progress = ((now * speed + offset) % 1)
+        
+        // Exponential ease expansion like a real bloom
+        const easeProgress = Math.sin(progress * (Math.PI / 2))
+        const r = maxR * 0.78 * easeProgress
+        
+        // Bell-curve opacity
+        const opacity = Math.sin(progress * Math.PI) * 0.85
+
+        if (r > 8 && opacity > 0.01) {
+          // Alternating colors between GLC Magenta (#F45197) and GLC Amber Orange (#FF7A00)
+          const isMagenta = i % 2 === 0
+          const innerColor = isMagenta ? '244, 81, 151' : '255, 122, 0'
+          const outerColor = isMagenta ? '255, 45, 141' : '245, 130, 50'
+
+          const ringGrad = ctx.createRadialGradient(
+            cx, cy, Math.max(0, r - 70),
+            cx, cy, r + 50
+          )
+          ringGrad.addColorStop(0, `rgba(${innerColor}, 0)`)
+          ringGrad.addColorStop(0.45, `rgba(${innerColor}, ${opacity * 0.8})`)
+          ringGrad.addColorStop(0.75, `rgba(${outerColor}, ${opacity * 0.45})`)
+          ringGrad.addColorStop(1, `rgba(${outerColor}, 0)`)
+
+          ctx.fillStyle = ringGrad
+          ctx.beginPath()
+          ctx.arc(cx, cy, r + 50, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+
+      // 3. Central Luminous Core Blobs (Swirling orbit)
+      const orbitR = 40 + Math.sin(now * 1.8) * 15
+      const angle = now * 0.9
+
+      // Magenta Core
+      const mX = cx + Math.cos(angle) * orbitR
+      const mY = cy + Math.sin(angle) * (orbitR * 0.7)
+      const mR = 110 + Math.sin(now * 2) * 20
+      const mGrad = ctx.createRadialGradient(mX, mY, 0, mX, mY, mR)
+      mGrad.addColorStop(0, 'rgba(255, 45, 141, 0.95)')
+      mGrad.addColorStop(0.5, 'rgba(244, 81, 151, 0.45)')
+      mGrad.addColorStop(1, 'rgba(244, 81, 151, 0)')
+      ctx.fillStyle = mGrad
       ctx.beginPath()
-      ctx.arc(orb2X, orb2Y, r2, 0, Math.PI * 2)
+      ctx.arc(mX, mY, mR, 0, Math.PI * 2)
       ctx.fill()
 
-      // Emitter 4: Core Specular Flare in Peach (#ffc5b6)
-      const flareR = 40 + Math.sin(now * 2.5) * 12
+      // Orange / Amber Core
+      const oX = cx - Math.cos(angle) * orbitR
+      const oY = cy - Math.sin(angle) * (orbitR * 0.7)
+      const oR = 105 + Math.cos(now * 1.7) * 20
+      const oGrad = ctx.createRadialGradient(oX, oY, 0, oX, oY, oR)
+      oGrad.addColorStop(0, 'rgba(255, 122, 0, 0.95)')
+      oGrad.addColorStop(0.5, 'rgba(245, 130, 50, 0.5)')
+      oGrad.addColorStop(1, 'rgba(245, 130, 50, 0)')
+      ctx.fillStyle = oGrad
+      ctx.beginPath()
+      ctx.arc(oX, oY, oR, 0, Math.PI * 2)
+      ctx.fill()
+
+      // 4. Specular Peach-Rose Flare Core (#ffc5b6)
+      const flareR = 45 + Math.sin(now * 2.4) * 12
       const flareGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, flareR)
-      flareGrad.addColorStop(0, 'rgba(255, 197, 182, 0.75)')
-      flareGrad.addColorStop(0.5, 'rgba(244, 81, 151, 0.3)')
+      flareGrad.addColorStop(0, 'rgba(255, 197, 182, 0.9)')
+      flareGrad.addColorStop(0.4, 'rgba(244, 81, 151, 0.45)')
       flareGrad.addColorStop(1, 'rgba(244, 81, 151, 0)')
       ctx.fillStyle = flareGrad
       ctx.beginPath()
       ctx.arc(cx, cy, flareR, 0, Math.PI * 2)
       ctx.fill()
 
-      // Vignette to blend smoothly into surrounding dark wine
-      const vig = ctx.createRadialGradient(
-        width * 0.5,
-        height * 0.5,
-        Math.min(width, height) * 0.25,
-        width * 0.5,
-        height * 0.5,
-        Math.max(width, height) * 0.55
+      // 5. Seamless Edge Falloff: melts completely into surrounding wine-950 page background
+      const edgeFalloff = ctx.createRadialGradient(
+        width * 0.5, height * 0.5, Math.min(width, height) * 0.22,
+        width * 0.5, height * 0.5, Math.max(width, height) * 0.52
       )
-      vig.addColorStop(0, 'rgba(11, 2, 7, 0)')
-      vig.addColorStop(0.7, 'rgba(11, 2, 7, 0.3)')
-      vig.addColorStop(1, 'rgba(11, 2, 7, 0.85)')
-      ctx.fillStyle = vig
+      edgeFalloff.addColorStop(0, 'rgba(11, 2, 7, 0)')
+      edgeFalloff.addColorStop(0.65, 'rgba(11, 2, 7, 0.25)')
+      edgeFalloff.addColorStop(1, 'rgba(11, 2, 7, 1)')
+      ctx.fillStyle = edgeFalloff
       ctx.fillRect(0, 0, width, height)
 
       animationFrameId = requestAnimationFrame(render)
@@ -222,7 +213,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full filter blur-[28px] sm:blur-[36px] scale-110 pointer-events-none select-none"
+        className="absolute inset-0 w-full h-full filter blur-[32px] sm:blur-[44px] scale-110 pointer-events-none select-none"
       />
       {children}
     </div>
