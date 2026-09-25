@@ -2,6 +2,7 @@
 
 import React from 'react'
 import SpeakerReveal from './SpeakerReveal'
+import KeynoteReveal from './KeynoteReveal'
 import PanelReveal from './PanelReveal'
 
 export default function RevealSection() {
@@ -15,7 +16,10 @@ export default function RevealSection() {
         {/* 1. Speakers Section */}
         <SpeakerReveal />
 
-        {/* 2. Symposia Section */}
+        {/* 2. Keynote Speaker Revealing Soon */}
+        <KeynoteReveal />
+
+        {/* 3. Symposia Section */}
         <PanelReveal />
       </div>
 
