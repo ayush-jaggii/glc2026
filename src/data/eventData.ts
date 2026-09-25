@@ -61,8 +61,10 @@ export const EVENT_DETAILS = {
   contacts: {
     email: "engage.tapmiblr@manipal.edu",
     leads: [
-      { name: "Deepan G", phone: "+91 97900 83446" },
+      { name: "Tarun S Nambiar", phone: "+91 95352 22633" },
+      { name: "Akshat Verma", phone: "+91 70240 60949" },
       { name: "Johnson P", phone: "+91 960 601 3114" },
+      { name: "Deepan G", phone: "+91 97900 83446" },
     ],
   },
   registrationSheetId: "1ZS0-TQlBPyBjTMQqOM11M2Yi2lpbiA6RPd0U_PUEtH0",
