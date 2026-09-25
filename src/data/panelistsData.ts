@@ -133,7 +133,7 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'it-5',
     name: 'Divya Kumari',
-    company: 'Decathlon',
+    company: 'Microland',
     designation: 'Board Member & Global Executive',
     linkedin: 'https://www.linkedin.com/in/divyakum',
     trackCode: 'IT',
