@@ -18,6 +18,7 @@ export interface PanelSchema {
   subtitle: string;
   image: string;
   description: string;
+  shortDescription?: string;
   keyQuestions: string[];
   isRevealed: boolean;
 }
