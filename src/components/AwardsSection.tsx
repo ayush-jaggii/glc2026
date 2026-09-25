@@ -135,7 +135,7 @@ export default function AwardsSection() {
               <img
                 src="/logos/plugscale-horizontal-white.png"
                 alt="PLUGSCALE Logo"
-                className="h-7 sm:h-8 md:h-9 w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity"
+                className="h-[21px] sm:h-6 md:h-[27px] w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity"
               />
             </a>
           </div>
