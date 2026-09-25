@@ -156,21 +156,21 @@ export default function Footer() {
 
         {/* Contact & Social Bar */}
         <div className="py-6 border-y border-wine-900/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Quick Contact Secretariat */}
-          <div className="flex items-center gap-2.5 text-xs text-cream-300">
-            <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-pink shrink-0">
+          {/* Quick Email Contact */}
+          <a
+            href={`mailto:${EVENT_DETAILS.contacts.email}`}
+            className="flex items-center gap-2.5 text-xs text-cream-300 hover:text-white group transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-wine-900/60 border border-wine-800 flex items-center justify-center text-glc-pink group-hover:border-glc-pink transition-colors shrink-0">
               <Mail className="w-3.5 h-3.5" />
             </div>
             <span>
-              Official Secretariat:{" "}
-              <a
-                href={`mailto:${EVENT_DETAILS.contacts.email}`}
-                className="text-cream-200 hover:text-white font-medium underline underline-offset-4 decoration-glc-pink/50 hover:decoration-glc-pink transition-colors"
-              >
+              <span className="text-cream-400">Official Email: </span>
+              <span className="font-medium text-cream-200 group-hover:text-white underline underline-offset-4 decoration-glc-pink/50 group-hover:decoration-glc-pink transition-colors">
                 {EVENT_DETAILS.contacts.email}
-              </a>
+              </span>
             </span>
-          </div>
+          </a>
 
           {/* Social Media Channels with Styled Square Borders */}
           <div className="flex items-center gap-3">
