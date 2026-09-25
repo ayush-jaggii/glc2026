@@ -213,17 +213,6 @@ export const PANELISTS_DATA: Panelist[] = [
   },
   {
     id: 'auto-3',
-    name: 'Sridhar Rao',
-    company: 'ZF Transmissions',
-    designation: 'Director',
-    linkedin: 'https://www.linkedin.com/in/shridharraob/',
-    trackCode: 'Auto',
-    trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/Auto/SridharRao_Auto.jpeg',
-    tags: ['Powertrain Systems', 'Industrial Manufacturing', 'Automotive'],
-  },
-  {
-    id: 'auto-4',
     name: 'Manoj Gupta',
     company: 'JBM Group',
     designation: 'CEO',
