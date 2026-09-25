@@ -201,7 +201,7 @@ export const Component = ({ className, children }: BloimAnimationBackgroundProps
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full filter blur-[36px] sm:blur-[50px] scale-105 pointer-events-none select-none"
+        className="absolute inset-0 w-full h-full filter blur-[10px] sm:blur-[14px] scale-105 pointer-events-none select-none"
       />
       {children}
     </div>
