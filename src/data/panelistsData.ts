@@ -211,17 +211,6 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/Auto/AnuragB_Auto.jpeg',
     tags: ['EV Transition', 'Hardware Innovation', 'Clean Mobility'],
   },
-  {
-    id: 'auto-3',
-    name: 'Manoj Gupta',
-    company: 'JBM Group',
-    designation: 'CEO',
-    linkedin: 'https://www.linkedin.com/in/manojgu/',
-    trackCode: 'Auto',
-    trackName: 'Automobile & EV Mobility',
-    photo: '/images/panelists/Auto/ManojGupta_Auto.jpeg',
-    tags: ['Clean Energy', 'Electric Buses', 'Commercial EV'],
-  },
 
   // BFSI Panel
   {
