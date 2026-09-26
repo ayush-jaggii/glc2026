@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { EVENT_DETAILS } from '@/data/eventData'
 import {
   CheckCircle2,
@@ -42,6 +42,24 @@ export default function RegistrationSection() {
   const [errorMsg, setErrorMsg] = useState('')
   const [generatedPass, setGeneratedPass] = useState<PassDetails | null>(null)
   const [delegateSuccess, setDelegateSuccess] = useState(false)
+
+  // Mobile-only auto-scroll to the top of the pass / confirmation area
+  useEffect(() => {
+    if (generatedPass || delegateSuccess) {
+      // Only execute on mobile screens (< 768px), leaving desktop/laptops untouched
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        // Delay allows mobile on-screen keyboards to finish collapsing
+        const timer = setTimeout(() => {
+          const target = document.getElementById('register')
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }, 120)
+
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [generatedPass, delegateSuccess])
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
