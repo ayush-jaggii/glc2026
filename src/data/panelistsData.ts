@@ -295,7 +295,7 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'media-3',
     name: 'Anindya Khare',
-    company: 'Zee Media Corporation Ltd',
+    company: 'iTV Network',
     designation: 'Marketing Head',
     linkedin: 'https://www.linkedin.com/in/anindya-khare-0567984/',
     trackCode: 'Media',
@@ -311,7 +311,7 @@ export const PANELISTS_DATA: Panelist[] = [
     linkedin: '',
     trackCode: 'Media',
     trackName: 'Media, Content & Brand Strategy',
-    photo: '',
+    photo: '/images/panelists/Media/JagdishChandra_Media.png',
     tags: ['Broadcast Journalism', 'Media Leadership', 'Editorial Vision'],
   },
 
