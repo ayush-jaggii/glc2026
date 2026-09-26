@@ -81,7 +81,7 @@ export const PANELS_LIST: PanelSchema[] = [
     topic: "Enterprise Tech Decoupling, AI Governance & Sovereign Cloud Infrastructure",
     subtitle: "Cross-Border Digital Architecture & Enterprise Scaling",
     image: "/panels/it-gcc.jpg",
-    description: "The restructuring of multinational IT architectures, data sovereignty boundaries, and cross-border AI governance frameworks.",
+    description: "The IT Panel will bring Business Beyond Borders to life by exploring how India is becoming a global hub for GCCs and services. Through real experiences, the conversation will connect AI, changing work, critical thinking, and essential skills, helping students understand global opportunities and prepare to become globally relevant professionals.",
     keyQuestions: [
       "Navigating cross-border data localization and ethical AI governance.",
       "From infrastructure cost centers to strategic platforms: Driving borderless tech innovation."
@@ -96,7 +96,7 @@ export const PANELS_LIST: PanelSchema[] = [
     topic: "Global Supply Networks, Sourcing Agility & Borderless Consumer Resonance",
     subtitle: "Cross-Border FMCG Value Chains & Consumer Demographics",
     image: "/panels/fmcg-retail.jpg",
-    description: "Cross-border consumer supply chains, regional sourcing agility, and brand positioning amidst economic nationalism and changing retail landscapes.",
+    description: "Fast moving goods move fastest across borders. This panel brings together FMCG leaders in supply chain, distribution and brand to unpack how products travel from a single plant to millions of homes, and what building a business beyond borders actually demands from the people who do it daily.",
     keyQuestions: [
       "How global FMCG leaders re-engineer sourcing to withstand localized disruptions.",
       "Maintaining universal brand authenticity while adapting to hyper-local cultural nuances."
@@ -111,7 +111,7 @@ export const PANELS_LIST: PanelSchema[] = [
     topic: "Global Liquidity, Sovereign Wealth & Next-Gen International Settlement",
     subtitle: "Cross-Border Capital Flows, Fintech & Alternative Settlement Rails",
     image: "/panels/finance-bfsi.jpg",
-    description: "Managing international liquidity, cross-border M&A, digital currency protocols, and shifting institutional capital across emerging market corridors.",
+    description: "What happens in one market rarely stays there. This BFSI panel traces how tariffs, conflict and AI travel through banking, financial services and insurance, and where they finally land. Expect candid perspectives, differing views, and takeaways grounded in experience rather than theory.",
     keyQuestions: [
       "Where institutional capital allocates in response to geopolitical realignments.",
       "The role of next-generation digital settlement rails in bypassing legacy frictions."
@@ -126,7 +126,7 @@ export const PANELS_LIST: PanelSchema[] = [
     topic: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs in EV Mobility",
     subtitle: "Clean-Tech Alliances & Automotive Manufacturing",
     image: "/panels/auto-mobility.jpg",
-    description: "EV battery supply chains, rare-earth mineral geopolitics, regulatory mandates, and global automotive manufacturing alliances.",
+    description: "The Automotive & EV panel will explore how global shifts, geopolitical tensions, and evolving supply chains are shaping the future of India’s automobile industry. Industry leaders will share practical insights on India’s journey towards self-reliance, emerging technologies, innovation, and changing business opportunities, while highlighting what these shifts mean for the next generation of management leaders.",
     keyQuestions: [
       "Mitigating critical mineral bottlenecks and battery recycling corridors.",
       "Navigating cross-border tariffs and localized manufacturing incentives in EV adoption."
@@ -141,7 +141,7 @@ export const PANELS_LIST: PanelSchema[] = [
     topic: "Cultural Resonance vs. International Scale: Navigating Borderless Media",
     subtitle: "Balancing Global Brand Trust with Localized Consumer Empathy",
     image: "/panels/media-brands.jpg",
-    description: "Balancing universal brand narratives with hyper-localized nuances across fragmented media channels and culturally sensitive global audiences.",
+    description: "What does it take to stay ahead when the rules of media and marketing are constantly changing? As global markets become more connected and emerging technologies reshape the industry, businesses are navigating new opportunities, challenges, and possibilities across borders. The panel, featuring industry leaders, will discuss these shifts, perspectives from the field, and the changing landscape of media and marketing.",
     keyQuestions: [
       "How enterprise marketing teams maintain global brand trust during geopolitical friction.",
       "Leveraging generative media without eroding regional consumer empathy."

@@ -132,13 +132,13 @@ export const PANELISTS_DATA: Panelist[] = [
   },
   {
     id: 'it-5',
-    name: 'Divya Kumari',
+    name: 'Divya Kumar',
     company: 'Microland',
     designation: 'Board Member & Global Executive',
     linkedin: 'https://www.linkedin.com/in/divyakum',
     trackCode: 'IT',
     trackName: 'IT & Digital Acceleration',
-    photo: '',
+    photo: '/images/panelists/IT/Divya_Kumar_IT.png',
     tags: ['Global Strategy', 'Retail Leadership', 'Board Governance'],
   },
 

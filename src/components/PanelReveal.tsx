@@ -142,13 +142,29 @@ export default function PanelReveal() {
 
               {/* Direct Speakers Grid on Click */}
               {isExpanded && (
-                <div className="px-2 sm:px-4 pb-8 pt-3 border-t border-wine-800/60 animate-fadeIn">
+                <div className="px-2 sm:px-4 pb-8 pt-4 border-t border-wine-800/60 animate-fadeIn space-y-6">
+                  {/* Panel Overview Description */}
+                  {panel.description && (
+                    <div className="p-4 sm:p-6 rounded-xl bg-gradient-to-r from-wine-950/90 via-[#180313]/80 to-wine-950/90 border border-wine-800/80 shadow-inner">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-glc-orange mb-1.5">
+                        Panel Overview
+                      </div>
+                      <p className="text-sm sm:text-base text-cream-200/90 leading-relaxed font-normal">
+                        {panel.description}
+                      </p>
+                    </div>
+                  )}
+
                   {speakers.length === 0 ? (
                     <div className="p-6 text-center text-xs text-cream-400 bg-wine-950/40 rounded-xl border border-wine-800/40">
                       Speakers for this panel will be announced shortly.
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div>
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-cream-400 mb-3">
+                        Featured Panelists ({speakers.length})
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {speakers.map((speaker) => (
                         <div
                           key={speaker.id}
@@ -206,7 +222,8 @@ export default function PanelReveal() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  </div>
+                )}
                 </div>
               )}
             </div>
