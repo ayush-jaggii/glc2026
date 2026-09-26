@@ -6,7 +6,7 @@ import { EVENT_DETAILS } from '@/data/eventData'
 
 export default function VenueSection() {
   const mapsUrl = "https://maps.app.goo.gl/AqKzfTSUj8v9RHWTA"
-  const embedUrl = "https://maps.google.com/maps?q=13.1275531,77.588986+(Ramdas+M+Pai+Convention+Centre)&hl=en&z=16&output=embed"
+  const embedUrl = "https://maps.google.com/maps?q=13.1275531,77.588986+(Ramdas+M+Pai+Convention+Centre)&hl=en&z=16&t=k&output=embed"
 
   return (
     <section id="venue" className="relative py-24 sm:py-32 bg-[#0E020C] border-t border-wine-800/80 overflow-hidden">
