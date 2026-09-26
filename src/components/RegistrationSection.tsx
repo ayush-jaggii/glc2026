@@ -21,6 +21,9 @@ import { generateQrDataUrl } from '@/lib/qrGenerator'
 
 type StreamType = 'delegate' | 'student'
 
+// Feature flag: set to true to re-enable student registration whenever ready
+const ENABLE_STUDENT_REGISTRATION = false
+
 export default function RegistrationSection() {
   const [stream, setStream] = useState<StreamType>('delegate')
 
@@ -224,11 +227,11 @@ export default function RegistrationSection() {
             <div className="lg:col-span-5 flex flex-col justify-between pt-2">
               <div>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4 leading-tight">
-                  {stream === 'student' ? 'Student Registration' : 'Delegate Registration'}
+                  {ENABLE_STUDENT_REGISTRATION && stream === 'student' ? 'Student Registration' : 'Delegate Registration'}
                 </h2>
 
                 <p className="text-sm sm:text-base text-cream-200/80 leading-relaxed mb-6">
-                  {stream === 'student'
+                  {ENABLE_STUDENT_REGISTRATION && stream === 'student'
                     ? 'Register for your official student pass and reserved auditorium seating at TAPMI, MAHE Bengaluru.'
                     : 'Register for executive access and participation at GLC 2026. Our team will review your registration and get in touch.'}
                 </p>
@@ -262,38 +265,40 @@ export default function RegistrationSection() {
             <div className="lg:col-span-7">
               <div className="bg-[#13030F] rounded-2xl p-6 sm:p-10 border border-wine-800 shadow-2xl relative">
                 
-                {/* Mode Switcher: Delegate vs Student */}
-                <div className="mb-8">
-                  <div className="grid grid-cols-2 p-1 rounded-xl bg-wine-950 border border-wine-800">
-                    <button
-                      type="button"
-                      onClick={() => setStream('delegate')}
-                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
-                        stream === 'delegate'
-                          ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
-                          : 'text-cream-300 hover:text-white'
-                      }`}
-                    >
-                      <Briefcase className="w-4 h-4 shrink-0" />
-                      <span className="sm:hidden">Delegate</span>
-                      <span className="hidden sm:inline">Delegate Registration</span>
-                    </button>
+                {/* Mode Switcher: Delegate vs Student (only displayed if student registration is enabled) */}
+                {ENABLE_STUDENT_REGISTRATION && (
+                  <div className="mb-8">
+                    <div className="grid grid-cols-2 p-1 rounded-xl bg-wine-950 border border-wine-800">
+                      <button
+                        type="button"
+                        onClick={() => setStream('delegate')}
+                        className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
+                          stream === 'delegate'
+                            ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
+                            : 'text-cream-300 hover:text-white'
+                        }`}
+                      >
+                        <Briefcase className="w-4 h-4 shrink-0" />
+                        <span className="sm:hidden">Delegate</span>
+                        <span className="hidden sm:inline">Delegate Registration</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setStream('student')}
-                      className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
-                        stream === 'student'
-                          ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
-                          : 'text-cream-300 hover:text-white'
-                      }`}
-                    >
-                      <GraduationCap className="w-4 h-4 shrink-0" />
-                      <span className="sm:hidden">Student</span>
-                      <span className="hidden sm:inline">Student Registration</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setStream('student')}
+                        className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
+                          stream === 'student'
+                            ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
+                            : 'text-cream-300 hover:text-white'
+                        }`}
+                      >
+                        <GraduationCap className="w-4 h-4 shrink-0" />
+                        <span className="sm:hidden">Student</span>
+                        <span className="hidden sm:inline">Student Registration</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Error Banner */}
                 {errorMsg && (
