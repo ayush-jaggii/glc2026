@@ -217,9 +217,11 @@ export default function PanelReveal() {
                                     </a>
                                   )}
                                 </div>
-                                <p className="text-xs text-glc-orange font-medium truncate mt-0.5">
-                                  {speaker.company}
-                                </p>
+                                {speaker.company && (
+                                  <p className="text-xs text-glc-orange font-medium truncate mt-0.5">
+                                    {speaker.company}
+                                  </p>
+                                )}
                               </div>
                             </div>
 

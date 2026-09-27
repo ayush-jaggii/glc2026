@@ -202,7 +202,7 @@ export const PANELISTS_DATA: Panelist[] = [
   },
   {
     id: 'auto-2',
-    name: 'Anurag B',
+    name: 'Anurag Bhardwaj',
     company: 'Ather Energy',
     designation: 'Vice President',
     linkedin: 'https://www.linkedin.com/in/commander-anurag-bhardwaj/',
@@ -273,7 +273,7 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'media-2',
     name: 'Bhavna Lalchandani',
-    company: 'Condé Nast India',
+    company: '',
     designation: 'Chief Content & Innovation Strategy Officer',
     linkedin: 'https://www.linkedin.com/in/bhavnalalchandani/',
     trackCode: 'Media',

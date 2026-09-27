@@ -135,9 +135,11 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
         </div>
 
         {/* Company Organization */}
-        <div className="text-xs font-semibold text-glc-orange mt-0.5 truncate">
-          {panelist.company}
-        </div>
+        {panelist.company && (
+          <div className="text-xs font-semibold text-glc-orange mt-0.5 truncate">
+            {panelist.company}
+          </div>
+        )}
 
         {/* Corporate Designation */}
         <div className="text-xs text-cream-200/90 mt-1 leading-relaxed font-normal group-hover:line-clamp-none line-clamp-1 transition-all">
