@@ -88,17 +88,17 @@ export default function PanelReveal() {
                   }
                 }}
                 aria-expanded={isExpanded}
-                className="group relative py-7 sm:py-9 px-2 sm:px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-wine-900/25 transition-all duration-300 rounded-xl cursor-pointer select-none"
+                className="group relative py-4 sm:py-9 px-2 sm:px-4 flex items-center justify-between gap-3 sm:gap-6 hover:bg-wine-900/25 transition-all duration-300 rounded-xl cursor-pointer select-none"
               >
                 {/* Left Column: Photo Thumbnail & Topic Info */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-7 flex-1 min-w-0">
+                <div className="flex items-center gap-3.5 sm:gap-7 flex-1 min-w-0">
                   {/* Panel Image Thumbnail */}
-                  <div className="relative w-full sm:w-44 md:w-56 aspect-[16/9] sm:aspect-auto sm:h-28 md:h-32 rounded-lg overflow-hidden shrink-0 bg-wine-950 border border-wine-800/80 group-hover:border-glc-magenta/70 shadow-lg group-hover:shadow-[0_0_24px_-6px_rgba(244,81,151,0.35)] transition-all duration-300">
+                  <div className="relative w-16 h-16 xs:w-20 xs:h-20 sm:w-44 md:w-56 sm:h-28 md:h-32 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-wine-950 border border-wine-800/80 group-hover:border-glc-magenta/70 shadow-md sm:shadow-lg group-hover:shadow-[0_0_24px_-6px_rgba(244,81,151,0.35)] transition-all duration-300">
                     <Image
                       src={panel.image}
                       alt={panel.title}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 176px, 224px"
+                      sizes="(max-width: 640px) 80px, (max-width: 768px) 176px, 224px"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                     {/* Subtle dark vignette on image */}
@@ -106,15 +106,15 @@ export default function PanelReveal() {
                   </div>
 
                   {/* Panel Name & Sector Tag Only */}
-                  <div className="flex flex-col justify-center min-w-0">
+                  <div className="flex flex-col justify-center min-w-0 flex-1">
                     {/* Panel Title */}
-                    <h4 className="text-xl sm:text-2xl md:text-3xl font-bold font-sans tracking-tight text-cream-100 group-hover:text-white transition-colors leading-snug">
+                    <h4 className="text-base sm:text-2xl md:text-3xl font-bold font-sans tracking-tight text-cream-100 group-hover:text-white transition-colors leading-snug line-clamp-2">
                       {panel.title}
                     </h4>
 
                     {/* Sector Category Tag in warm accent color */}
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <span className="text-xs sm:text-sm font-medium tracking-wide text-glc-orange group-hover:text-glc-pink transition-colors">
+                    <div className="mt-1 sm:mt-1.5 flex items-center gap-2">
+                      <span className="text-[11px] sm:text-sm font-medium tracking-wide text-glc-orange group-hover:text-glc-pink transition-colors truncate">
                         {panel.category}
                       </span>
                     </div>
@@ -122,18 +122,27 @@ export default function PanelReveal() {
                 </div>
 
                 {/* Right Column: Active Gradient Edge Indicator & Arrow */}
-                <div className="hidden sm:flex items-center gap-4 shrink-0 pl-4">
-                  <ArrowUpRightIcon
-                    className={`w-5 h-5 transition-all duration-300 ${
-                      isExpanded
-                        ? 'text-glc-orange rotate-90 scale-110'
-                        : 'text-cream-400/60 group-hover:text-glc-orange group-hover:translate-x-0.5 group-hover:-translate-y-0.5'
-                    }`}
-                  />
-
-                  {/* Gradient Accent Bar */}
+                <div className="flex items-center gap-2 sm:gap-4 shrink-0 pl-1 sm:pl-4">
+                  {/* Circular badge on mobile for high tap affordance, seamless on desktop */}
                   <div
-                    className={`w-2.5 h-16 rounded-full bg-gradient-to-b from-glc-orange via-glc-pink to-glc-magenta transition-all duration-300 shadow-[0_0_16px_rgba(244,81,151,0.6)] ${
+                    className={`w-8 h-8 sm:w-auto sm:h-auto rounded-full sm:rounded-none flex items-center justify-center transition-all duration-300 ${
+                      isExpanded
+                        ? 'bg-glc-orange/20 sm:bg-transparent border border-glc-orange/40 sm:border-0'
+                        : 'bg-wine-900/60 sm:bg-transparent border border-wine-700/50 sm:border-0 group-hover:border-glc-orange/50'
+                    }`}
+                  >
+                    <ArrowUpRightIcon
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
+                        isExpanded
+                          ? 'text-glc-orange rotate-90 scale-110'
+                          : 'text-cream-300 sm:text-cream-400/60 group-hover:text-glc-orange group-hover:translate-x-0.5 group-hover:-translate-y-0.5'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Gradient Accent Bar (Desktop only) */}
+                  <div
+                    className={`hidden sm:block w-2.5 h-16 rounded-full bg-gradient-to-b from-glc-orange via-glc-pink to-glc-magenta transition-all duration-300 shadow-[0_0_16px_rgba(244,81,151,0.6)] ${
                       isExpanded ? 'opacity-100 scale-y-105' : 'opacity-0 group-hover:opacity-100'
                     }`}
                   />
