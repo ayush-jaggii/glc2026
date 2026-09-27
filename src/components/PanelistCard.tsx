@@ -80,6 +80,7 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
             src={panelist.photo}
             alt={panelist.name}
             fill
+            priority
             sizes="(max-width: 640px) 280px, 300px"
             className="object-cover object-top filter grayscale contrast-[1.18] brightness-[0.85] group-hover:grayscale-0 group-hover:contrast-[1.05] group-hover:brightness-100 group-hover:scale-105 transition-all duration-500 ease-out"
           />
