@@ -4,6 +4,7 @@ import RevealSection from '@/components/RevealSection'
 import PastGlcGallery3D from '@/components/PastGlcGallery3D'
 import AwardsSection from '@/components/AwardsSection'
 import ArchiveGallery from '@/components/ArchiveGallery'
+import AgendaSection from '@/components/AgendaSection'
 import DelegateAdvantage from '@/components/DelegateAdvantage'
 import RegistrationSection from '@/components/RegistrationSection'
 import VenueSection from '@/components/VenueSection'
@@ -30,7 +31,10 @@ export default function HomePage() {
       {/* 6. Historical Archive & Auditorium Retrospective Film */}
       <ArchiveGallery />
 
-      {/* 6. Executive Delegate ROI & Advantage Path */}
+      {/* 7. Conference Itinerary & Full Event Flow */}
+      <AgendaSection />
+
+      {/* 8. Executive Delegate ROI & Advantage Path */}
       <DelegateAdvantage />
 
       {/* 7. Direct Delegate Registration Portal (Google Sheets Integrated) */}

@@ -19,6 +19,7 @@ export default function Navigation() {
   const navLinks = [
     { label: 'Speakers', href: '#speakers' },
     { label: 'Panels', href: '#panels' },
+    { label: 'Agenda', href: '#agenda' },
     { label: 'Awards', href: '#awards' },
     { label: 'Venue', href: '#venue' },
   ]
