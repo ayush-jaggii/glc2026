@@ -31,19 +31,19 @@ export default function HomePage() {
       {/* 6. Historical Archive & Auditorium Retrospective Film */}
       <ArchiveGallery />
 
-      {/* 7. Conference Itinerary & Full Event Flow */}
-      <AgendaSection />
-
-      {/* 8. Executive Delegate ROI & Advantage Path */}
+      {/* 7. Executive Delegate ROI & Advantage Path */}
       <DelegateAdvantage />
 
-      {/* 7. Direct Delegate Registration Portal (Google Sheets Integrated) */}
+      {/* 8. Direct Delegate Registration Portal (Google Sheets Integrated) */}
       <RegistrationSection />
 
-      {/* 8. Event Venue & Google Maps Location */}
+      {/* 9. Event Venue & Google Maps Location */}
       <VenueSection />
 
-      {/* 9. Institutional Footer & Secretariat Baseline */}
+      {/* 10. Conference Itinerary & Full Event Flow */}
+      <AgendaSection />
+
+      {/* 11. Institutional Footer & Secretariat Baseline */}
       <Footer />
     </main>
   )
