@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { PANELS_LIST } from '@/data/eventData'
 import { PANELISTS_DATA, Panelist } from '@/data/panelistsData'
@@ -41,6 +41,33 @@ const PANEL_TRACK_MAP: Record<string, 'IT' | 'Auto' | 'FMCG' | 'BFSI' | 'Media'>
 export default function PanelReveal() {
   const [expandedPanelId, setExpandedPanelId] = useState<string | null>(null)
 
+  useEffect(() => {
+    const handleOpenPanel = (e: Event) => {
+      const customEvt = e as CustomEvent<{ panelId: string }>
+      if (customEvt.detail?.panelId) {
+        setExpandedPanelId(customEvt.detail.panelId)
+      }
+    }
+
+    const checkHash = () => {
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const hash = window.location.hash.replace('#', '')
+        if (hash.startsWith('panel-')) {
+          setExpandedPanelId(hash)
+        }
+      }
+    }
+
+    window.addEventListener('glc:open-panel', handleOpenPanel)
+    window.addEventListener('hashchange', checkHash)
+    checkHash()
+
+    return () => {
+      window.removeEventListener('glc:open-panel', handleOpenPanel)
+      window.removeEventListener('hashchange', checkHash)
+    }
+  }, [])
+
   const togglePanel = (panelId: string) => {
     setExpandedPanelId((prev) => (prev === panelId ? null : panelId))
   }
@@ -72,7 +99,8 @@ export default function PanelReveal() {
           return (
             <div
               key={panel.id}
-              className={`transition-colors duration-300 rounded-xl overflow-hidden ${
+              id={panel.id}
+              className={`transition-colors duration-300 rounded-xl overflow-hidden scroll-mt-28 ${
                 isExpanded ? 'bg-wine-900/30' : ''
               }`}
             >
