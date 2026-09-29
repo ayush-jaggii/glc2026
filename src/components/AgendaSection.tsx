@@ -2,6 +2,21 @@
 
 import React from 'react'
 
+const ArrowUpRightIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <line x1="7" y1="17" x2="17" y2="7" />
+    <polyline points="7 7 17 7 17 17" />
+  </svg>
+)
+
 interface ScheduleEntry {
   time: string
   title: string
@@ -130,13 +145,10 @@ export default function AgendaSection() {
                   </div>
                 </div>
 
-                {/* Right: Minimal Interactive Hint for Panels */}
+                {/* Right: Subtle arrow icon on interactive rows */}
                 {isInteractive && (
-                  <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-cream-400 group-hover:text-glc-orange transition-colors shrink-0">
-                    <span>{item.panelId ? 'View Speakers' : 'Details'}</span>
-                    <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      ↗
-                    </span>
+                  <div className="shrink-0 text-cream-400/40 group-hover:text-glc-orange transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    <ArrowUpRightIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                 )}
               </div>
