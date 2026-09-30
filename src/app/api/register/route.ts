@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import QRCode from 'qrcode'
 import { allocateAuditoriumSeat, generateRegistrationId, AttendeeCategory } from '@/lib/seatAllocator'
 
+// In-memory debounce cache to prevent rapid double-clicks from creating duplicate rows
+const recentDelegateSubmissions = new Map<string, number>()
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -250,11 +253,80 @@ export async function POST(request: Request) {
       source: 'GLC 2026 Official Flagship Portal'
     }
 
-    // 1. Dual-Write: Safely persist delegate registration to Supabase database (PostgreSQL)
-    // Ensures zero data loss and handles high-concurrency bursts effortlessly
+    // 1. Deduplication & Debounce Checks
+    const normalizedEmail = payload.email
+    const now = Date.now()
+    const lastSubmission = recentDelegateSubmissions.get(normalizedEmail)
+
+    // Debounce rapid double-clicks (within 30 seconds)
+    if (lastSubmission && (now - lastSubmission) < 30000) {
+      console.log('Debouncing rapid duplicate submission for:', normalizedEmail)
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Registration confirmed. Your official conference pass has been generated.',
+          registrationId,
+          passDetails: {
+            regId: registrationId,
+            name: payload.fullName,
+            category: payload.passType,
+            categoryKey: resolvedCategory,
+            affiliation: payload.affiliation,
+            roleOrProgram: payload.roleOrProgram,
+            seat: seatAllocation.seatNumber,
+            zone: seatAllocation.zone,
+            fullSeatString: seatAllocation.fullSeatString,
+            date: 'Saturday, 10 October 2026',
+            time: '09:00 AM IST',
+            venue: 'Dr. Ramdas M. Pai Auditorium',
+            campus: 'MAHE Bengaluru',
+            submittedAt: payload.submittedAt
+          }
+        },
+        { status: 200 }
+      )
+    }
+    recentDelegateSubmissions.set(normalizedEmail, now)
+
+    // Periodic cleanup of debounce cache
+    if (recentDelegateSubmissions.size > 2000) {
+      const cutoff = now - 60000
+      recentDelegateSubmissions.forEach((timestamp, key) => {
+        if (timestamp < cutoff) recentDelegateSubmissions.delete(key)
+      })
+    }
+
+    // 2. Check if delegate already exists in Supabase
+    let isAlreadyRegistered = false
     let supabaseRecordId: string | null = null
 
     if (resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
+      try {
+        const checkRes = await fetch(
+          `${supabaseUrl}/rest/v1/delegates?email=eq.${encodeURIComponent(normalizedEmail)}&select=id,full_name,created_at&limit=1`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`
+            },
+            signal: AbortSignal.timeout(3000)
+          }
+        )
+        if (checkRes.ok) {
+          const existing = await checkRes.json()
+          if (Array.isArray(existing) && existing.length > 0) {
+            isAlreadyRegistered = true
+            supabaseRecordId = existing[0].id
+            console.log('Delegate already registered in Supabase:', normalizedEmail)
+          }
+        }
+      } catch (checkErr) {
+        console.warn('Supabase delegate lookup warning:', checkErr)
+      }
+    }
+
+    // 3. Persist delegate registration to Supabase database (PostgreSQL) if not already registered
+    if (!isAlreadyRegistered && resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
       try {
         const sbRes = await fetch(`${supabaseUrl}/rest/v1/delegates`, {
           method: 'POST',
@@ -291,41 +363,34 @@ export async function POST(request: Request) {
       }
     }
 
-    // 2. Forward delegate registration to Google Sheets webhook with automatic retries and 12s timeout
+    // 4. Forward delegate registration to Google Sheets webhook (Single dispatch, strictly NO retry loop)
+    // Eliminates duplicate row creation caused by slow Google Apps Script cold starts
     const webhookUrl =
       process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
       process.env.EXCEL_WEBHOOK_URL ||
       'https://script.google.com/macros/s/AKfycbyBuLVzg4kTc78RHpJ4jg3OOXUYiDGBd43-xinzy9uelua0kbgT4mR53EHJpbSHu7eD/exec'
 
-    if (resolvedCategory === 'delegate' && webhookUrl) {
-      const MAX_RETRIES = 2
+    if (!isAlreadyRegistered && resolvedCategory === 'delegate' && webhookUrl) {
       let sheetDispatched = false
+      try {
+        const upstream = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          redirect: 'follow',
+          signal: AbortSignal.timeout(10000)
+        })
 
-      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-        try {
-          const upstream = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            redirect: 'follow',
-            signal: AbortSignal.timeout(12000) // generous 12s timeout to accommodate cold starts & lock wait
-          })
-
-          if (upstream.ok) {
-            sheetDispatched = true
-            console.log(`Successfully recorded delegate to Google Sheet on attempt ${attempt}:`, payload.fullName)
-            break
-          } else {
-            console.warn(`Google Sheets webhook attempt ${attempt} returned status ${upstream.status}`)
-          }
-        } catch (err) {
-          console.warn(`Google Sheets webhook attempt ${attempt} failed:`, err)
+        if (upstream.ok) {
+          sheetDispatched = true
+          console.log('Successfully recorded delegate to Google Sheet:', payload.fullName)
+        } else {
+          console.warn(`Google Sheets webhook returned status ${upstream.status}`)
         }
-
-        // Wait 1.2s before retry
-        if (attempt < MAX_RETRIES) {
-          await new Promise((resolve) => setTimeout(resolve, 1200))
-        }
+      } catch (err) {
+        // Notice: Google Apps Script frequently processes requests in the background even if the HTTP
+        // connection times out. We intentionally do NOT retry to prevent duplicate rows.
+        console.warn('Google Sheets webhook notice (single dispatch completed):', err)
       }
 
       // If synced successfully, flag the record in Supabase
