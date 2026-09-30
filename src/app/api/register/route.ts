@@ -253,14 +253,13 @@ export async function POST(request: Request) {
       source: 'GLC 2026 Official Flagship Portal'
     }
 
-    // 1. Deduplication & Debounce Checks
+    // 1. Debounce rapid double-clicks (within 15 seconds for exact same email)
     const normalizedEmail = payload.email
     const now = Date.now()
     const lastSubmission = recentDelegateSubmissions.get(normalizedEmail)
 
-    // Debounce rapid double-clicks (within 30 seconds)
-    if (lastSubmission && (now - lastSubmission) < 30000) {
-      console.log('Debouncing rapid duplicate submission for:', normalizedEmail)
+    if (lastSubmission && (now - lastSubmission) < 15000) {
+      console.log('Debouncing rapid double-click submission for:', normalizedEmail)
       return NextResponse.json(
         {
           success: true,
@@ -296,45 +295,16 @@ export async function POST(request: Request) {
       })
     }
 
-    // 2. Check if delegate already exists in Supabase
-    let isAlreadyRegistered = false
-    let supabaseRecordId: string | null = null
-
+    // 2. Persist delegate registration to Supabase database (PostgreSQL)
     if (resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
       try {
-        const checkRes = await fetch(
-          `${supabaseUrl}/rest/v1/delegates?email=eq.${encodeURIComponent(normalizedEmail)}&select=id,full_name,created_at&limit=1`,
-          {
-            headers: {
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseAnonKey}`
-            },
-            signal: AbortSignal.timeout(3000)
-          }
-        )
-        if (checkRes.ok) {
-          const existing = await checkRes.json()
-          if (Array.isArray(existing) && existing.length > 0) {
-            isAlreadyRegistered = true
-            supabaseRecordId = existing[0].id
-            console.log('Delegate already registered in Supabase:', normalizedEmail)
-          }
-        }
-      } catch (checkErr) {
-        console.warn('Supabase delegate lookup warning:', checkErr)
-      }
-    }
-
-    // 3. Persist delegate registration to Supabase database (PostgreSQL) if not already registered
-    if (!isAlreadyRegistered && resolvedCategory === 'delegate' && supabaseUrl && supabaseAnonKey) {
-      try {
-        const sbRes = await fetch(`${supabaseUrl}/rest/v1/delegates`, {
+        await fetch(`${supabaseUrl}/rest/v1/delegates`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             apikey: supabaseAnonKey,
             Authorization: `Bearer ${supabaseAnonKey}`,
-            Prefer: 'return=representation'
+            Prefer: 'return=minimal'
           },
           body: JSON.stringify({
             full_name: payload.fullName,
@@ -343,46 +313,33 @@ export async function POST(request: Request) {
             company: payload.company,
             designation: payload.designation,
             track_preference: payload.trackPreference,
-            synced_to_sheets: false,
             submitted_at: payload.submittedAt
           }),
           signal: AbortSignal.timeout(5000)
         })
-
-        if (sbRes.ok) {
-          const inserted = await sbRes.json()
-          if (Array.isArray(inserted) && inserted[0]?.id) {
-            supabaseRecordId = inserted[0].id
-            console.log('Delegate securely saved in Supabase:', supabaseRecordId)
-          }
-        } else {
-          console.warn('Supabase delegate backup non-OK:', await sbRes.text())
-        }
       } catch (sbErr) {
-        console.warn('Supabase delegate backup dispatch warning:', sbErr)
+        console.warn('Supabase delegate notice:', sbErr)
       }
     }
 
-    // 4. Forward delegate registration to Google Sheets webhook (Single dispatch, strictly NO retry loop)
+    // 3. Forward delegate registration to Google Sheets webhook (Single dispatch, NO retry loop)
     // Eliminates duplicate row creation caused by slow Google Apps Script cold starts
     const webhookUrl =
       process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
       process.env.EXCEL_WEBHOOK_URL ||
       'https://script.google.com/macros/s/AKfycbyBuLVzg4kTc78RHpJ4jg3OOXUYiDGBd43-xinzy9uelua0kbgT4mR53EHJpbSHu7eD/exec'
 
-    if (!isAlreadyRegistered && resolvedCategory === 'delegate' && webhookUrl) {
-      let sheetDispatched = false
+    if (resolvedCategory === 'delegate' && webhookUrl) {
       try {
         const upstream = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
           redirect: 'follow',
-          signal: AbortSignal.timeout(10000)
+          signal: AbortSignal.timeout(12000)
         })
 
         if (upstream.ok) {
-          sheetDispatched = true
           console.log('Successfully recorded delegate to Google Sheet:', payload.fullName)
         } else {
           console.warn(`Google Sheets webhook returned status ${upstream.status}`)
@@ -391,24 +348,6 @@ export async function POST(request: Request) {
         // Notice: Google Apps Script frequently processes requests in the background even if the HTTP
         // connection times out. We intentionally do NOT retry to prevent duplicate rows.
         console.warn('Google Sheets webhook notice (single dispatch completed):', err)
-      }
-
-      // If synced successfully, flag the record in Supabase
-      if (sheetDispatched && supabaseRecordId && supabaseUrl && supabaseAnonKey) {
-        try {
-          await fetch(`${supabaseUrl}/rest/v1/delegates?id=eq.${supabaseRecordId}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseAnonKey}`
-            },
-            body: JSON.stringify({ synced_to_sheets: true }),
-            signal: AbortSignal.timeout(3000)
-          })
-        } catch {
-          // Non-blocking sync status update
-        }
       }
     }
 
