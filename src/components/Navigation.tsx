@@ -21,6 +21,7 @@ export default function Navigation() {
     { label: 'Panels', href: '#panels' },
     { label: 'Agenda', href: '#agenda' },
     { label: 'Awards', href: '#awards' },
+    { label: 'Partners', href: '#partners' },
     { label: 'Venue', href: '#venue' },
   ]
 
