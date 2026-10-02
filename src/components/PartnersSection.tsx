@@ -6,20 +6,19 @@ import Image from 'next/image'
 interface PartnerLogo {
   name: string
   src: string
-  width: number
-  height: number
+  imageClass: string
 }
 
-const EXHIBITORS: PartnerLogo[] = [
-  { name: 'Yoga Bar', src: '/sponsors/yogabar.png', width: 140, height: 60 },
-  { name: 'The Belgian Waffle Co', src: '/sponsors/belgian-waffle.svg', width: 140, height: 60 },
-  { name: 'SMH', src: '/sponsors/smh.png', width: 140, height: 60 },
-  { name: 'Farmley', src: '/sponsors/farmley.jpg', width: 140, height: 60 },
-  { name: 'NEXTORK', src: '/sponsors/nextork.jpg', width: 160, height: 60 },
-  { name: 'Tazish', src: '/sponsors/tazish.jpeg', width: 160, height: 60 },
-  { name: "Snap 'N' Stick", src: '/sponsors/snap-n-stick.svg', width: 150, height: 50 },
-  { name: 'The Chatpata Affair', src: '/sponsors/chatpata-affair.webp', width: 150, height: 50 },
-  { name: 'Rescript', src: '/sponsors/rescript.svg', width: 150, height: 50 }
+const PARTNERS: PartnerLogo[] = [
+  { name: 'Yoga Bar', src: '/sponsors/yogabar.png', imageClass: 'h-11 w-auto max-w-[110px]' },
+  { name: 'The Belgian Waffle Co', src: '/sponsors/belgian-waffle.svg', imageClass: 'h-12 w-auto max-w-[110px]' },
+  { name: 'SMH', src: '/sponsors/smh.png', imageClass: 'h-11 w-auto max-w-[110px]' },
+  { name: 'Farmley', src: '/sponsors/farmley.jpg', imageClass: 'h-11 w-auto max-w-[115px]' },
+  { name: 'NEXTORK', src: '/sponsors/nextork.jpg', imageClass: 'h-9 w-auto max-w-[130px]' },
+  { name: 'Tazish', src: '/sponsors/tazish.jpeg', imageClass: 'h-10 w-auto max-w-[125px]' },
+  { name: "Snap 'N' Stick", src: '/sponsors/snap-n-stick.svg', imageClass: 'h-12 w-auto max-w-[125px]' },
+  { name: 'The Chatpata Affair', src: '/sponsors/chatpata-affair.webp', imageClass: 'h-9 w-auto max-w-[130px]' },
+  { name: 'Rescript', src: '/sponsors/rescript.svg', imageClass: 'h-9 w-auto max-w-[125px]' }
 ]
 
 export default function PartnersSection() {
@@ -27,7 +26,7 @@ export default function PartnersSection() {
     <section id="partners" className="relative py-20 sm:py-28 bg-[#0B0207] border-t border-wine-900/60 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Clean, Minimal Header */}
+        {/* Minimalist Section Header */}
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
             Our Partners
@@ -59,50 +58,44 @@ export default function PartnersSection() {
           {/* Minimal Divider */}
           <div className="w-20 h-px bg-wine-800/80 mx-auto mb-12" />
 
-          {/* 2. Partner Marquee Ticker */}
+          {/* 2. Partner Marquee Ticker (Optically Balanced, No Exhibitors label) */}
           <div className="flex flex-col items-center">
             {/* Seamless Infinite Loop with Gradient Edge Mask */}
-            <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] py-2">
+            <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_8%,black_92%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_8%,black_92%,transparent_100%)] py-2">
               <div
                 className="animate-marquee flex items-center gap-6"
-                style={{ animationDuration: '28s' }}
+                style={{ animationDuration: '26s' }}
               >
                 {/* Track 1 */}
                 <div className="flex items-center gap-6 shrink-0">
-                  {EXHIBITORS.map((item) => (
+                  {PARTNERS.map((item) => (
                     <div
                       key={item.name}
-                      className="bg-white rounded-2xl px-6 py-3 h-20 w-44 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
+                      className="bg-white rounded-2xl px-5 py-3 h-20 w-44 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
                     >
-                      <div className="relative w-full h-12">
-                        <Image
-                          src={item.src}
-                          alt={item.name}
-                          fill
-                          sizes="176px"
-                          className="object-contain"
-                        />
-                      </div>
+                      <img
+                        src={item.src}
+                        alt={item.name}
+                        className={`${item.imageClass} object-contain`}
+                        loading="lazy"
+                      />
                     </div>
                   ))}
                 </div>
 
                 {/* Track 2 (Duplicate for Seamless Infinite Marquee Loop) */}
                 <div className="flex items-center gap-6 shrink-0" aria-hidden="true">
-                  {EXHIBITORS.map((item, idx) => (
+                  {PARTNERS.map((item, idx) => (
                     <div
                       key={`${item.name}-dup-${idx}`}
-                      className="bg-white rounded-2xl px-6 py-3 h-20 w-44 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
+                      className="bg-white rounded-2xl px-5 py-3 h-20 w-44 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
                     >
-                      <div className="relative w-full h-12">
-                        <Image
-                          src={item.src}
-                          alt={item.name}
-                          fill
-                          sizes="176px"
-                          className="object-contain"
-                        />
-                      </div>
+                      <img
+                        src={item.src}
+                        alt={item.name}
+                        className={`${item.imageClass} object-contain`}
+                        loading="lazy"
+                      />
                     </div>
                   ))}
                 </div>
