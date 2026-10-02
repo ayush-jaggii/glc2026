@@ -53,7 +53,7 @@ export default function DelegatePassCard({
         id={id}
         name={pass.name}
         event={'GLC 2026\nBUSINESS BEYOND BORDERS'}
-        subMeta={`${pass.roleOrProgram || ''} · Seat: ${pass.seat}`}
+        subMeta={pass.seat ? `${pass.roleOrProgram || ''} · Seat: ${pass.seat}` : (pass.roleOrProgram || '')}
         venue="DR. RAMDAS M. PAI AUDITORIUM"
         dates="SAT, 10 OCT 2026 · 09:00 AM"
         watermark="2026"

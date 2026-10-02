@@ -10,27 +10,38 @@ import {
   XCircle,
   LogOut,
   RefreshCw,
-  Armchair,
   UserCheck,
-  Lock
+  Lock,
+  DoorOpen,
+  Smartphone
 } from 'lucide-react'
 
 interface StudentResult {
   roll_number: string
   full_name: string
-  seat_number: string
-  program: string
-  year_of_study: string
+  seat_number?: string
+  program?: string
+  year_of_study?: string
   status: string
   marked_at?: string
   marked_by?: string
 }
 
+interface VolunteerInfo {
+  id: string
+  username: string
+  name: string
+  gate: string
+}
+
 export default function VolunteerScannerPage() {
-  const [volunteerName, setVolunteerName] = useState('')
-  const [pin, setPin] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [volunteer, setVolunteer] = useState<VolunteerInfo | null>(null)
+  const [sessionToken, setSessionToken] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   // Scanner state
   const [scannerActive, setScannerActive] = useState(false)
@@ -45,9 +56,19 @@ export default function VolunteerScannerPage() {
   const html5QrCodeRef = useRef<any>(null)
   const processingRef = useRef(false)
 
-  // Audio synthesis feedback
+  // Audio & Haptic feedback
   const playSound = (type: 'success' | 'warning' | 'error') => {
     try {
+      if (typeof window !== 'undefined' && 'navigator' in window && navigator.vibrate) {
+        if (type === 'success') {
+          navigator.vibrate([70, 40, 70])
+        } else if (type === 'warning') {
+          navigator.vibrate([150, 80, 150])
+        } else {
+          navigator.vibrate([300])
+        }
+      }
+
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
@@ -80,47 +101,86 @@ export default function VolunteerScannerPage() {
     }
   }
 
-  // Load volunteer session from localStorage
+  // Load session from localStorage on mount
   useEffect(() => {
-    const savedName = localStorage.getItem('glc_volunteer_name')
-    const savedPin = localStorage.getItem('glc_volunteer_pin')
-    if (savedName && savedPin) {
-      setVolunteerName(savedName)
-      setPin(savedPin)
-      setIsAuthenticated(true)
+    const savedToken = localStorage.getItem('glc_volunteer_session')
+    const savedVolunteer = localStorage.getItem('glc_volunteer_data')
+    if (savedToken && savedVolunteer) {
+      try {
+        const parsed = JSON.parse(savedVolunteer)
+        setSessionToken(savedToken)
+        setVolunteer(parsed)
+        setIsAuthenticated(true)
+      } catch {
+        localStorage.removeItem('glc_volunteer_session')
+        localStorage.removeItem('glc_volunteer_data')
+      }
     }
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError('')
-    if (!volunteerName.trim()) {
-      setLoginError('Please enter your name.')
-      return
-    }
-    if (!pin.trim()) {
-      setLoginError('Please enter the Event PIN.')
-      return
-    }
+    setIsLoggingIn(true)
 
-    localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-    localStorage.setItem('glc_volunteer_pin', pin.trim())
-    setIsAuthenticated(true)
+    try {
+      const res = await fetch('/api/volunteer/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim()
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        setSessionToken(data.sessionToken)
+        setVolunteer(data.volunteer)
+        localStorage.setItem('glc_volunteer_session', data.sessionToken)
+        localStorage.setItem('glc_volunteer_data', JSON.stringify(data.volunteer))
+        setIsAuthenticated(true)
+        setUsername('')
+        setPassword('')
+      } else {
+        setLoginError(data.error || 'Authentication failed. Please check credentials.')
+      }
+    } catch {
+      setLoginError('Network error connecting to login server.')
+    } finally {
+      setIsLoggingIn(false)
+    }
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     stopScanner()
-    localStorage.removeItem('glc_volunteer_name')
-    localStorage.removeItem('glc_volunteer_pin')
+    if (sessionToken || volunteer?.username) {
+      try {
+        await fetch('/api/volunteer/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionToken,
+            username: volunteer?.username
+          })
+        })
+      } catch {
+        // Logout best effort
+      }
+    }
+
+    localStorage.removeItem('glc_volunteer_session')
+    localStorage.removeItem('glc_volunteer_data')
     setIsAuthenticated(false)
-    setVolunteerName('')
-    setPin('')
+    setVolunteer(null)
+    setSessionToken(null)
     setScanResult(null)
   }
 
   // Scan processor
   const processToken = async (rawText: string) => {
-    if (processingRef.current) return
+    if (processingRef.current || !sessionToken) return
     processingRef.current = true
     setIsProcessing(true)
 
@@ -130,8 +190,7 @@ export default function VolunteerScannerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: rawText,
-          volunteerName: volunteerName.trim() || 'Volunteer Desk',
-          pin: pin.trim()
+          sessionToken
         })
       })
 
@@ -149,14 +208,23 @@ export default function VolunteerScannerPage() {
         playSound('warning')
         setScanResult({
           type: 'warning',
-          message: data.message || 'Already Recorded!',
+          message: data.message || 'Attendance Already Recorded!',
           student: data.student
         })
+      } else if (data.code === 'SESSION_INVALID' || res.status === 401) {
+        playSound('error')
+        setScanResult({
+          type: 'error',
+          message: 'Your session has expired or was opened on another phone. Please sign in again.'
+        })
+        setTimeout(() => {
+          handleLogout()
+        }, 2500)
       } else {
         playSound('error')
         setScanResult({
           type: 'error',
-          message: data.error || data.message || 'Pass not recognized or invalid PIN.'
+          message: data.error || data.message || 'Invalid pass QR token.'
         })
       }
     } catch {
@@ -204,7 +272,7 @@ export default function VolunteerScannerPage() {
       setScannerActive(false)
       setScanResult({
         type: 'error',
-        message: 'Camera access denied or unavailable. Please enable camera permissions in your mobile browser.'
+        message: 'Camera access denied or unavailable. Please enable camera permissions in your browser.'
       })
     }
   }
@@ -251,80 +319,105 @@ export default function VolunteerScannerPage() {
             className="flex items-center gap-1 text-[11px] text-cream-400 hover:text-white px-2.5 py-1 rounded-lg bg-wine-900/60 border border-wine-800 transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Exit</span>
+            <span>Sign Out</span>
           </button>
         )}
       </div>
 
       {!isAuthenticated ? (
-        /* Login / PIN Prompt Card */
+        /* Login Prompt Card */
         <div className="w-full max-w-md bg-[#13030F] rounded-3xl p-6 sm:p-8 border border-wine-800 shadow-2xl mt-4">
           <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3 shadow-lg">
               <Lock className="w-6 h-6" />
             </div>
             <h1 className="text-xl font-bold text-white tracking-wide">
-              Auditorium Attendance Desk
+              Auditorium Scanner Desk
             </h1>
             <p className="text-xs text-cream-400 mt-1">
-              Sign in with your name and the Event PIN provided by the PACE Committee.
+              Sign in with your assigned Volunteer ID & Password created by Admin.
             </p>
           </div>
 
           {loginError && (
-            <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-800 text-xs text-red-200 text-center">
-              {loginError}
+            <div className="mb-4 p-3.5 rounded-xl bg-red-950/70 border border-red-800 text-xs text-red-200 leading-relaxed">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span>{loginError}</span>
+              </div>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                Volunteer Name
+                Volunteer Username
               </label>
               <input
                 type="text"
                 required
-                value={volunteerName}
-                onChange={(e) => setVolunteerName(e.target.value)}
-                placeholder="e.g. Priya Sharma"
-                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. volunteer1"
+                autoCapitalize="none"
+                autoCorrect="off"
+                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta"
               />
             </div>
 
             <div>
               <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                Event PIN
+                Password
               </label>
               <input
                 type="password"
                 required
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="Enter 4 or 6-digit PIN"
-                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta tracking-widest text-center"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2"
+              disabled={isLoggingIn}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 disabled:opacity-50 transition-opacity mt-2 flex items-center justify-center gap-2"
             >
-              Access Scanner Desk →
+              {isLoggingIn ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                <span>Access Scanner Desk →</span>
+              )}
             </button>
           </form>
+
+          <div className="mt-6 pt-4 border-t border-wine-900/80 text-[11px] text-cream-400 text-center flex items-center justify-center gap-1.5">
+            <Smartphone className="w-3.5 h-3.5 text-glc-orange" />
+            <span>Single-device session locked for gate security.</span>
+          </div>
         </div>
       ) : (
         /* Authenticated Volunteer Scanner Interface */
         <div className="w-full max-w-md space-y-4">
           {/* Volunteer Status Bar */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-wine-900/40 border border-wine-800/80 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-white">{volunteerName}</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-white text-sm">{volunteer?.name}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px] text-glc-magenta font-semibold mt-0.5">
+                <DoorOpen className="w-3 h-3" />
+                <span>{volunteer?.gate || 'Gate 1'}</span>
+              </div>
             </div>
-            <div className="text-[11px] text-cream-300">
-              Verified by you: <strong className="text-glc-orange text-sm ml-0.5">{sessionCount}</strong>
+            <div className="text-right">
+              <span className="text-[10px] uppercase tracking-wider text-cream-400 block">Scanned</span>
+              <strong className="text-glc-orange text-base font-mono">{sessionCount}</strong>
             </div>
           </div>
 
@@ -406,22 +499,18 @@ export default function VolunteerScannerPage() {
                           {scanResult.student.roll_number}
                         </strong>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Assigned Seat:</span>
-                        <span className="inline-flex items-center gap-1 font-bold text-white px-2.5 py-0.5 rounded-md bg-white/20">
-                          <Armchair className="w-3.5 h-3.5 text-glc-orange" />
-                          {scanResult.student.seat_number}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Program / Year:</span>
-                        <span>{scanResult.student.year_of_study}</span>
-                      </div>
+                      {scanResult.student.program && (
+                        <div className="flex justify-between items-center">
+                          <span className="opacity-80">Program / Year:</span>
+                          <span>{scanResult.student.program} {scanResult.student.year_of_study ? `(${scanResult.student.year_of_study})` : ''}</span>
+                        </div>
+                      )}
                       {scanResult.student.marked_at && (
                         <div className="flex justify-between items-center text-[11px] text-amber-300">
                           <span>Recorded At:</span>
                           <span>
-                            {scanResult.student.marked_at} (by {scanResult.student.marked_by})
+                            {new Date(scanResult.student.marked_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {scanResult.student.marked_by ? ` (by ${scanResult.student.marked_by})` : ''}
                           </span>
                         </div>
                       )}
@@ -435,7 +524,7 @@ export default function VolunteerScannerPage() {
           {/* Verification Protocol Notice */}
           <div className="p-3 text-center text-[10px] text-cream-400/80 leading-relaxed border-t border-wine-900/80">
             <UserCheck className="w-3.5 h-3.5 inline mr-1 text-glc-magenta" />
-            <strong>Physical Protocol</strong>: Always match the student name and roll number with their physical TAPMI / MAHE University ID card.
+            <strong>Physical Protocol</strong>: Always verify that the student name and roll number match their physical TAPMI / MAHE University ID card.
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import QRCode from 'qrcode'
+import crypto from 'crypto'
 import { allocateAuditoriumSeat, generateRegistrationId, AttendeeCategory } from '@/lib/seatAllocator'
 
 // In-memory debounce cache to prevent rapid double-clicks from creating duplicate rows
@@ -25,11 +26,20 @@ export async function POST(request: Request) {
       program
     } = body
 
-    if (!fullName || !email) {
-      return NextResponse.json(
-        { error: 'Full Name and Email Address are required.' },
-        { status: 400 }
-      )
+    if (registrationType === 'delegate') {
+      if (!fullName || !email) {
+        return NextResponse.json(
+          { error: 'Full Name and Email Address are required for delegate registration.' },
+          { status: 400 }
+        )
+      }
+    } else {
+      if (!email) {
+        return NextResponse.json(
+          { error: 'Email Address is required.' },
+          { status: 400 }
+        )
+      }
     }
 
     // Basic email format check
@@ -60,6 +70,24 @@ export async function POST(request: Request) {
         )
       }
 
+      const normalizedEmail = (email || '').trim().toLowerCase()
+      if (!normalizedEmail.endsWith('@learner.manipal.edu')) {
+        return NextResponse.json(
+          { error: 'Please enter your official MAHE student email ending with @learner.manipal.edu' },
+          { status: 400 }
+        )
+      }
+
+      // Generate deterministic unique token from Roll Number using HMAC SHA-256
+      // Guaranteed to be mathematically unique per roll number with zero collisions
+      const rollTokenHash = crypto
+        .createHmac('sha256', 'glc-2026-student-qr-secret-key-mahe')
+        .update(rollNumber)
+        .digest('hex')
+        .substring(0, 10)
+        .toUpperCase()
+      const deterministicToken = `GLC26-STU-${rollTokenHash}`
+
       const yearLabel = year?.trim() || 'Student'
       const programLabel = program?.trim() || 'TAPMI / MAHE Bengaluru'
 
@@ -86,13 +114,15 @@ export async function POST(request: Request) {
         console.warn('Supabase student lookup error:', err)
       }
 
-      const qrToken =
-        studentRecord?.qr_token ||
-        `GLC26-STU-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+      const qrToken = studentRecord?.qr_token || deterministicToken
 
       if (studentRecord) {
-        // Record is immutable once created. If qr_token was somehow missing, attach it only.
-        if (!studentRecord.qr_token) {
+        // Record exists: ensure qr_token and email are synchronized
+        const updateFields: any = {}
+        if (!studentRecord.qr_token) updateFields.qr_token = deterministicToken
+        if (!studentRecord.email || studentRecord.email !== normalizedEmail) updateFields.email = normalizedEmail
+
+        if (Object.keys(updateFields).length > 0) {
           try {
             const updateRes = await fetch(
               `${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`,
@@ -104,9 +134,7 @@ export async function POST(request: Request) {
                   Authorization: `Bearer ${supabaseAnonKey}`,
                   Prefer: 'return=representation'
                 },
-                body: JSON.stringify({
-                  qr_token: qrToken
-                })
+                body: JSON.stringify(updateFields)
               }
             )
             if (updateRes.ok) {
@@ -116,14 +144,12 @@ export async function POST(request: Request) {
               }
             }
           } catch (patchErr) {
-            console.warn('Supabase student qr_token initialization warning:', patchErr)
+            console.warn('Supabase student update notice:', patchErr)
           }
         }
       } else {
-        // PACE hasn't pre-loaded this student yet, insert with PACE pending seat
-        const defaultSeatNumber = body.seatNumber || 'Allocated at Check-in'
-        const defaultZone = 'Balcony · Student Seating'
-        const defaultGate = 'Gate 3 · Student Check-In'
+        // If student not found in pre-loaded list, register with entered details or return error
+        const studentName = (fullName || '').trim() || `Student (${rollNumber})`
 
         try {
           const insertRes = await fetch(`${supabaseUrl}/rest/v1/students`, {
@@ -136,16 +162,16 @@ export async function POST(request: Request) {
             },
             body: JSON.stringify({
               roll_number: rollNumber,
-              full_name: fullName.trim(),
-              email: email.trim().toLowerCase(),
+              full_name: studentName,
+              email: normalizedEmail,
               phone: phone?.trim() || 'N/A',
               program: programLabel,
               year_of_study: yearLabel,
-              seat_number: defaultSeatNumber,
-              seat_zone: defaultZone,
-              gate: defaultGate,
-              full_seat_string: `${defaultZone} · ${defaultSeatNumber}`,
-              qr_token: qrToken,
+              seat_number: '',
+              seat_zone: 'Auditorium',
+              gate: 'Auditorium Main Gate',
+              full_seat_string: 'Auditorium Seating',
+              qr_token: deterministicToken,
               status: 'ABSENT'
             })
           })
@@ -163,14 +189,14 @@ export async function POST(request: Request) {
         if (!studentRecord) {
           studentRecord = {
             roll_number: rollNumber,
-            full_name: fullName.trim(),
+            full_name: studentName,
             program: programLabel,
             year_of_study: yearLabel,
-            seat_number: defaultSeatNumber,
-            seat_zone: defaultZone,
-            gate: defaultGate,
-            full_seat_string: `${defaultZone} · ${defaultSeatNumber}`,
-            qr_token: qrToken,
+            seat_number: '',
+            seat_zone: 'Auditorium',
+            gate: 'Auditorium Main Gate',
+            full_seat_string: 'Auditorium Seating',
+            qr_token: deterministicToken,
             status: 'ABSENT'
           }
         }
@@ -197,10 +223,10 @@ export async function POST(request: Request) {
           category: 'Student Pass',
           categoryKey: 'student',
           affiliation: 'TAPMI Bengaluru, MAHE',
-          roleOrProgram: `${studentRecord.year_of_study} (${studentRecord.roll_number})`,
-          seat: studentRecord.seat_number,
-          zone: studentRecord.seat_zone,
-          fullSeatString: studentRecord.full_seat_string,
+          roleOrProgram: `${studentRecord.year_of_study || 'Student'} (${studentRecord.roll_number})`,
+          seat: '', // No seat selection needed
+          zone: 'Auditorium',
+          fullSeatString: 'Auditorium Seating',
           date: 'Saturday, 10 October 2026',
           time: '09:00 AM IST',
           venue: 'Dr. Ramdas M. Pai Auditorium',

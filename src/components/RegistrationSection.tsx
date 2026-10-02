@@ -13,7 +13,8 @@ import {
   Tag,
   GraduationCap,
   Briefcase,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from 'lucide-react'
 import { PassDetails } from '@/components/pass/DelegatePassCard'
 import TicketPrinterAnimation from '@/components/pass/TicketPrinterAnimation'
@@ -21,24 +22,22 @@ import { generateQrDataUrl } from '@/lib/qrGenerator'
 
 type StreamType = 'delegate' | 'student'
 
-// Feature flag: set to true to re-enable student registration whenever ready
-const ENABLE_STUDENT_REGISTRATION = false
+// Feature flag: set to true to enable student pass generation
+const ENABLE_STUDENT_REGISTRATION = true
 
 export default function RegistrationSection() {
   const [stream, setStream] = useState<StreamType>('delegate')
 
-  // Common fields
+  // Common & Delegate fields
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-
-  // Delegate specific fields
   const [organization, setOrganization] = useState('')
   const [designation, setDesignation] = useState('')
 
-  // Student specific fields (only our college - TAPMI Bengaluru, MAHE)
-  const [year, setYear] = useState('1st Year')
+  // Student specific fields (simplified: Roll Number + Learner Email only)
   const [studentId, setStudentId] = useState('')
+  const [studentEmail, setStudentEmail] = useState('')
 
   // Submission & Pass State
   const [loading, setLoading] = useState(false)
@@ -49,9 +48,7 @@ export default function RegistrationSection() {
   // Mobile-only auto-scroll to the top of the pass / confirmation area
   useEffect(() => {
     if (generatedPass || delegateSuccess) {
-      // Only execute on mobile screens (< 768px), leaving desktop/laptops untouched
       if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        // Delay allows mobile on-screen keyboards to finish collapsing
         const timer = setTimeout(() => {
           const target = document.getElementById('register')
           if (target) {
@@ -68,32 +65,52 @@ export default function RegistrationSection() {
     e.preventDefault()
     setErrorMsg('')
 
-    if (!fullName.trim() || !email.trim() || !phone.trim()) {
-      setErrorMsg('Please complete all required fields (Full Name, Email, Phone).')
-      return
-    }
+    if (stream === 'delegate') {
+      if (!fullName.trim() || !email.trim() || !phone.trim()) {
+        setErrorMsg('Please complete all required fields (Full Name, Email, Phone).')
+        return
+      }
 
-    if (stream === 'delegate' && !organization.trim()) {
-      setErrorMsg('Please provide your Organization or Company name.')
-      return
+      if (!organization.trim()) {
+        setErrorMsg('Please provide your Organization or Company name.')
+        return
+      }
+    } else {
+      // Student validation
+      if (!studentId.trim()) {
+        setErrorMsg('Please enter your University Roll Number / Registration ID.')
+        return
+      }
+      if (!studentEmail.trim()) {
+        setErrorMsg('Please enter your official MAHE learner email address.')
+        return
+      }
+      if (!studentEmail.trim().toLowerCase().endsWith('@learner.manipal.edu')) {
+        setErrorMsg('Email must end with @learner.manipal.edu')
+        return
+      }
     }
 
     setLoading(true)
 
     try {
-      const payload = {
-        registrationType: stream,
-        fullName,
-        email,
-        phone,
-        // Delegate fields
-        organization,
-        designation,
-        passType: stream === 'student' ? 'Student Pass' : 'Delegate Pass',
-        // Student fields
-        year,
-        studentId
-      }
+      const payload =
+        stream === 'delegate'
+          ? {
+              registrationType: 'delegate',
+              fullName,
+              email,
+              phone,
+              organization,
+              designation,
+              passType: 'Delegate Pass'
+            }
+          : {
+              registrationType: 'student',
+              studentId: studentId.trim(),
+              email: studentEmail.trim().toLowerCase(),
+              passType: 'Student Pass'
+            }
 
       const res = await fetch('/api/register', {
         method: 'POST',
@@ -106,8 +123,8 @@ export default function RegistrationSection() {
         if (stream === 'delegate') {
           setDelegateSuccess(true)
         } else if (data.passDetails) {
-          // Generate high-resolution QR code data URL for student pass
-          const qrUrl = await generateQrDataUrl(data.passDetails)
+          // If server returned pre-rendered qrDataUrl or generate locally
+          const qrUrl = data.passDetails.qrDataUrl || (await generateQrDataUrl(data.passDetails))
           const completePass: PassDetails = {
             ...data.passDetails,
             qrDataUrl: qrUrl
@@ -115,7 +132,7 @@ export default function RegistrationSection() {
           setGeneratedPass(completePass)
         }
       } else {
-        setErrorMsg(data.error || 'Failed to submit registration. Please try again.')
+        setErrorMsg(data.error || 'Failed to process request. Please try again.')
       }
     } catch {
       setErrorMsg('Network connectivity error. Please verify your connection.')
@@ -132,8 +149,8 @@ export default function RegistrationSection() {
     setPhone('')
     setOrganization('')
     setDesignation('')
-    setYear('1st Year')
     setStudentId('')
+    setStudentEmail('')
     setErrorMsg('')
   }
 
@@ -204,13 +221,16 @@ export default function RegistrationSection() {
           </div>
         ) : generatedPass ? (
           <div className="flex flex-col items-center justify-center animate-fadeIn">
-            
             <div className="text-center max-w-2xl mx-auto mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-wine-900/80 text-emerald-400 border border-emerald-500/40 mb-3 shadow-md">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Pass Issued Successfully</span>
+              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream-50 uppercase">
-                Welcome to GLC 2026
+                Your GLC 2026 Pass
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
-                Official pass issued. You may download and use it for attendance on event day.
+                Save or screenshot your pass below. Present the QR code to volunteers at the Auditorium gate on Saturday for atomic attendance verification.
               </p>
             </div>
 
@@ -223,16 +243,16 @@ export default function RegistrationSection() {
           /* Registration Form & Context */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            {/* Left Column: Clean & Revamped Context */}
+            {/* Left Column */}
             <div className="lg:col-span-5 flex flex-col justify-between pt-2">
               <div>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4 leading-tight">
-                  {ENABLE_STUDENT_REGISTRATION && stream === 'student' ? 'Student Registration' : 'Delegate Registration'}
+                  {stream === 'student' ? 'Student Pass' : 'Delegate Registration'}
                 </h2>
 
                 <p className="text-sm sm:text-base text-cream-200/80 leading-relaxed mb-6">
-                  {ENABLE_STUDENT_REGISTRATION && stream === 'student'
-                    ? 'Register for your official student pass and reserved auditorium seating at TAPMI, MAHE Bengaluru.'
+                  {stream === 'student'
+                    ? 'Enter your Roll Number and official Learner Email to download your verified auditorium entry pass.'
                     : 'Register for executive access and participation at GLC 2026. Our team will review your registration and get in touch.'}
                 </p>
               </div>
@@ -265,13 +285,16 @@ export default function RegistrationSection() {
             <div className="lg:col-span-7">
               <div className="bg-[#13030F] rounded-2xl p-6 sm:p-10 border border-wine-800 shadow-2xl relative">
                 
-                {/* Mode Switcher: Delegate vs Student (only displayed if student registration is enabled) */}
+                {/* Mode Switcher */}
                 {ENABLE_STUDENT_REGISTRATION && (
                   <div className="mb-8">
                     <div className="grid grid-cols-2 p-1 rounded-xl bg-wine-950 border border-wine-800">
                       <button
                         type="button"
-                        onClick={() => setStream('delegate')}
+                        onClick={() => {
+                          setStream('delegate')
+                          setErrorMsg('')
+                        }}
                         className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
                           stream === 'delegate'
                             ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
@@ -285,7 +308,10 @@ export default function RegistrationSection() {
 
                       <button
                         type="button"
-                        onClick={() => setStream('student')}
+                        onClick={() => {
+                          setStream('student')
+                          setErrorMsg('')
+                        }}
                         className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
                           stream === 'student'
                             ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
@@ -293,8 +319,8 @@ export default function RegistrationSection() {
                         }`}
                       >
                         <GraduationCap className="w-4 h-4 shrink-0" />
-                        <span className="sm:hidden">Student</span>
-                        <span className="hidden sm:inline">Student Registration</span>
+                        <span className="sm:hidden">Student Pass</span>
+                        <span className="hidden sm:inline">Student Pass (MAHE)</span>
                       </button>
                     </div>
                   </div>
@@ -302,16 +328,13 @@ export default function RegistrationSection() {
 
                 {/* Error Banner */}
                 {errorMsg && (
-                  <div className="mb-6 p-3.5 rounded-xl bg-red-950/50 border border-red-800/80 text-xs text-red-200">
+                  <div className="mb-6 p-3.5 rounded-xl bg-red-950/60 border border-red-800/80 text-xs text-red-200">
                     {errorMsg}
                   </div>
                 )}
 
                 {/* Form */}
                 <form onSubmit={handleRegister} className="space-y-5">
-                  
-
-
                   {/* Delegate Form Fields */}
                   {stream === 'delegate' ? (
                     <>
@@ -407,104 +430,46 @@ export default function RegistrationSection() {
                       </div>
                     </>
                   ) : (
-                    /* Student Form Fields (Streamlined for TAPMI/MAHE Bengaluru) */
+                    /* Streamlined Student Form: Roll Number & Learner Email ONLY */
                     <>
-                      {/* Name & College Email */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Full Name *
-                          </label>
-                          <div className="relative">
-                            <User className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
-                            <input
-                              type="text"
-                              required
-                              value={fullName}
-                              onChange={(e) => setFullName(e.target.value)}
-                              placeholder="e.g. Ananya Rao"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            College / Learner Email *
-                          </label>
-                          <div className="relative">
-                            <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
-                            <input
-                              type="email"
-                              required
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="name@learner.manipal.edu"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Year of Study & Roll Number */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Program & Year of Study *
-                          </label>
-                          <div className="relative">
-                            <GraduationCap className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
-                            <select
-                              value={year}
-                              onChange={(e) => setYear(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 focus:outline-none focus:border-glc-magenta transition-colors"
-                            >
-                              <option value="BBA - 1st Year">BBA · 1st Year</option>
-                              <option value="BBA - 2nd Year">BBA · 2nd Year</option>
-                              <option value="BBA - 3rd Year">BBA · 3rd Year</option>
-                              <option value="BBA - 4th Year">BBA · 4th Year</option>
-                              <option value="MBA - 1st Year">MBA · 1st Year</option>
-                              <option value="MBA - 2nd Year">MBA · 2nd Year</option>
-                              <option value="PhD / Research Scholar">PhD / Research Scholar</option>
-                              <option value="Other Student">Other Student</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                            Roll No. / Student ID *
-                          </label>
-                          <div className="relative">
-                            <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
-                            <input
-                              type="text"
-                              required
-                              value={studentId}
-                              onChange={(e) => setStudentId(e.target.value)}
-                              placeholder="e.g. 2401042 / 24MBATM042"
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors uppercase font-mono"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Phone */}
                       <div>
                         <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
-                          Contact Phone / WhatsApp *
+                          Roll Number / Registration Number *
                         </label>
                         <div className="relative">
-                          <Phone className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                          <Tag className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
                           <input
-                            type="tel"
+                            type="text"
                             required
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+91 98765 43210"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta transition-colors"
+                            value={studentId}
+                            onChange={(e) => setStudentId(e.target.value)}
+                            placeholder="e.g. 2401042 / 24MBATM042"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-colors uppercase font-mono tracking-wider"
                           />
                         </div>
+                        <span className="text-[10px] text-cream-400/80 mt-1 block">
+                          Enter your official MAHE / TAPMI student roll number.
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] uppercase tracking-wider text-cream-300 mb-1.5 font-semibold">
+                          Official Learner Email *
+                        </label>
+                        <div className="relative">
+                          <Mail className="w-4 h-4 text-cream-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                          <input
+                            type="email"
+                            required
+                            value={studentEmail}
+                            onChange={(e) => setStudentEmail(e.target.value)}
+                            placeholder="yourname@learner.manipal.edu"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-xs text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-colors"
+                          />
+                        </div>
+                        <span className="text-[10px] text-cream-400/80 mt-1 block">
+                          Must end with <code className="text-glc-orange font-mono">@learner.manipal.edu</code>
+                        </span>
                       </div>
                     </>
                   )}
@@ -520,13 +485,13 @@ export default function RegistrationSection() {
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
                           <span>
-                            {stream === 'delegate' ? 'Submitting Registration...' : 'Generating Student Pass...'}
+                            {stream === 'delegate' ? 'Submitting Registration...' : 'Generating Official Pass...'}
                           </span>
                         </>
                       ) : (
                         <>
                           <span>
-                            {stream === 'delegate' ? 'Complete Registration' : 'Complete Registration & Generate Pass'}
+                            {stream === 'delegate' ? 'Complete Registration' : 'Get My Pass →'}
                           </span>
                           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </>
