@@ -139,17 +139,22 @@ body {
 /* Volunteer QR Scanner Custom Styles */
 #volunteer-reader {
   width: 100% !important;
-  height: 100% !important;
   border: none !important;
   position: relative !important;
   background: #000000 !important;
+  overflow: hidden !important;
+  border-radius: 1.5rem !important;
 }
 
 #volunteer-reader video {
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  height: auto !important;
+  display: block !important;
   border-radius: 1.5rem !important;
+}
+
+#volunteer-reader canvas {
+  display: none !important;
 }
 
 /* Hide html5-qrcode default distorted SVG shader and banner elements */

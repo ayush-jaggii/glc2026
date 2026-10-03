@@ -242,11 +242,8 @@ export default function VolunteerScannerPage() {
       await html5QrCode.start(
         { facingMode: 'environment' },
         {
-          fps: 24,
-          videoConstraints: {
-            facingMode: 'environment',
-            advanced: [{ focusMode: 'continuous' } as any]
-          } as any
+          fps: 25,
+          disableFlip: true
         },
         (decodedText: string) => {
           processToken(decodedText)
@@ -408,31 +405,13 @@ export default function VolunteerScannerPage() {
           </div>
 
           {/* Camera Viewfinder Viewport */}
-          <div className="relative w-full aspect-square bg-black rounded-3xl overflow-hidden border border-wine-700 shadow-2xl flex flex-col items-center justify-center">
-            <div id="volunteer-reader" className="w-full h-full min-h-[300px]" />
+          <div className="relative w-full aspect-[4/5] sm:aspect-square max-h-[500px] bg-black rounded-3xl overflow-hidden border border-wine-700 shadow-2xl flex flex-col items-center justify-center">
+            <div id="volunteer-reader" className="w-full min-h-[300px]" />
 
-            {/* Custom Perfectly Square Reticle Viewfinder */}
+            {/* Active Full-View Scanner Laser Sweep */}
             {scannerActive && (
-              <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
-                {/* 1:1 Symmetrical Square Scanning Reticle */}
-                <div className="relative w-64 h-64 sm:w-72 sm:h-72 aspect-square flex items-center justify-center">
-                  {/* Top-Left Corner */}
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-[3.5px] border-l-[3.5px] border-white rounded-tl-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
-                  {/* Top-Right Corner */}
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-[3.5px] border-r-[3.5px] border-white rounded-tr-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
-                  {/* Bottom-Left Corner */}
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3.5px] border-l-[3.5px] border-white rounded-bl-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
-                  {/* Bottom-Right Corner */}
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3.5px] border-r-[3.5px] border-white rounded-br-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
-
-                  {/* Laser Scanning Line Animation */}
-                  <div className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-glc-magenta to-transparent shadow-[0_0_12px_#F45197] animate-scanline" />
-
-                  {/* Alignment Prompt */}
-                  <div className="absolute -bottom-8 px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-[10px] text-cream-200 font-medium tracking-wider text-center whitespace-nowrap">
-                    Align student QR inside frame
-                  </div>
-                </div>
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-glc-magenta to-transparent shadow-[0_0_16px_#F45197] animate-scanline" />
               </div>
             )}
 
