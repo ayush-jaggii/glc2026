@@ -232,8 +232,9 @@ export default function RegistrationSection() {
           <div className="flex flex-col items-center justify-center animate-fadeIn">
             
             <div className="text-center max-w-2xl mx-auto mb-6">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream-50 uppercase">
-                {studentFirstName ? `Welcome ${studentFirstName} to GLC 2026` : 'Welcome to GLC 2026'}
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream-50 uppercase leading-tight">
+                {studentFirstName ? `Hello ${studentFirstName},` : 'Hello,'}
+                <span className="block mt-1">welcome to GLC 2026</span>
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
                 Official pass is issued. You may download and use it for attendance on event day.
