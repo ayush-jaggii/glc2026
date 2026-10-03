@@ -247,6 +247,21 @@ export default function PassDownloadActions({
     return destCanvas
   }
 
+  const notifyDownloadServer = async () => {
+    try {
+      const identifier = pass.regId || pass.roleOrProgram?.replace('Roll No: ', '').trim()
+      if (identifier) {
+        await fetch('/api/register/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier })
+        })
+      }
+    } catch {
+      // non-blocking tracking
+    }
+  }
+
   const handleDownloadPdf = async () => {
     try {
       setDownloadingPdf(true)
@@ -281,6 +296,9 @@ export default function PassDownloadActions({
       const safeName = sanitizeFilename(pass.name)
       pdf.save(`GLC2026_Delegate_Pass_${safeName}.pdf`)
 
+      // Track download event in database
+      notifyDownloadServer()
+
       setDownloadSuccess(true)
       setTimeout(() => setDownloadSuccess(false), 4000)
     } catch (err) {
@@ -303,6 +321,9 @@ export default function PassDownloadActions({
       link.download = `GLC2026_Delegate_Pass_${sanitizeFilename(pass.name)}.png`
       link.href = clippedCanvas.toDataURL('image/png')
       link.click()
+
+      // Track download event in database
+      notifyDownloadServer()
 
       setDownloadSuccess(true)
       setTimeout(() => setDownloadSuccess(false), 4000)
