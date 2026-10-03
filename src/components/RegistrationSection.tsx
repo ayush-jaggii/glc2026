@@ -480,7 +480,7 @@ export default function RegistrationSection() {
                       ) : (
                         <>
                           <span>
-                            {stream === 'student' ? 'Access & Download My Pass' : 'Complete Registration'}
+                            {stream === 'student' ? 'Download My Pass' : 'Complete Registration'}
                           </span>
                           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </>
