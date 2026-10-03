@@ -455,7 +455,7 @@ export default function RegistrationSection() {
                               setStudentRollNumber(e.target.value)
                               setErrorMsg('')
                             }}
-                            placeholder="e.g. 246213066"
+                            placeholder="e.g. 246213240"
                             className="w-full pl-10 pr-4 py-3 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-colors uppercase font-mono tracking-wider"
                           />
                         </div>
