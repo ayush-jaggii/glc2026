@@ -3,14 +3,53 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { token, volunteerName = 'Volunteer', pin } = body
+    const { token, volunteerName = 'Volunteer', pin, sessionToken } = body
 
     if (!token) {
       return NextResponse.json({ error: 'Verification token / QR code is required.' }, { status: 400 })
     }
 
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
+    const supabaseAnonKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
+
+    let effectiveVolunteerName = volunteerName
+    let isAuthenticated = false
+
+    // 1. Authenticate via individual Volunteer session token
+    if (sessionToken) {
+      try {
+        const vRes = await fetch(
+          `${supabaseUrl}/rest/v1/volunteers?current_session_token=eq.${encodeURIComponent(sessionToken)}&select=*`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`
+            }
+          }
+        )
+        if (vRes.ok) {
+          const vData = await vRes.json()
+          if (Array.isArray(vData) && vData.length > 0 && vData[0].is_active) {
+            isAuthenticated = true
+            effectiveVolunteerName = `${vData[0].name} (${vData[0].gate || 'Gate 1'})`
+          }
+        }
+      } catch (err) {
+        console.warn('Volunteer token lookup error:', err)
+      }
+    }
+
+    // 2. Authenticate via master Event PIN
     const expectedPin = process.env.VOLUNTEER_PIN || 'GLC2026'
-    if (!pin || pin.trim() !== expectedPin.trim()) {
+    if (!isAuthenticated && pin && pin.trim() === expectedPin.trim()) {
+      isAuthenticated = true
+    }
+
+    // 3. Reject unauthorized requests
+    if (!isAuthenticated) {
       return NextResponse.json(
         {
           success: false,
@@ -23,14 +62,8 @@ export async function POST(request: Request) {
     }
 
     if (token === 'PING_CHECK') {
-      return NextResponse.json({ success: true, message: 'PIN valid.' })
+      return NextResponse.json({ success: true, message: 'Authorized.' })
     }
-
-    const supabaseUrl =
-      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
-    const supabaseAnonKey =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
 
     const rpcRes = await fetch(`${supabaseUrl}/rest/v1/rpc/mark_student_attendance`, {
       method: 'POST',
@@ -41,7 +74,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         p_qr_token: token.trim(),
-        p_volunteer_name: volunteerName.trim()
+        p_volunteer_name: effectiveVolunteerName.trim()
       })
     })
 

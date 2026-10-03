@@ -10,9 +10,12 @@ import {
   XCircle,
   LogOut,
   RefreshCw,
-  Armchair,
   UserCheck,
-  Lock
+  Lock,
+  KeyRound,
+  DoorOpen,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 
 interface StudentResult {
@@ -24,11 +27,17 @@ interface StudentResult {
 }
 
 export default function VolunteerScannerPage() {
+  const [loginMode, setLoginMode] = useState<'credentials' | 'pin'>('credentials')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [volunteerName, setVolunteerName] = useState('')
+  const [volunteerGate, setVolunteerGate] = useState('')
   const [pin, setPin] = useState('')
+  const [sessionToken, setSessionToken] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loginError, setLoginError] = useState('')
-  const [validatingPin, setValidatingPin] = useState(false)
+  const [validating, setValidating] = useState(false)
 
   // Scanner state
   const [scannerActive, setScannerActive] = useState(false)
@@ -80,9 +89,17 @@ export default function VolunteerScannerPage() {
 
   // Load volunteer session from localStorage
   useEffect(() => {
+    const savedToken = localStorage.getItem('glc_volunteer_session')
     const savedName = localStorage.getItem('glc_volunteer_name')
+    const savedGate = localStorage.getItem('glc_volunteer_gate')
     const savedPin = localStorage.getItem('glc_volunteer_pin')
-    if (savedName && savedPin) {
+
+    if (savedToken && savedName) {
+      setSessionToken(savedToken)
+      setVolunteerName(savedName)
+      setVolunteerGate(savedGate || 'Gate 1')
+      setIsAuthenticated(true)
+    } else if (savedName && savedPin) {
       setVolunteerName(savedName)
       setPin(savedPin)
       setIsAuthenticated(true)
@@ -92,53 +109,100 @@ export default function VolunteerScannerPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError('')
-    if (!volunteerName.trim()) {
-      setLoginError('Please enter your name.')
-      return
-    }
-    const cleanPin = pin.trim()
-    if (!cleanPin) {
-      setLoginError('Please enter the Event PIN.')
-      return
-    }
+    setValidating(true)
 
-    setValidatingPin(true)
     try {
-      const res = await fetch('/api/volunteer/scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: 'PING_CHECK',
-          volunteerName: volunteerName.trim(),
-          pin: cleanPin
+      if (loginMode === 'credentials') {
+        if (!username.trim() || !password) {
+          setLoginError('Please enter your Volunteer Login ID and Password.')
+          setValidating(false)
+          return
+        }
+
+        const res = await fetch('/api/volunteer/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: username.trim(),
+            password
+          })
         })
-      })
 
-      const data = await res.json()
-      if (!res.ok || !data.success) {
-        setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
-        return
+        const data = await res.json()
+
+        if (res.ok && data.success) {
+          localStorage.setItem('glc_volunteer_session', data.sessionToken)
+          localStorage.setItem('glc_volunteer_name', data.volunteer.name)
+          localStorage.setItem('glc_volunteer_gate', data.volunteer.gate || 'Gate 1')
+          setSessionToken(data.sessionToken)
+          setVolunteerName(data.volunteer.name)
+          setVolunteerGate(data.volunteer.gate || 'Gate 1')
+          setIsAuthenticated(true)
+          setPassword('')
+        } else {
+          setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
+        }
+      } else {
+        // Master PIN login
+        if (!volunteerName.trim() || !pin.trim()) {
+          setLoginError('Please enter your Name and Event PIN.')
+          setValidating(false)
+          return
+        }
+
+        const res = await fetch('/api/volunteer/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: 'PING_CHECK',
+            volunteerName: volunteerName.trim(),
+            pin: pin.trim()
+          })
+        })
+
+        const data = await res.json()
+        if (res.ok && data.success) {
+          localStorage.setItem('glc_volunteer_name', volunteerName.trim())
+          localStorage.setItem('glc_volunteer_pin', pin.trim())
+          setIsAuthenticated(true)
+        } else {
+          setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
+        }
       }
-
-      localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-      localStorage.setItem('glc_volunteer_pin', cleanPin)
-      setIsAuthenticated(true)
     } catch {
-      localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-      localStorage.setItem('glc_volunteer_pin', cleanPin)
-      setIsAuthenticated(true)
+      setLoginError('Network connectivity error. Please verify your connection.')
     } finally {
-      setValidatingPin(false)
+      setValidating(false)
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     stopScanner()
+    const token = sessionToken || localStorage.getItem('glc_volunteer_session')
+    if (token) {
+      try {
+        await fetch('/api/volunteer/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionToken: token })
+        })
+      } catch {
+        // ignore logout network errors
+      }
+    }
+
+    localStorage.removeItem('glc_volunteer_session')
     localStorage.removeItem('glc_volunteer_name')
+    localStorage.removeItem('glc_volunteer_gate')
     localStorage.removeItem('glc_volunteer_pin')
+
+    setSessionToken(null)
     setIsAuthenticated(false)
     setVolunteerName('')
+    setVolunteerGate('')
     setPin('')
+    setUsername('')
+    setPassword('')
     setScanResult(null)
   }
 
@@ -154,7 +218,8 @@ export default function VolunteerScannerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: rawText,
-          volunteerName: volunteerName.trim() || 'Volunteer Desk',
+          sessionToken,
+          volunteerName: volunteerGate ? `${volunteerName} (${volunteerGate})` : volunteerName,
           pin: pin.trim()
         })
       })
@@ -180,7 +245,7 @@ export default function VolunteerScannerPage() {
         playSound('error')
         setScanResult({
           type: 'error',
-          message: data.error || data.message || 'Pass not recognized or invalid PIN.'
+          message: data.error || data.message || 'Pass not recognized or invalid permissions.'
         })
       }
     } catch {
@@ -200,36 +265,29 @@ export default function VolunteerScannerPage() {
   // Camera scanner lifecycle
   const startScanner = async () => {
     setScanResult(null)
-    setScannerActive(true)
-
     try {
       const { Html5Qrcode } = await import('html5-qrcode')
       const html5QrCode = new Html5Qrcode('volunteer-reader')
       html5QrCodeRef.current = html5QrCode
 
-      const config = {
-        fps: 15,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
-      }
-
       await html5QrCode.start(
         { facingMode: 'environment' },
-        config,
+        {
+          fps: 15,
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0
+        },
         (decodedText: string) => {
           processToken(decodedText)
         },
         () => {
-          // Ignore frame decode misses
+          // scanning frame dropped, normal behavior
         }
       )
-    } catch (err) {
-      console.error('Camera init error:', err)
-      setScannerActive(false)
-      setScanResult({
-        type: 'error',
-        message: 'Camera access denied or unavailable. Please enable camera permissions in your mobile browser.'
-      })
+      setScannerActive(true)
+    } catch (err: any) {
+      console.error('Camera initialization error:', err)
+      alert('Unable to access camera. Please ensure camera permissions are granted in browser settings.')
     }
   }
 
@@ -238,8 +296,8 @@ export default function VolunteerScannerPage() {
       try {
         await html5QrCodeRef.current.stop()
         html5QrCodeRef.current.clear()
-      } catch {
-        // Already stopped
+      } catch (err) {
+        console.error('Error stopping scanner:', err)
       }
       html5QrCodeRef.current = null
     }
@@ -272,7 +330,7 @@ export default function VolunteerScannerPage() {
           <button
             onClick={handleLogout}
             type="button"
-            className="flex items-center gap-1 text-[11px] text-cream-400 hover:text-white px-2.5 py-1 rounded-lg bg-wine-900/60 border border-wine-800 transition-colors"
+            className="flex items-center gap-1 text-[11px] text-cream-400 hover:text-white px-2.5 py-1 rounded-lg bg-wine-900/60 border border-wine-800 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Exit</span>
@@ -281,18 +339,44 @@ export default function VolunteerScannerPage() {
       </div>
 
       {!isAuthenticated ? (
-        /* Login / PIN Prompt Card */
+        /* Login / Authentication Prompt Card */
         <div className="w-full max-w-md bg-[#13030F] rounded-3xl p-6 sm:p-8 border border-wine-800 shadow-2xl mt-4">
           <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3 shadow-md">
               <Lock className="w-6 h-6" />
             </div>
             <h1 className="text-xl font-bold text-white tracking-wide">
-              Auditorium Attendance Desk
+              Auditorium Gate Scanner
             </h1>
             <p className="text-xs text-cream-400 mt-1">
-              Sign in with your name and the Event PIN provided by the PACE Committee.
+              Sign in with your volunteer account issued by the Secretariat on <code className="text-glc-orange font-mono">/web-admin</code>.
             </p>
+          </div>
+
+          {/* Mode Switcher */}
+          <div className="flex rounded-xl bg-wine-950 p-1 border border-wine-800 mb-5">
+            <button
+              type="button"
+              onClick={() => { setLoginMode('credentials'); setLoginError('') }}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-colors cursor-pointer ${
+                loginMode === 'credentials'
+                  ? 'bg-glc-magenta text-white shadow-sm'
+                  : 'text-cream-400 hover:text-white'
+              }`}
+            >
+              Volunteer Account
+            </button>
+            <button
+              type="button"
+              onClick={() => { setLoginMode('pin'); setLoginError('') }}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-colors cursor-pointer ${
+                loginMode === 'pin'
+                  ? 'bg-glc-magenta text-white shadow-sm'
+                  : 'text-cream-400 hover:text-white'
+              }`}
+            >
+              Master Event PIN
+            </button>
           </div>
 
           {loginError && (
@@ -302,46 +386,93 @@ export default function VolunteerScannerPage() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                Volunteer Name
-              </label>
-              <input
-                type="text"
-                required
-                value={volunteerName}
-                onChange={(e) => setVolunteerName(e.target.value)}
-                placeholder="e.g. Priya Sharma"
-                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta"
-              />
-            </div>
+            {loginMode === 'credentials' ? (
+              <>
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Volunteer Login ID / Username
+                  </label>
+                  <div className="relative">
+                    <KeyRound className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                    <input
+                      type="text"
+                      required
+                      autoFocus
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
+                      placeholder="e.g. rahul_gate1"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
+                    />
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                Event PIN
-              </label>
-              <input
-                type="password"
-                required
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="Enter 4 or 6-digit PIN"
-                className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta tracking-widest text-center"
-              />
-            </div>
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter volunteer password"
+                      className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-cream-400 hover:text-white cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={volunteerName}
+                    onChange={(e) => setVolunteerName(e.target.value)}
+                    placeholder="e.g. Rahul Sharma"
+                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Event PIN
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    placeholder="Enter Master Event PIN"
+                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta tracking-widest text-center"
+                  />
+                </div>
+              </>
+            )}
 
             <button
               type="submit"
-              disabled={validatingPin}
+              disabled={validating}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
             >
-              {validatingPin ? (
+              {validating ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Verifying PIN...</span>
+                  <span>Verifying Credentials...</span>
                 </>
               ) : (
-                <span>Access Scanner Desk →</span>
+                <span>Access Gate Scanner Desk →</span>
               )}
             </button>
           </form>
@@ -353,15 +484,20 @@ export default function VolunteerScannerPage() {
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-wine-900/40 border border-wine-800/80 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-white">{volunteerName}</span>
+              <div>
+                <span className="font-semibold text-white">{volunteerName}</span>
+                {volunteerGate && (
+                  <span className="block text-[10px] text-cream-400 font-mono">{volunteerGate}</span>
+                )}
+              </div>
             </div>
             <div className="text-[11px] text-cream-300">
-              Verified by you: <strong className="text-glc-orange text-sm ml-0.5">{sessionCount}</strong>
+              Scanned: <strong className="text-glc-orange text-sm ml-0.5">{sessionCount}</strong>
             </div>
           </div>
 
-          {/* Scanner Viewfinder Box */}
-          <div className="relative rounded-3xl overflow-hidden bg-black border-2 border-wine-700/80 shadow-2xl flex flex-col items-center justify-center min-h-[300px]">
+          {/* Camera Viewfinder Viewport */}
+          <div className="relative w-full aspect-square bg-black rounded-3xl overflow-hidden border border-wine-700 shadow-2xl flex flex-col items-center justify-center">
             <div id="volunteer-reader" className="w-full h-full min-h-[300px]" />
 
             {!scannerActive && (
@@ -376,7 +512,7 @@ export default function VolunteerScannerPage() {
                 <button
                   onClick={startScanner}
                   type="button"
-                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-glc-magenta to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-md hover:scale-105 transition-all"
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-glc-magenta to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-md hover:scale-105 transition-all cursor-pointer"
                 >
                   Start Camera Scanner
                 </button>
@@ -387,7 +523,7 @@ export default function VolunteerScannerPage() {
               <button
                 onClick={stopScanner}
                 type="button"
-                className="absolute bottom-3 px-4 py-1.5 rounded-full bg-black/70 border border-white/20 text-[11px] text-cream-200 hover:text-white backdrop-blur-md"
+                className="absolute bottom-3 px-4 py-1.5 rounded-full bg-black/70 border border-white/20 text-[11px] text-cream-200 hover:text-white backdrop-blur-md cursor-pointer"
               >
                 Pause Camera
               </button>
@@ -404,7 +540,7 @@ export default function VolunteerScannerPage() {
           {/* Verification Result Card */}
           {scanResult && (
             <div
-              className={`p-5 rounded-2xl border shadow-xl transition-all ${
+              className={`p-4 sm:p-5 rounded-2xl border shadow-xl transition-all animate-fadeIn ${
                 scanResult.type === 'success'
                   ? 'bg-emerald-950/70 border-emerald-500/80 text-emerald-100'
                   : scanResult.type === 'warning'
@@ -413,41 +549,31 @@ export default function VolunteerScannerPage() {
               }`}
             >
               <div className="flex items-start gap-3">
-                {scanResult.type === 'success' && (
+                {scanResult.type === 'success' ? (
                   <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-                )}
-                {scanResult.type === 'warning' && (
+                ) : scanResult.type === 'warning' ? (
                   <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
-                )}
-                {scanResult.type === 'error' && (
+                ) : (
                   <XCircle className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />
                 )}
 
                 <div className="flex-1">
-                  <div className="font-bold text-sm leading-tight">{scanResult.message}</div>
+                  <h3 className="font-bold text-sm leading-tight text-white">
+                    {scanResult.message}
+                  </h3>
 
                   {scanResult.student && (
-                    <div className="mt-3 pt-3 border-t border-white/10 space-y-2 text-xs">
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Student Name:</span>
-                        <strong className="text-white text-sm">{scanResult.student.full_name}</strong>
+                    <div className="mt-2 text-xs space-y-1 bg-black/30 p-2.5 rounded-xl border border-white/10 font-mono">
+                      <div className="font-bold text-white">
+                        {scanResult.student.full_name}
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Roll Number:</span>
-                        <strong className="font-mono text-white tracking-wider">
-                          {scanResult.student.roll_number}
-                        </strong>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Affiliation:</span>
-                        <span className="text-white font-medium">TAPMI Bengaluru, MAHE</span>
+                      <div className="text-[11px] text-cream-300">
+                        Roll No: {scanResult.student.roll_number}
                       </div>
                       {scanResult.student.marked_at && (
-                        <div className="flex justify-between items-center text-[11px] text-amber-300">
-                          <span>Recorded At:</span>
-                          <span>
-                            {scanResult.student.marked_at} (by {scanResult.student.marked_by})
-                          </span>
+                        <div className="text-[10px] text-cream-400">
+                          Marked At: {scanResult.student.marked_at}
+                          {scanResult.student.marked_by ? ` (${scanResult.student.marked_by})` : ''}
                         </div>
                       )}
                     </div>
@@ -457,10 +583,10 @@ export default function VolunteerScannerPage() {
             </div>
           )}
 
-          {/* Verification Protocol Notice */}
-          <div className="p-3 text-center text-[10px] text-cream-400/80 leading-relaxed border-t border-wine-900/80">
-            <UserCheck className="w-3.5 h-3.5 inline mr-1 text-glc-magenta" />
-            <strong>Physical Protocol</strong>: Always match the student name and roll number with their physical TAPMI / MAHE University ID card.
+          {/* Bottom Security Note */}
+          <div className="text-center text-[11px] text-cream-400/60 pt-2">
+            <ShieldCheck className="w-3.5 h-3.5 inline mr-1 text-glc-magenta" />
+            <span>Attendance locked to official device session.</span>
           </div>
         </div>
       )}
