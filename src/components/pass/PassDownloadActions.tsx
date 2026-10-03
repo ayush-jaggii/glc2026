@@ -16,7 +16,7 @@ export default function PassDownloadActions({
 }: PassDownloadActionsProps) {
   const [downloadingPdf, setDownloadingPdf] = useState(false)
   const [downloadingImage, setDownloadingImage] = useState(false)
-  const [downloadSuccess, setDownloadSuccess] = useState(false)
+  const [successType, setSuccessType] = useState<'image' | 'pdf' | null>(null)
 
   const sanitizeFilename = (str: string) => {
     return str.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30)
@@ -299,8 +299,8 @@ export default function PassDownloadActions({
       // Track download event in database
       notifyDownloadServer()
 
-      setDownloadSuccess(true)
-      setTimeout(() => setDownloadSuccess(false), 4000)
+      setSuccessType('pdf')
+      setTimeout(() => setSuccessType(null), 4000)
     } catch (err) {
       console.error('Error generating PDF:', err)
       window.print()
@@ -316,17 +316,61 @@ export default function PassDownloadActions({
       if (!element) return
 
       const clippedCanvas = await captureAndClipTicket(element)
+      const filename = `GLC2026_Delegate_Pass_${sanitizeFilename(pass.name)}.png`
 
-      const link = document.createElement('a')
-      link.download = `GLC2026_Delegate_Pass_${sanitizeFilename(pass.name)}.png`
-      link.href = clippedCanvas.toDataURL('image/png')
-      link.click()
+      // Convert canvas to Blob for reliable cross-platform downloading
+      const blob = await new Promise<Blob | null>((resolve) => {
+        clippedCanvas.toBlob((b) => resolve(b), 'image/png')
+      })
+
+      if (!blob) {
+        throw new Error('Failed to generate pass image blob')
+      }
+
+      // Check if Web Share API is available (iOS Safari, iPadOS, Android)
+      // This allows mobile users to tap "Save Image" to save directly into Apple Photos / Camera Roll
+      // instead of hiding in iCloud Files or failing due to WebKit data-URI restrictions.
+      let sharedViaNavigator = false
+      if (typeof navigator !== 'undefined' && navigator.share && typeof File !== 'undefined') {
+        try {
+          const file = new File([blob], filename, { type: 'image/png', lastModified: Date.now() })
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: 'GLC 2026 Delegate Pass',
+              text: `GLC 2026 Delegate Pass for ${pass.name}`
+            })
+            sharedViaNavigator = true
+          }
+        } catch (shareErr: any) {
+          // If the user cancelled or dismissed the share sheet, return gracefully
+          if (shareErr.name === 'AbortError') {
+            return
+          }
+          console.warn('Native share failed or dismissed, falling back to direct download:', shareErr)
+        }
+      }
+
+      // Standard browser download fallback (Desktop Chrome, Safari, Firefox, Edge)
+      if (!sharedViaNavigator) {
+        const blobUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = filename
+        // Must append to body for Safari / iOS WebKit to trigger .click()
+        document.body.appendChild(link)
+        link.click()
+        setTimeout(() => {
+          document.body.removeChild(link)
+          URL.revokeObjectURL(blobUrl)
+        }, 2000)
+      }
 
       // Track download event in database
       notifyDownloadServer()
 
-      setDownloadSuccess(true)
-      setTimeout(() => setDownloadSuccess(false), 4000)
+      setSuccessType('image')
+      setTimeout(() => setSuccessType(null), 4000)
     } catch (err) {
       console.error('Error generating Image:', err)
     } finally {
@@ -337,44 +381,54 @@ export default function PassDownloadActions({
   return (
     <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
       
-      {/* Primary: Download PDF */}
+      {/* Primary: Save Pass as Image (PNG) */}
       <button
         type="button"
-        onClick={handleDownloadPdf}
-        disabled={downloadingPdf}
+        onClick={handleDownloadImage}
+        disabled={downloadingImage || downloadingPdf}
         className="w-full sm:w-auto px-6 py-3.5 rounded-full font-semibold text-xs tracking-wider uppercase text-white bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange hover:shadow-[0_0_24px_-4px_rgba(244,81,151,0.6)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg cursor-pointer"
       >
-        {downloadingPdf ? (
+        {downloadingImage ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Generating High-Res PDF...</span>
+            <span>Generating High-Res Image...</span>
           </>
-        ) : downloadSuccess ? (
+        ) : successType === 'image' ? (
           <>
             <Check className="w-4 h-4 text-emerald-300" />
-            <span>Pass Downloaded!</span>
+            <span>Pass Saved!</span>
           </>
         ) : (
           <>
-            <FileText className="w-4 h-4" />
-            <span>Download Pass (PDF)</span>
+            <ImageIcon className="w-4 h-4" />
+            <span>Save Pass (Image PNG)</span>
           </>
         )}
       </button>
 
-      {/* Secondary: Save Image PNG */}
+      {/* Secondary: Download Pass (PDF) */}
       <button
         type="button"
-        onClick={handleDownloadImage}
-        disabled={downloadingImage}
+        onClick={handleDownloadPdf}
+        disabled={downloadingPdf || downloadingImage}
         className="w-full sm:w-auto px-6 py-3.5 rounded-full font-semibold text-xs tracking-wider uppercase text-cream-200 hover:text-white bg-wine-900/70 hover:bg-wine-850 border border-wine-700/80 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer shadow-md"
       >
-        {downloadingImage ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+        {downloadingPdf ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Generating PDF...</span>
+          </>
+        ) : successType === 'pdf' ? (
+          <>
+            <Check className="w-4 h-4 text-emerald-300" />
+            <span>PDF Downloaded!</span>
+          </>
         ) : (
-          <ImageIcon className="w-4 h-4 text-glc-orange" />
+          <>
+            <FileText className="w-4 h-4 text-glc-orange" />
+            <span>Download Pass (PDF)</span>
+          </>
         )}
-        <span>Save as Image (PNG)</span>
       </button>
 
     </div>
