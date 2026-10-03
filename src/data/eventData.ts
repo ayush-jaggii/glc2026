@@ -122,11 +122,11 @@ export const PANELS_LIST: PanelSchema[] = [
     id: "panel-4",
     number: "04",
     title: "Shifting Gears",
-    category: "Automobile & EV Mobility",
+    category: "Automotive & EV Mobility",
     topic: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs in EV Mobility",
     subtitle: "Clean-Tech Alliances & Automotive Manufacturing",
     image: "/panels/auto-mobility.jpg",
-    description: "The Automotive & EV panel will explore how global shifts, geopolitical tensions, and evolving supply chains are shaping the future of India’s automobile industry. Industry leaders will share practical insights on India’s journey towards self-reliance, emerging technologies, innovation, and changing business opportunities, while highlighting what these shifts mean for the next generation of management leaders.",
+    description: "The Automotive & EV panel will explore how global shifts, geopolitical tensions, and evolving supply chains are shaping the future of India’s automotive industry. Industry leaders will share practical insights on India’s journey towards self-reliance, emerging technologies, innovation, and changing business opportunities, while highlighting what these shifts mean for the next generation of management leaders.",
     keyQuestions: [
       "Mitigating critical mineral bottlenecks and battery recycling corridors.",
       "Navigating cross-border tariffs and localized manufacturing incentives in EV adoption."

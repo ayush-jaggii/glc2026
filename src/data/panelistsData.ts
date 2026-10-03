@@ -44,8 +44,8 @@ export const PANEL_TRACKS: PanelTrack[] = [
   },
   {
     code: 'Auto',
-    name: 'Automobile & EV Mobility',
-    shortTitle: 'Automobile & EV',
+    name: 'Automotive & EV Mobility',
+    shortTitle: 'Automotive & EV',
     color: '#F58232',
     badgeBg: 'bg-black/60',
     badgeBorder: 'border-white/20',
@@ -188,7 +188,7 @@ export const PANELISTS_DATA: Panelist[] = [
     tags: ['Workforce Agility', 'Operations Culture', 'Talent Systems'],
   },
 
-  // Automobile & EV Panel
+  // Automotive & EV Panel
   {
     id: 'auto-1',
     name: 'Maharana Ray',
@@ -196,7 +196,7 @@ export const PANELISTS_DATA: Panelist[] = [
     designation: 'President',
     linkedin: 'https://linkedin.com/in/maharana-ray-28b9b714',
     trackCode: 'Auto',
-    trackName: 'Automobile & EV Mobility',
+    trackName: 'Automotive & EV Mobility',
     photo: '/images/panelists/Auto/MaharanaRay_Auto.jpeg',
     tags: ['Automotive Leadership', 'Mobility Platforms', 'Global Scale'],
   },
@@ -207,7 +207,7 @@ export const PANELISTS_DATA: Panelist[] = [
     designation: 'Vice President',
     linkedin: 'https://www.linkedin.com/in/commander-anurag-bhardwaj/',
     trackCode: 'Auto',
-    trackName: 'Automobile & EV Mobility',
+    trackName: 'Automotive & EV Mobility',
     photo: '/images/panelists/Auto/AnuragB_Auto.jpeg',
     tags: ['EV Transition', 'Hardware Innovation', 'Clean Mobility'],
   },
@@ -427,7 +427,7 @@ export const FEATURED_ACCORDION_ITEMS = [
     company: 'FTA MOBILITY SOLUTIONS LTD.',
     designation: 'President',
     linkedin: 'https://linkedin.com/in/maharana-ray-28b9b714',
-    track: 'Automobile & EV Mobility',
+    track: 'Automotive & EV Mobility',
     tags: ['Automotive Leadership', 'Mobility Platforms', 'Global Scale'],
   },
   {
