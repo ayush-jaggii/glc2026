@@ -127,25 +127,21 @@ export async function POST(request: Request) {
         )
       }
 
-      // 2. Track that student has retrieved/downloaded their pass
-      const newDownloadCount = (studentRecord.download_count || 0) + 1
       const nowIso = new Date().toISOString()
       const firstDownloaded = studentRecord.first_downloaded_at || nowIso
+      const newDownloadCount = (studentRecord.download_count || 0) + 1
 
+      // 2. Track that student has retrieved/downloaded their pass via secure RPC
       try {
-        await fetch(`${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`, {
-          method: 'PATCH',
+        await fetch(`${supabaseUrl}/rest/v1/rpc/record_pass_download`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             apikey: supabaseAnonKey,
-            Authorization: `Bearer ${supabaseAnonKey}`,
-            Prefer: 'return=representation'
+            Authorization: `Bearer ${supabaseAnonKey}`
           },
           body: JSON.stringify({
-            has_downloaded_pass: true,
-            first_downloaded_at: firstDownloaded,
-            last_downloaded_at: nowIso,
-            download_count: newDownloadCount
+            p_student_id: studentRecord.id
           })
         })
       } catch (patchErr) {
