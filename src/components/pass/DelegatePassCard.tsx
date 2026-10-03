@@ -10,7 +10,7 @@ export interface PassDetails {
   categoryKey?: 'student' | 'executive' | 'corporate' | 'academic'
   affiliation?: string
   roleOrProgram?: string
-  seat: string
+  seat?: string
   zone?: string
   gate?: string
   fullSeatString?: string
@@ -47,13 +47,17 @@ export default function DelegatePassCard({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const subMetaText = pass.seat
+    ? `${pass.roleOrProgram || ''} · Seat: ${pass.seat}`
+    : (pass.roleOrProgram || '')
+
   return (
     <div ref={containerRef} className="w-full flex justify-center py-4 px-2">
       <AdmitOneTicket
         id={id}
         name={pass.name}
         event={'GLC 2026\nBUSINESS BEYOND BORDERS'}
-        subMeta={`${pass.roleOrProgram || ''} · Seat: ${pass.seat}`}
+        subMeta={subMetaText}
         venue="DR. RAMDAS M. PAI AUDITORIUM"
         dates="SAT, 10 OCT 2026 · 09:00 AM"
         watermark="2026"

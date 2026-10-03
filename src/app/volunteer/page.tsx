@@ -18,9 +18,6 @@ import {
 interface StudentResult {
   roll_number: string
   full_name: string
-  seat_number: string
-  program: string
-  year_of_study: string
   status: string
   marked_at?: string
   marked_by?: string
@@ -407,15 +404,8 @@ export default function VolunteerScannerPage() {
                         </strong>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="opacity-80">Assigned Seat:</span>
-                        <span className="inline-flex items-center gap-1 font-bold text-white px-2.5 py-0.5 rounded-md bg-white/20">
-                          <Armchair className="w-3.5 h-3.5 text-glc-orange" />
-                          {scanResult.student.seat_number}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="opacity-80">Program / Year:</span>
-                        <span>{scanResult.student.year_of_study}</span>
+                        <span className="opacity-80">Affiliation:</span>
+                        <span className="text-white font-medium">TAPMI Bengaluru, MAHE</span>
                       </div>
                       {scanResult.student.marked_at && (
                         <div className="flex justify-between items-center text-[11px] text-amber-300">

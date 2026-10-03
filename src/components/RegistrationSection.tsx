@@ -26,7 +26,7 @@ type StreamType = 'delegate' | 'student'
 const ENABLE_STUDENT_REGISTRATION = true
 
 export default function RegistrationSection() {
-  const [stream, setStream] = useState<StreamType>('student')
+  const [stream, setStream] = useState<StreamType>('delegate')
 
   // Delegate specific fields
   const [fullName, setFullName] = useState('')
@@ -161,6 +161,8 @@ export default function RegistrationSection() {
     setErrorMsg('')
   }
 
+  const studentFirstName = generatedPass?.name ? generatedPass.name.trim().split(' ')[0] : ''
+
   return (
     <section id="register" className="relative py-24 sm:py-32 bg-wine-950 overflow-hidden border-t border-wine-900/80 scroll-mt-24">
       {/* Ambient background accents */}
@@ -231,10 +233,10 @@ export default function RegistrationSection() {
             
             <div className="text-center max-w-2xl mx-auto mb-6">
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream-50 uppercase">
-                Welcome to GLC 2026
+                {studentFirstName ? `Welcome ${studentFirstName} to GLC 2026` : 'Welcome to GLC 2026'}
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
-                Official pass issued. You may download and use it for attendance on event day.
+                Official pass is issued. You may download and use it for attendance on event day.
               </p>
             </div>
 
@@ -251,12 +253,12 @@ export default function RegistrationSection() {
             <div className="lg:col-span-5 flex flex-col justify-between pt-2">
               <div>
                 <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-cream-50 uppercase mb-4 leading-tight">
-                  {stream === 'student' ? 'Student Pass Portal' : 'Delegate Registration'}
+                  {stream === 'student' ? 'Student Registration' : 'Delegate Registration'}
                 </h2>
 
                 <p className="text-sm sm:text-base text-cream-200/80 leading-relaxed mb-6">
                   {stream === 'student'
-                    ? 'All TAPMI / MAHE Bengaluru students are registered in the official conference roster. Enter your college roll number to retrieve your pass and view your reserved seating.'
+                    ? 'Enter your roll number to register for the event.'
                     : 'Register for executive access and participation at GLC 2026. Our team will review your registration and get in touch.'}
                 </p>
               </div>
@@ -289,27 +291,10 @@ export default function RegistrationSection() {
             <div className="lg:col-span-7">
               <div className="bg-[#13030F] rounded-2xl p-6 sm:p-10 border border-wine-800 shadow-2xl relative">
                 
-                {/* Mode Switcher: Student vs Delegate */}
+                {/* Mode Switcher: Delegate vs Student */}
                 {ENABLE_STUDENT_REGISTRATION && (
                   <div className="mb-8">
                     <div className="grid grid-cols-2 p-1 rounded-xl bg-wine-950 border border-wine-800">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setStream('student')
-                          setErrorMsg('')
-                        }}
-                        className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
-                          stream === 'student'
-                            ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
-                            : 'text-cream-300 hover:text-white'
-                        }`}
-                      >
-                        <GraduationCap className="w-4 h-4 shrink-0" />
-                        <span className="sm:hidden">Student Pass</span>
-                        <span className="hidden sm:inline">Student Pass Portal</span>
-                      </button>
-
                       <button
                         type="button"
                         onClick={() => {
@@ -325,6 +310,23 @@ export default function RegistrationSection() {
                         <Briefcase className="w-4 h-4 shrink-0" />
                         <span className="sm:hidden">Delegate</span>
                         <span className="hidden sm:inline">Delegate Registration</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStream('student')
+                          setErrorMsg('')
+                        }}
+                        className={`flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-bold tracking-wide transition-all ${
+                          stream === 'student'
+                            ? 'bg-gradient-to-r from-glc-magenta to-glc-orange text-white shadow-md'
+                            : 'text-cream-300 hover:text-white'
+                        }`}
+                      >
+                        <GraduationCap className="w-4 h-4 shrink-0" />
+                        <span className="sm:hidden">Student</span>
+                        <span className="hidden sm:inline">Student Registration</span>
                       </button>
                     </div>
                   </div>
@@ -456,9 +458,6 @@ export default function RegistrationSection() {
                             className="w-full pl-10 pr-4 py-3 rounded-xl bg-wine-950/90 border border-wine-800 text-[16px] sm:text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-colors uppercase font-mono tracking-wider"
                           />
                         </div>
-                        <p className="mt-2 text-xs text-cream-300/70 leading-relaxed">
-                          All TAPMI / MAHE Bengaluru students are pre-registered in the roster. Enter your official roll number to retrieve your pass.
-                        </p>
                       </div>
                     </div>
                   )}

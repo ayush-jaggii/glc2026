@@ -192,16 +192,9 @@ function VerifyContent() {
 
                 <div className="my-5 p-4 rounded-2xl bg-white/5 border border-wine-800 text-left space-y-2.5 text-xs">
                   <div className="flex justify-between items-center">
-                    <span className="text-cream-400">Assigned Seat:</span>
-                    <span className="font-bold text-white px-2.5 py-0.5 rounded-md bg-wine-900 border border-wine-700 flex items-center gap-1">
-                      <Armchair className="w-3.5 h-3.5 text-glc-orange" />
-                      {result.student.seat_number}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-cream-400">Program / Cohort:</span>
+                    <span className="text-cream-400">Affiliation:</span>
                     <span className="font-semibold text-cream-200">
-                      {result.student.year_of_study}
+                      TAPMI Bengaluru, MAHE
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -239,10 +232,6 @@ function VerifyContent() {
                     <div className="flex justify-between">
                       <span className="text-amber-200/70">Roll No:</span>
                       <strong className="font-mono text-white">{result.student.roll_number}</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-amber-200/70">Seat:</span>
-                      <strong className="text-white">{result.student.seat_number}</strong>
                     </div>
                     <div className="flex justify-between text-amber-300">
                       <span>Recorded At:</span>

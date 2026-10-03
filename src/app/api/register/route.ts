@@ -130,6 +130,7 @@ export async function POST(request: Request) {
       // 2. Track that student has retrieved/downloaded their pass
       const newDownloadCount = (studentRecord.download_count || 0) + 1
       const nowIso = new Date().toISOString()
+      const firstDownloaded = studentRecord.first_downloaded_at || nowIso
 
       try {
         await fetch(`${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`, {
@@ -142,7 +143,8 @@ export async function POST(request: Request) {
           },
           body: JSON.stringify({
             has_downloaded_pass: true,
-            downloaded_at: nowIso,
+            first_downloaded_at: firstDownloaded,
+            last_downloaded_at: nowIso,
             download_count: newDownloadCount
           })
         })
@@ -161,7 +163,7 @@ export async function POST(request: Request) {
         }
       })
 
-      // 4. Return official Pass Details (NO program displayed)
+      // 4. Return official Pass Details (NO program, NO seat displayed)
       return NextResponse.json({
         success: true,
         message: 'Your official GLC 2026 student pass has been retrieved.',
@@ -173,16 +175,12 @@ export async function POST(request: Request) {
           categoryKey: 'student',
           affiliation: 'TAPMI Bengaluru, MAHE',
           roleOrProgram: `Roll No: ${studentRecord.roll_number}`,
-          seat: studentRecord.seat_number || 'Allocated at Check-in',
-          zone: studentRecord.seat_zone || 'Balcony · Student Seating',
-          gate: studentRecord.gate || 'Gate 3 · Student Check-In',
-          fullSeatString: studentRecord.full_seat_string || 'Balcony · Student Seating · Allocated at Check-in',
           date: 'Saturday, 10 October 2026',
           time: '09:00 AM IST',
           venue: 'Dr. Ramdas M. Pai Auditorium',
           campus: 'MAHE Bengaluru',
           qrDataUrl,
-          submittedAt: studentRecord.created_at || nowIso,
+          submittedAt: firstDownloaded,
           hasDownloadedBefore: Boolean(studentRecord.has_downloaded_pass),
           downloadCount: newDownloadCount
         }
