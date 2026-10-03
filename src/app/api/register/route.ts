@@ -5,6 +5,60 @@ import { allocateAuditoriumSeat, generateRegistrationId, AttendeeCategory } from
 // In-memory debounce cache to prevent rapid double-clicks from creating duplicate rows
 const recentDelegateSubmissions = new Map<string, number>()
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const rollNumber = (searchParams.get('rollNumber') || searchParams.get('roll') || '').trim().toUpperCase()
+
+    if (!rollNumber) {
+      return NextResponse.json({ error: 'Roll number is required.' }, { status: 400 })
+    }
+
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
+    const supabaseAnonKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
+
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/students?roll_number=eq.${encodeURIComponent(rollNumber)}&select=id,full_name,email,roll_number,seat_number,has_downloaded_pass,download_count`,
+      {
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`
+        }
+      }
+    )
+
+    if (!res.ok) {
+      return NextResponse.json({ error: 'Database query failed.' }, { status: 500 })
+    }
+
+    const data = await res.json()
+    if (!Array.isArray(data) || data.length === 0) {
+      return NextResponse.json(
+        { found: false, error: `Roll number "${rollNumber}" not found in the student roster.` },
+        { status: 404 }
+      )
+    }
+
+    const student = data[0]
+    return NextResponse.json({
+      found: true,
+      student: {
+        name: student.full_name,
+        email: student.email,
+        rollNumber: student.roll_number,
+        hasDownloaded: Boolean(student.has_downloaded_pass),
+        downloadCount: student.download_count || 0
+      }
+    })
+  } catch (error) {
+    console.error('Lookup error:', error)
+    return NextResponse.json({ error: 'Server error during lookup.' }, { status: 500 })
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -19,27 +73,9 @@ export async function POST(request: Request) {
       passType,
       trackPreference,
       // Student specific
-      year,
-      studentId,
       rollNumber: rawRollNumber,
-      program
+      studentId
     } = body
-
-    if (!fullName || !email) {
-      return NextResponse.json(
-        { error: 'Full Name and Email Address are required.' },
-        { status: 400 }
-      )
-    }
-
-    // Basic email format check
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please enter a valid email address.' },
-        { status: 400 }
-      )
-    }
 
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://epkpjeuqfttwnptxnubt.supabase.co'
@@ -48,24 +84,20 @@ export async function POST(request: Request) {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
 
     // ==========================================
-    // 1. STUDENT REGISTRATION ENGINE (SUPABASE)
+    // 1. STUDENT PASS RETRIEVAL ENGINE (SUPABASE)
     // ==========================================
     if (registrationType === 'student') {
-      const rollNumber = (studentId || rawRollNumber || '').trim().toUpperCase()
+      const rollNumber = (rawRollNumber || studentId || '').trim().toUpperCase()
 
       if (!rollNumber) {
         return NextResponse.json(
-          { error: 'College Roll Number / Student ID is required for student registration.' },
+          { error: 'College Roll Number is required to access your pass.' },
           { status: 400 }
         )
       }
 
-      const yearLabel = year?.trim() || 'Student'
-      const programLabel = program?.trim() || 'TAPMI / MAHE Bengaluru'
-
-      // Check if student is already in Supabase (either pre-loaded by PACE or previously registered)
+      // 1. Fetch student from Supabase roster
       let studentRecord: any = null
-
       try {
         const checkRes = await fetch(
           `${supabaseUrl}/rest/v1/students?roll_number=eq.${encodeURIComponent(rollNumber)}&select=*`,
@@ -86,97 +118,39 @@ export async function POST(request: Request) {
         console.warn('Supabase student lookup error:', err)
       }
 
-      const qrToken =
-        studentRecord?.qr_token ||
-        `GLC26-STU-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-
-      if (studentRecord) {
-        // Record is immutable once created. If qr_token was somehow missing, attach it only.
-        if (!studentRecord.qr_token) {
-          try {
-            const updateRes = await fetch(
-              `${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`,
-              {
-                method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json',
-                  apikey: supabaseAnonKey,
-                  Authorization: `Bearer ${supabaseAnonKey}`,
-                  Prefer: 'return=representation'
-                },
-                body: JSON.stringify({
-                  qr_token: qrToken
-                })
-              }
-            )
-            if (updateRes.ok) {
-              const updated = await updateRes.json()
-              if (Array.isArray(updated) && updated.length > 0) {
-                studentRecord = updated[0]
-              }
-            }
-          } catch (patchErr) {
-            console.warn('Supabase student qr_token initialization warning:', patchErr)
-          }
-        }
-      } else {
-        // PACE hasn't pre-loaded this student yet, insert with PACE pending seat
-        const defaultSeatNumber = body.seatNumber || 'Allocated at Check-in'
-        const defaultZone = 'Balcony · Student Seating'
-        const defaultGate = 'Gate 3 · Student Check-In'
-
-        try {
-          const insertRes = await fetch(`${supabaseUrl}/rest/v1/students`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseAnonKey}`,
-              Prefer: 'return=representation'
-            },
-            body: JSON.stringify({
-              roll_number: rollNumber,
-              full_name: fullName.trim(),
-              email: email.trim().toLowerCase(),
-              phone: phone?.trim() || 'N/A',
-              program: programLabel,
-              year_of_study: yearLabel,
-              seat_number: defaultSeatNumber,
-              seat_zone: defaultZone,
-              gate: defaultGate,
-              full_seat_string: `${defaultZone} · ${defaultSeatNumber}`,
-              qr_token: qrToken,
-              status: 'ABSENT'
-            })
-          })
-
-          if (insertRes.ok) {
-            const inserted = await insertRes.json()
-            if (Array.isArray(inserted) && inserted.length > 0) {
-              studentRecord = inserted[0]
-            }
-          }
-        } catch (insertErr) {
-          console.error('Supabase student insert error:', insertErr)
-        }
-
-        if (!studentRecord) {
-          studentRecord = {
-            roll_number: rollNumber,
-            full_name: fullName.trim(),
-            program: programLabel,
-            year_of_study: yearLabel,
-            seat_number: defaultSeatNumber,
-            seat_zone: defaultZone,
-            gate: defaultGate,
-            full_seat_string: `${defaultZone} · ${defaultSeatNumber}`,
-            qr_token: qrToken,
-            status: 'ABSENT'
-          }
-        }
+      if (!studentRecord) {
+        return NextResponse.json(
+          {
+            error: `Roll number "${rollNumber}" was not found in the student roster. Please check your roll number or contact the GLC Secretariat at tapmi.glc@manipal.edu.`
+          },
+          { status: 404 }
+        )
       }
 
-      // Generate verifiable QR code data URL
+      // 2. Track that student has retrieved/downloaded their pass
+      const newDownloadCount = (studentRecord.download_count || 0) + 1
+      const nowIso = new Date().toISOString()
+
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/students?id=eq.${studentRecord.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`,
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({
+            has_downloaded_pass: true,
+            downloaded_at: nowIso,
+            download_count: newDownloadCount
+          })
+        })
+      } catch (patchErr) {
+        console.warn('Failed to update student download tracking:', patchErr)
+      }
+
+      // 3. Generate QR code for gate verification
       const verificationUrl = `https://www.tapmiblrglc.in/verify?token=${studentRecord.qr_token}`
       const qrDataUrl = await QRCode.toDataURL(verificationUrl, {
         margin: 1,
@@ -187,9 +161,10 @@ export async function POST(request: Request) {
         }
       })
 
+      // 4. Return official Pass Details (NO program displayed)
       return NextResponse.json({
         success: true,
-        message: 'Your official GLC 2026 student pass has been generated.',
+        message: 'Your official GLC 2026 student pass has been retrieved.',
         registrationId: studentRecord.qr_token,
         passDetails: {
           regId: studentRecord.qr_token,
@@ -197,18 +172,40 @@ export async function POST(request: Request) {
           category: 'Student Pass',
           categoryKey: 'student',
           affiliation: 'TAPMI Bengaluru, MAHE',
-          roleOrProgram: `${studentRecord.year_of_study} (${studentRecord.roll_number})`,
-          seat: studentRecord.seat_number,
-          zone: studentRecord.seat_zone,
-          fullSeatString: studentRecord.full_seat_string,
+          roleOrProgram: `Roll No: ${studentRecord.roll_number}`,
+          seat: studentRecord.seat_number || 'Allocated at Check-in',
+          zone: studentRecord.seat_zone || 'Balcony · Student Seating',
+          gate: studentRecord.gate || 'Gate 3 · Student Check-In',
+          fullSeatString: studentRecord.full_seat_string || 'Balcony · Student Seating · Allocated at Check-in',
           date: 'Saturday, 10 October 2026',
           time: '09:00 AM IST',
           venue: 'Dr. Ramdas M. Pai Auditorium',
           campus: 'MAHE Bengaluru',
           qrDataUrl,
-          submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          submittedAt: studentRecord.created_at || nowIso,
+          hasDownloadedBefore: Boolean(studentRecord.has_downloaded_pass),
+          downloadCount: newDownloadCount
         }
       })
+    }
+
+    // ==========================================
+    // 2. DELEGATE REGISTRATION ENGINE
+    // ==========================================
+    if (!fullName || !email) {
+      return NextResponse.json(
+        { error: 'Full Name and Email Address are required for delegate registration.' },
+        { status: 400 }
+      )
+    }
+
+    // Basic email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Please enter a valid email address.' },
+        { status: 400 }
+      )
     }
 
     // ==========================================
