@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     const data = await res.json()
     if (!Array.isArray(data) || data.length === 0) {
       return NextResponse.json(
-        { found: false, error: `Roll number "${rollNumber}" not found in the student roster.` },
+        { found: false, error: 'Roll number not found, please check roll no or contact Nexora or the CE team' },
         { status: 404 }
       )
     }
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
       if (!studentRecord) {
         return NextResponse.json(
           {
-            error: `Roll number "${rollNumber}" was not found in the student roster. Please check your roll number or contact the GLC Secretariat at tapmi.glc@manipal.edu.`
+            error: 'Roll number not found, please check roll no or contact Nexora or the CE team'
           },
           { status: 404 }
         )

@@ -96,7 +96,7 @@ export default function RegistrationSection() {
           }
           setGeneratedPass(completePass)
         } else {
-          setErrorMsg(data.error || 'Roll number not found. Please verify your roll number.')
+          setErrorMsg(data.error || 'Roll number not found, please check roll no or contact Nexora or the CE team')
         }
       } catch {
         setErrorMsg('Network connectivity error. Please verify your connection.')
@@ -237,7 +237,7 @@ export default function RegistrationSection() {
                 <span className="block mt-1">welcome to GLC 2026</span>
               </h2>
               <p className="mt-2 text-sm sm:text-base text-cream-200/90 leading-relaxed">
-                Official pass is issued. You may download and use it for attendance on event day.
+                Official pass is issued. You may download and use it for attendance on 10th October.
               </p>
             </div>
 

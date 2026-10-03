@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 function checkAdminAuth(token: string | null): boolean {
   if (!token) return false
-  const expectedPassword = process.env.ADMIN_PASSWORD || 'GLC2026_ADMIN'
+  const expectedPassword = process.env.ADMIN_PASSWORD || 'clankers'
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf-8')
     return decoded.includes(expectedPassword)

@@ -189,7 +189,7 @@ export default function AdminDashboardPage() {
               <ShieldCheck className="w-8 h-8 text-glc-magenta" />
             </div>
             <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">
-              Secretariat Control
+              Welcome Nexora
             </h1>
             <p className="text-xs text-cream-400 mt-1 uppercase tracking-wider font-semibold">
               GLC 2026 Operations & Metrics
@@ -251,7 +251,7 @@ export default function AdminDashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-wine-900 border border-wine-700 text-glc-orange mb-2">
               <ShieldCheck className="w-3 h-3" />
-              <span>Core Secretariat Console</span>
+              <span>Nexora Control Console</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white">
               GLC 2026 Live Metrics & Roster
