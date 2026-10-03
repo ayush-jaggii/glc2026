@@ -131,7 +131,7 @@ export async function POST(request: Request) {
       const firstDownloaded = studentRecord.first_downloaded_at || nowIso
       const newDownloadCount = (studentRecord.download_count || 0) + 1
 
-      // 2. Track that student has retrieved/downloaded their pass via secure RPC
+      // 2. Mark pass as downloaded upon roll number entry (assume downloaded)
       try {
         await fetch(`${supabaseUrl}/rest/v1/rpc/record_pass_download`, {
           method: 'POST',
@@ -141,7 +141,7 @@ export async function POST(request: Request) {
             Authorization: `Bearer ${supabaseAnonKey}`
           },
           body: JSON.stringify({
-            p_student_id: studentRecord.id
+            p_identifier: studentRecord.roll_number
           })
         })
       } catch (patchErr) {
