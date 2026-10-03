@@ -317,7 +317,7 @@ export default function VolunteerScannerPage() {
               Auditorium Gate Scanner
             </h1>
             <p className="text-xs text-cream-400 mt-1">
-              Sign in with your volunteer account issued by the Secretariat on <code className="text-glc-orange font-mono">/web-admin</code>.
+              Login with your account issued by Nexora
             </p>
           </div>
 
