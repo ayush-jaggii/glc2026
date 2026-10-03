@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwa3BqZXVxZnR0d25wdHhudWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTk2NDIsImV4cCI6MjEwNTY3NTY0Mn0.yT1WLsa057AXEnExxkJWU_s0uZ7XD4Qwx1PM7a9xgT0'
 
     const res = await fetch(
-      `${supabaseUrl}/rest/v1/students?roll_number=eq.${encodeURIComponent(rollNumber)}&select=id,full_name,email,roll_number,seat_number,has_downloaded_pass,download_count`,
+      `${supabaseUrl}/rest/v1/students?roll_number=eq.${encodeURIComponent(rollNumber)}&select=id,full_name,email,roll_number,has_downloaded_pass,download_count,first_downloaded_at,last_downloaded_at`,
       {
         headers: {
           apikey: supabaseAnonKey,
