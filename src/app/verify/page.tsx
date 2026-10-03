@@ -21,24 +21,26 @@ function VerifyContent() {
   const token = searchParams.get('token') || searchParams.get('id') || ''
 
   const [volunteerName, setVolunteerName] = useState('')
-  const [pin, setPin] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [sessionToken, setSessionToken] = useState<string | null>(null)
   const [isAuth, setIsAuth] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [authError, setAuthError] = useState('')
 
   useEffect(() => {
+    const savedToken = localStorage.getItem('glc_volunteer_session')
     const savedName = localStorage.getItem('glc_volunteer_name')
-    const savedPin = localStorage.getItem('glc_volunteer_pin')
-    if (savedName && savedPin) {
-      setVolunteerName(savedName)
-      setPin(savedPin)
+    if (savedToken) {
+      setSessionToken(savedToken)
+      if (savedName) setVolunteerName(savedName)
       setIsAuth(true)
-      executeVerification(token, savedName, savedPin)
+      executeVerification(token, savedToken, savedName || 'Volunteer Desk')
     }
   }, [token])
 
-  const executeVerification = async (tok: string, vName: string, vPin: string) => {
+  const executeVerification = async (tok: string, sToken: string, vName: string) => {
     if (!tok) return
     setLoading(true)
     setResult(null)
@@ -49,8 +51,8 @@ function VerifyContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: tok,
-          volunteerName: vName || 'Volunteer Desk',
-          pin: vPin
+          sessionToken: sToken,
+          volunteerName: vName || 'Volunteer Desk'
         })
       })
 
@@ -67,19 +69,41 @@ function VerifyContent() {
     }
   }
 
-  const handleVolunteerAuth = (e: React.FormEvent) => {
+  const handleVolunteerLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setAuthError('')
 
-    if (!volunteerName.trim() || !pin.trim()) {
-      setAuthError('Please enter your name and Event PIN.')
+    if (!username.trim() || !password) {
+      setAuthError('Please enter your Volunteer Login ID and Password.')
       return
     }
 
-    localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-    localStorage.setItem('glc_volunteer_pin', pin.trim())
-    setIsAuth(true)
-    executeVerification(token, volunteerName.trim(), pin.trim())
+    try {
+      const res = await fetch('/api/volunteer/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username.trim(),
+          password
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        localStorage.setItem('glc_volunteer_session', data.sessionToken)
+        localStorage.setItem('glc_volunteer_name', data.volunteer.name)
+        localStorage.setItem('glc_volunteer_gate', data.volunteer.gate || 'Gate 1')
+        setSessionToken(data.sessionToken)
+        setVolunteerName(data.volunteer.name)
+        setIsAuth(true)
+        executeVerification(token, data.sessionToken, data.volunteer.name)
+      } else {
+        setAuthError(data.error || 'Nice try! 😉 Only authorized GLC gate volunteers can check in passes.')
+      }
+    } catch {
+      setAuthError('Network connectivity error. Please verify your connection.')
+    }
   }
 
   return (
@@ -124,7 +148,7 @@ function VerifyContent() {
               </div>
               <h2 className="text-lg font-bold text-white">Volunteer Check-In Required</h2>
               <p className="text-xs text-cream-400 mt-1">
-                Enter your name and the Event PIN to authenticate and record student attendance.
+                Enter your Volunteer Login ID and Password to authenticate and record student attendance.
               </p>
             </div>
 
@@ -134,42 +158,51 @@ function VerifyContent() {
               </div>
             )}
 
-            <form onSubmit={handleVolunteerAuth} className="space-y-4">
+            <form onSubmit={handleVolunteerLogin} className="space-y-4">
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                  Volunteer Name
+                  Volunteer Login ID / Username
                 </label>
                 <input
                   type="text"
                   required
-                  value={volunteerName}
-                  onChange={(e) => setVolunteerName(e.target.value)}
-                  placeholder="e.g. Rahul Sharma"
-                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
+                  placeholder="e.g. rahul_gate1"
+                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
                 />
               </div>
 
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                  Event PIN
+                  Password
                 </label>
                 <input
                   type="password"
                   required
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  placeholder="Enter Event PIN"
-                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta text-center tracking-widest"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter volunteer password"
+                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2 cursor-pointer"
               >
-                Confirm & Record Attendance →
+                Sign In & Confirm Attendance →
               </button>
             </form>
+
+            <div className="mt-4 pt-4 border-t border-wine-800/60 text-center">
+              <Link
+                href="/volunteer"
+                className="text-xs text-glc-orange hover:underline font-medium"
+              >
+                Or open Volunteer Camera Scanner →
+              </Link>
+            </div>
           </div>
         ) : loading ? (
           <div className="text-center py-12">

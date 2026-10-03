@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     let effectiveVolunteerName = volunteerName
     let isAuthenticated = false
 
-    // 1. Authenticate via individual Volunteer session token
+    // 1. Authenticate exclusively via active individual Volunteer session token
     if (sessionToken) {
       try {
         const vRes = await fetch(
@@ -42,13 +42,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 2. Authenticate via master Event PIN
-    const expectedPin = process.env.VOLUNTEER_PIN || 'GLC2026'
-    if (!isAuthenticated && pin && pin.trim() === expectedPin.trim()) {
-      isAuthenticated = true
-    }
-
-    // 3. Reject unauthorized requests
+    // 2. Reject unauthorized requests (no master PIN fallback)
     if (!isAuthenticated) {
       return NextResponse.json(
         {

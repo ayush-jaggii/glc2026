@@ -136,3 +136,50 @@ body {
   }
 }
 
+/* Volunteer QR Scanner Custom Styles */
+#volunteer-reader {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  position: relative !important;
+  background: #000000 !important;
+}
+
+#volunteer-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 1.5rem !important;
+}
+
+/* Hide html5-qrcode default distorted SVG shader and banner elements */
+#volunteer-reader__scan_region {
+  display: none !important;
+}
+
+#volunteer-reader__dashboard_section_csr,
+#volunteer-reader__dashboard_section_swaplink,
+#volunteer-reader__header_message {
+  display: none !important;
+}
+
+@keyframes scanline {
+  0% {
+    top: 6%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 90%;
+    opacity: 1;
+  }
+  100% {
+    top: 6%;
+    opacity: 0.7;
+  }
+}
+
+.animate-scanline {
+  animation: scanline 2.2s ease-in-out infinite;
+  will-change: top, opacity;
+}
+

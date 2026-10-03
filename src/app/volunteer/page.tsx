@@ -27,13 +27,11 @@ interface StudentResult {
 }
 
 export default function VolunteerScannerPage() {
-  const [loginMode, setLoginMode] = useState<'credentials' | 'pin'>('credentials')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [volunteerName, setVolunteerName] = useState('')
   const [volunteerGate, setVolunteerGate] = useState('')
-  const [pin, setPin] = useState('')
   const [sessionToken, setSessionToken] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loginError, setLoginError] = useState('')
@@ -92,16 +90,11 @@ export default function VolunteerScannerPage() {
     const savedToken = localStorage.getItem('glc_volunteer_session')
     const savedName = localStorage.getItem('glc_volunteer_name')
     const savedGate = localStorage.getItem('glc_volunteer_gate')
-    const savedPin = localStorage.getItem('glc_volunteer_pin')
 
     if (savedToken && savedName) {
       setSessionToken(savedToken)
       setVolunteerName(savedName)
       setVolunteerGate(savedGate || 'Gate 1')
-      setIsAuthenticated(true)
-    } else if (savedName && savedPin) {
-      setVolunteerName(savedName)
-      setPin(savedPin)
       setIsAuthenticated(true)
     }
   }, [])
@@ -112,62 +105,34 @@ export default function VolunteerScannerPage() {
     setValidating(true)
 
     try {
-      if (loginMode === 'credentials') {
-        if (!username.trim() || !password) {
-          setLoginError('Please enter your Volunteer Login ID and Password.')
-          setValidating(false)
-          return
-        }
+      if (!username.trim() || !password) {
+        setLoginError('Please enter your Volunteer Login ID and Password.')
+        setValidating(false)
+        return
+      }
 
-        const res = await fetch('/api/volunteer/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: username.trim(),
-            password
-          })
+      const res = await fetch('/api/volunteer/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username.trim(),
+          password
         })
+      })
 
-        const data = await res.json()
+      const data = await res.json()
 
-        if (res.ok && data.success) {
-          localStorage.setItem('glc_volunteer_session', data.sessionToken)
-          localStorage.setItem('glc_volunteer_name', data.volunteer.name)
-          localStorage.setItem('glc_volunteer_gate', data.volunteer.gate || 'Gate 1')
-          setSessionToken(data.sessionToken)
-          setVolunteerName(data.volunteer.name)
-          setVolunteerGate(data.volunteer.gate || 'Gate 1')
-          setIsAuthenticated(true)
-          setPassword('')
-        } else {
-          setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
-        }
+      if (res.ok && data.success) {
+        localStorage.setItem('glc_volunteer_session', data.sessionToken)
+        localStorage.setItem('glc_volunteer_name', data.volunteer.name)
+        localStorage.setItem('glc_volunteer_gate', data.volunteer.gate || 'Gate 1')
+        setSessionToken(data.sessionToken)
+        setVolunteerName(data.volunteer.name)
+        setVolunteerGate(data.volunteer.gate || 'Gate 1')
+        setIsAuthenticated(true)
+        setPassword('')
       } else {
-        // Master PIN login
-        if (!volunteerName.trim() || !pin.trim()) {
-          setLoginError('Please enter your Name and Event PIN.')
-          setValidating(false)
-          return
-        }
-
-        const res = await fetch('/api/volunteer/scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token: 'PING_CHECK',
-            volunteerName: volunteerName.trim(),
-            pin: pin.trim()
-          })
-        })
-
-        const data = await res.json()
-        if (res.ok && data.success) {
-          localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-          localStorage.setItem('glc_volunteer_pin', pin.trim())
-          setIsAuthenticated(true)
-        } else {
-          setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
-        }
+        setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
       }
     } catch {
       setLoginError('Network connectivity error. Please verify your connection.')
@@ -200,7 +165,6 @@ export default function VolunteerScannerPage() {
     setIsAuthenticated(false)
     setVolunteerName('')
     setVolunteerGate('')
-    setPin('')
     setUsername('')
     setPassword('')
     setScanResult(null)
@@ -219,8 +183,7 @@ export default function VolunteerScannerPage() {
         body: JSON.stringify({
           token: rawText,
           sessionToken,
-          volunteerName: volunteerGate ? `${volunteerName} (${volunteerGate})` : volunteerName,
-          pin: pin.trim()
+          volunteerName: volunteerGate ? `${volunteerName} (${volunteerGate})` : volunteerName
         })
       })
 
@@ -266,16 +229,24 @@ export default function VolunteerScannerPage() {
   const startScanner = async () => {
     setScanResult(null)
     try {
-      const { Html5Qrcode } = await import('html5-qrcode')
-      const html5QrCode = new Html5Qrcode('volunteer-reader')
+      const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import('html5-qrcode')
+      const html5QrCode = new Html5Qrcode('volunteer-reader', {
+        formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+        verbose: false,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        }
+      })
       html5QrCodeRef.current = html5QrCode
 
       await html5QrCode.start(
         { facingMode: 'environment' },
         {
-          fps: 15,
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 1.0
+          fps: 24,
+          videoConstraints: {
+            facingMode: 'environment',
+            advanced: [{ focusMode: 'continuous' } as any]
+          } as any
         },
         (decodedText: string) => {
           processToken(decodedText)
@@ -353,32 +324,6 @@ export default function VolunteerScannerPage() {
             </p>
           </div>
 
-          {/* Mode Switcher */}
-          <div className="flex rounded-xl bg-wine-950 p-1 border border-wine-800 mb-5">
-            <button
-              type="button"
-              onClick={() => { setLoginMode('credentials'); setLoginError('') }}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-colors cursor-pointer ${
-                loginMode === 'credentials'
-                  ? 'bg-glc-magenta text-white shadow-sm'
-                  : 'text-cream-400 hover:text-white'
-              }`}
-            >
-              Volunteer Account
-            </button>
-            <button
-              type="button"
-              onClick={() => { setLoginMode('pin'); setLoginError('') }}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-colors cursor-pointer ${
-                loginMode === 'pin'
-                  ? 'bg-glc-magenta text-white shadow-sm'
-                  : 'text-cream-400 hover:text-white'
-              }`}
-            >
-              Master Event PIN
-            </button>
-          </div>
-
           {loginError && (
             <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-800 text-xs text-red-200 text-center">
               {loginError}
@@ -386,80 +331,46 @@ export default function VolunteerScannerPage() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            {loginMode === 'credentials' ? (
-              <>
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                    Volunteer Login ID / Username
-                  </label>
-                  <div className="relative">
-                    <KeyRound className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
-                    <input
-                      type="text"
-                      required
-                      autoFocus
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
-                      placeholder="e.g. rahul_gate1"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
-                    />
-                  </div>
-                </div>
+            <div>
+              <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                Volunteer Login ID / Username
+              </label>
+              <div className="relative">
+                <KeyRound className="w-4 h-4 text-cream-400 absolute left-3.5 top-3 pointer-events-none" />
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
+                  placeholder="e.g. rahul_gate1"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
+                />
+              </div>
+            </div>
 
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter volunteer password"
-                      className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-cream-400 hover:text-white cursor-pointer"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={volunteerName}
-                    onChange={(e) => setVolunteerName(e.target.value)}
-                    placeholder="e.g. Rahul Sharma"
-                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                    Event PIN
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    placeholder="Enter Master Event PIN"
-                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta tracking-widest text-center"
-                  />
-                </div>
-              </>
-            )}
+            <div>
+              <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter volunteer password"
+                  className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-cream-400 hover:text-white cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
 
             <button
               type="submit"
@@ -499,6 +410,31 @@ export default function VolunteerScannerPage() {
           {/* Camera Viewfinder Viewport */}
           <div className="relative w-full aspect-square bg-black rounded-3xl overflow-hidden border border-wine-700 shadow-2xl flex flex-col items-center justify-center">
             <div id="volunteer-reader" className="w-full h-full min-h-[300px]" />
+
+            {/* Custom Perfectly Square Reticle Viewfinder */}
+            {scannerActive && (
+              <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
+                {/* 1:1 Symmetrical Square Scanning Reticle */}
+                <div className="relative w-64 h-64 sm:w-72 sm:h-72 aspect-square flex items-center justify-center">
+                  {/* Top-Left Corner */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-[3.5px] border-l-[3.5px] border-white rounded-tl-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
+                  {/* Top-Right Corner */}
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-[3.5px] border-r-[3.5px] border-white rounded-tr-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
+                  {/* Bottom-Left Corner */}
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3.5px] border-l-[3.5px] border-white rounded-bl-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
+                  {/* Bottom-Right Corner */}
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3.5px] border-r-[3.5px] border-white rounded-br-xl drop-shadow-[0_0_8px_rgba(244,81,151,0.6)]" />
+
+                  {/* Laser Scanning Line Animation */}
+                  <div className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-glc-magenta to-transparent shadow-[0_0_12px_#F45197] animate-scanline" />
+
+                  {/* Alignment Prompt */}
+                  <div className="absolute -bottom-8 px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-[10px] text-cream-200 font-medium tracking-wider text-center whitespace-nowrap">
+                    Align student QR inside frame
+                  </div>
+                </div>
+              </div>
+            )}
 
             {!scannerActive && (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0D020B]/90">
