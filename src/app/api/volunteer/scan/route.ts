@@ -11,7 +11,19 @@ export async function POST(request: Request) {
 
     const expectedPin = process.env.VOLUNTEER_PIN || 'GLC2026'
     if (!pin || pin.trim() !== expectedPin.trim()) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid Volunteer PIN.' }, { status: 401 })
+      return NextResponse.json(
+        {
+          success: false,
+          code: 'UNAUTHORIZED_NICE_TRY',
+          error: 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.',
+          message: 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.'
+        },
+        { status: 401 }
+      )
+    }
+
+    if (token === 'PING_CHECK') {
+      return NextResponse.json({ success: true, message: 'PIN valid.' })
     }
 
     const supabaseUrl =

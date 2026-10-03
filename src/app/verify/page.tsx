@@ -242,6 +242,41 @@ function VerifyContent() {
                   </div>
                 )}
               </div>
+            ) : result.code === 'UNAUTHORIZED_NICE_TRY' || (result.error && result.error.includes('Nice try')) ? (
+              <div className="text-center py-5 animate-fadeIn">
+                <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
+                  🕵️‍♂️
+                </div>
+                <span className="inline-block px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/80 text-[11px] font-bold text-amber-300 uppercase tracking-widest mb-2">
+                  Unauthorized Scan Detected
+                </span>
+                <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight">
+                  Nice Try! 😉
+                </h2>
+                <p className="text-xs text-amber-200/90 leading-relaxed mb-4 max-w-sm mx-auto">
+                  Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.
+                </p>
+                <div className="p-3.5 rounded-2xl bg-white/5 border border-wine-800 text-[11px] text-cream-300 space-y-1 mb-4 text-left">
+                  <div className="font-semibold text-glc-orange uppercase tracking-wider text-[10px]">
+                    Official Entry Procedure
+                  </div>
+                  <div className="text-cream-300/90 leading-relaxed">
+                    Show your official digital pass to a gate volunteer at the auditorium entrance on <strong>10th October</strong> to record your attendance.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('glc_volunteer_name')
+                    localStorage.removeItem('glc_volunteer_pin')
+                    setIsAuth(false)
+                    setResult(null)
+                  }}
+                  className="text-xs text-glc-magenta hover:underline font-semibold"
+                >
+                  ← Return to Volunteer Sign-in
+                </button>
+              </div>
             ) : (
               <div className="text-center py-6">
                 <XCircle className="w-14 h-14 text-red-400 mx-auto mb-3" />

@@ -28,6 +28,7 @@ export default function VolunteerScannerPage() {
   const [pin, setPin] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [validatingPin, setValidatingPin] = useState(false)
 
   // Scanner state
   const [scannerActive, setScannerActive] = useState(false)
@@ -88,21 +89,47 @@ export default function VolunteerScannerPage() {
     }
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError('')
     if (!volunteerName.trim()) {
       setLoginError('Please enter your name.')
       return
     }
-    if (!pin.trim()) {
+    const cleanPin = pin.trim()
+    if (!cleanPin) {
       setLoginError('Please enter the Event PIN.')
       return
     }
 
-    localStorage.setItem('glc_volunteer_name', volunteerName.trim())
-    localStorage.setItem('glc_volunteer_pin', pin.trim())
-    setIsAuthenticated(true)
+    setValidatingPin(true)
+    try {
+      const res = await fetch('/api/volunteer/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: 'PING_CHECK',
+          volunteerName: volunteerName.trim(),
+          pin: cleanPin
+        })
+      })
+
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
+        return
+      }
+
+      localStorage.setItem('glc_volunteer_name', volunteerName.trim())
+      localStorage.setItem('glc_volunteer_pin', cleanPin)
+      setIsAuthenticated(true)
+    } catch {
+      localStorage.setItem('glc_volunteer_name', volunteerName.trim())
+      localStorage.setItem('glc_volunteer_pin', cleanPin)
+      setIsAuthenticated(true)
+    } finally {
+      setValidatingPin(false)
+    }
   }
 
   const handleLogout = () => {
@@ -305,9 +332,17 @@ export default function VolunteerScannerPage() {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2"
+              disabled={validatingPin}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
             >
-              Access Scanner Desk →
+              {validatingPin ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Verifying PIN...</span>
+                </>
+              ) : (
+                <span>Access Scanner Desk →</span>
+              )}
             </button>
           </form>
         </div>
