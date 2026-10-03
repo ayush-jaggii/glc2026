@@ -14,12 +14,10 @@ interface ScheduleSession {
 }
 
 const SESSIONS: ScheduleSession[] = [
-  { id: 's-reporting', time: '08:30 AM', duration: '30m', durationMin: 30, title: 'Reporting Time for Students', type: 'ceremony' },
-  { id: 's-inaugural', time: '09:30 AM', duration: '20m', durationMin: 20, title: 'Inaugural Ceremony & Lighting of the Lamp', type: 'ceremony' },
+  { id: 's-inaugural', time: '09:30 AM', duration: '20m', durationMin: 20, title: 'Inaugural Ceremony', type: 'ceremony' },
   { id: 's-dean', time: '09:50 AM', duration: '10m', durationMin: 10, title: 'Welcome Address by Dean, TAPMI Bengaluru', type: 'address' },
   { id: 's-vc', time: '10:00 AM', duration: '10m', durationMin: 10, title: 'Address by Pro Vice-Chancellor, MAHE Bengaluru', type: 'address' },
-  { id: 's-keynote', time: '10:10 AM', duration: '15m', durationMin: 15, title: 'Keynote Address', type: 'keynote' },
-  { id: 's-felicitation', time: '10:25 AM', duration: '5m', durationMin: 5, title: 'Felicitation to Keynote Speaker', type: 'ceremony' },
+  { id: 's-keynote', time: '10:10 AM', duration: '20m', durationMin: 20, title: 'Keynote Address & Felicitation', type: 'keynote' },
   { id: 's-tea1', time: '10:30 AM', duration: '30m', durationMin: 30, title: 'Morning Tea Break', type: 'break' },
   { id: 's-panel1', time: '11:00 AM', duration: '1h 00m', durationMin: 60, title: 'Panel 1 — IT (Ctrl + Alt + Global)', type: 'panel', panelId: 'panel-1' },
   { id: 's-panel2', time: '12:15 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 2 — FMCG (Aisle Be There)', type: 'panel', panelId: 'panel-2' },
@@ -114,7 +112,7 @@ export default function AgendaSection() {
         {/* 1. Proportional Time Rail */}
         <div className="mb-10 p-4 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800 shadow-2xl">
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-cream-300/70 font-semibold tracking-wider uppercase mb-3">
-            <span>08:30 AM</span>
+            <span>09:30 AM</span>
             <span>12:00 PM</span>
             <span>03:00 PM</span>
             <span>06:00 PM</span>
