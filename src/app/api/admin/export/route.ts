@@ -26,21 +26,32 @@ export async function GET(request: Request) {
   }
 
   try {
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,has_downloaded_pass,first_downloaded_at,last_downloaded_at,download_count,status,marked_at,marked_by&order=roll_number.asc`,
-      {
-        headers: {
-          apikey: supabaseAnonKey,
-          Authorization: `Bearer ${supabaseAnonKey}`
+    // Fetch all students using pagination to overcome PostgREST 1000 row ceiling
+    let students: any[] = []
+    let offset = 0
+    const pageSize = 1000
+
+    while (true) {
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,has_downloaded_pass,first_downloaded_at,last_downloaded_at,download_count,status,marked_at,marked_by&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
+        {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`
+          }
         }
+      )
+
+      if (!res.ok) {
+        return new NextResponse('Failed to export data.', { status: 500 })
       }
-    )
 
-    if (!res.ok) {
-      return new NextResponse('Failed to export data.', { status: 500 })
+      const page = await res.json()
+      if (!Array.isArray(page) || page.length === 0) break
+      students = students.concat(page)
+      if (page.length < pageSize) break
+      offset += pageSize
     }
-
-    const students = await res.json()
 
     // Format IST date helper
     const formatIst = (isoStr: string | null) => {

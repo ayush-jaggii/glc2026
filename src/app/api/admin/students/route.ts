@@ -29,22 +29,33 @@ export async function GET(request: Request) {
     const search = searchParams.get('search')?.trim().toLowerCase() || ''
     const statusFilter = searchParams.get('status') || 'ALL'
 
-    // Fetch all students
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/students?select=id,roll_number,full_name,email,qr_token,status,marked_at,marked_by,has_downloaded_pass,download_count,first_downloaded_at,last_downloaded_at&order=roll_number.asc`,
-      {
-        headers: {
-          apikey: supabaseAnonKey,
-          Authorization: `Bearer ${supabaseAnonKey}`
-        }
-      }
-    )
+    // Fetch all students using pagination to overcome PostgREST 1000 row ceiling
+    let allStudents: any[] = []
+    let offset = 0
+    const pageSize = 1000
 
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Failed to fetch student records.' }, { status: 500 })
+    while (true) {
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/students?select=id,roll_number,full_name,email,qr_token,status,marked_at,marked_by,has_downloaded_pass,download_count,first_downloaded_at,last_downloaded_at&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
+        {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`
+          }
+        }
+      )
+
+      if (!res.ok) {
+        return NextResponse.json({ error: 'Failed to fetch student records.' }, { status: 500 })
+      }
+
+      const page = await res.json()
+      if (!Array.isArray(page) || page.length === 0) break
+      allStudents = allStudents.concat(page)
+      if (page.length < pageSize) break
+      offset += pageSize
     }
 
-    const allStudents = await res.json()
     const totalCount = allStudents.length
 
     // Pass download metrics

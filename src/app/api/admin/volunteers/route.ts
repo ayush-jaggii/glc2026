@@ -39,27 +39,29 @@ export async function GET(request: Request) {
 
     const volunteers = await res.json()
 
-    // Also get scan counts from students table
-    const scanCountRes = await fetch(
-      `${supabaseUrl}/rest/v1/students?status=eq.PRESENT&select=marked_by`,
-      {
-        headers: {
-          apikey: supabaseAnonKey,
-          Authorization: `Bearer ${supabaseAnonKey}`
-        }
-      }
-    )
-
+    // Also get scan counts from students table using pagination
     const scanCounts: Record<string, number> = {}
-    if (scanCountRes.ok) {
-      const records = await scanCountRes.json()
-      if (Array.isArray(records)) {
-        records.forEach((r: any) => {
-          if (r.marked_by) {
-            scanCounts[r.marked_by] = (scanCounts[r.marked_by] || 0) + 1
+    let scanOffset = 0
+    while (true) {
+      const scanCountRes = await fetch(
+        `${supabaseUrl}/rest/v1/students?status=eq.PRESENT&select=marked_by&offset=${scanOffset}&limit=1000`,
+        {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`
           }
-        })
-      }
+        }
+      )
+      if (!scanCountRes.ok) break
+      const records = await scanCountRes.json()
+      if (!Array.isArray(records) || records.length === 0) break
+      records.forEach((r: any) => {
+        if (r.marked_by) {
+          scanCounts[r.marked_by] = (scanCounts[r.marked_by] || 0) + 1
+        }
+      })
+      if (records.length < 1000) break
+      scanOffset += 1000
     }
 
     const sanitized = (volunteers || []).map((v: any) => {
