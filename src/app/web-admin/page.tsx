@@ -39,6 +39,9 @@ interface StudentRecord {
   status: string
   marked_at: string | null
   marked_by: string | null
+  status_pm?: string
+  marked_at_pm?: string | null
+  marked_by_pm?: string | null
   has_downloaded_pass: boolean
   download_count: number
   first_downloaded_at: string | null
@@ -65,6 +68,14 @@ interface AdminStats {
   present: number
   presentPercent: number
   absent: number
+  presentAm: number
+  presentAmPercent: number
+  absentAm: number
+  presentPm: number
+  presentPmPercent: number
+  absentPm: number
+  presentBoth: number
+  presentBothPercent: number
   totalDownloadEvents: number
 }
 
@@ -78,19 +89,29 @@ export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<'students' | 'volunteers'>('students')
 
   // Stats & Students
+  const [activeSession, setActiveSession] = useState<'AM' | 'PM'>('AM')
+  const [switchingSession, setSwitchingSession] = useState(false)
   const [stats, setStats] = useState<AdminStats>({
-    total: 1004,
+    total: 1005,
     downloaded: 0,
     downloadedPercent: 0,
-    notDownloaded: 1004,
+    notDownloaded: 1005,
     present: 0,
     presentPercent: 0,
-    absent: 1004,
+    absent: 1005,
+    presentAm: 0,
+    presentAmPercent: 0,
+    absentAm: 1005,
+    presentPm: 0,
+    presentPmPercent: 0,
+    absentPm: 1005,
+    presentBoth: 0,
+    presentBothPercent: 0,
     totalDownloadEvents: 0
   })
   const [students, setStudents] = useState<StudentRecord[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'DOWNLOADED' | 'NOT_DOWNLOADED' | 'PRESENT' | 'ABSENT'>('ALL')
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'DOWNLOADED' | 'NOT_DOWNLOADED' | 'PRESENT_AM' | 'PRESENT_PM' | 'PRESENT_BOTH' | 'ABSENT'>('ALL')
   const [loadingStudents, setLoadingStudents] = useState(false)
 
   // Volunteers State
@@ -181,6 +202,9 @@ export default function AdminDashboardPage() {
 
       const data = await res.json()
       if (res.ok && data.success) {
+        if (data.activeSession) {
+          setActiveSession(data.activeSession)
+        }
         setStats(data.stats)
         setStudents(data.students)
       }
@@ -188,6 +212,37 @@ export default function AdminDashboardPage() {
       console.error('Failed to load students:', err)
     } finally {
       setLoadingStudents(false)
+    }
+  }
+
+  const handleSwitchSession = async (targetSession: 'AM' | 'PM') => {
+    if (!adminToken || switchingSession || activeSession === targetSession) return
+    const sessionLabel = targetSession === 'AM' ? 'Morning Entry (Session 1)' : 'Post-Lunch Return (Session 2)'
+    if (!window.confirm(`Switch active scanning mode to "${sessionLabel}"? Gate scanners will automatically record attendance for this session.`)) {
+      return
+    }
+
+    setSwitchingSession(true)
+    try {
+      const res = await fetch('/api/admin/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({ session: targetSession })
+      })
+      if (res.ok) {
+        setActiveSession(targetSession)
+        fetchStudents()
+      } else {
+        alert('Failed to switch session mode.')
+      }
+    } catch (err) {
+      console.error('Session switch error:', err)
+      alert('Error updating session mode.')
+    } finally {
+      setSwitchingSession(false)
     }
   }
 
@@ -505,101 +560,204 @@ export default function AdminDashboardPage() {
         {/* ========================================== */}
         {activeTab === 'students' && (
           <div className="space-y-8 animate-fadeIn">
-            {/* METRICS CARDS GRID */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* SESSION MODE CONTROL BANNER */}
+            <div className="p-5 rounded-2xl bg-[#170513] border-2 border-wine-700/80 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${
+                  activeSession === 'PM'
+                    ? 'bg-gradient-to-br from-amber-600 to-orange-600 shadow-amber-900/40'
+                    : 'bg-gradient-to-br from-emerald-600 to-teal-600 shadow-emerald-900/40'
+                }`}>
+                  <DoorOpen className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs uppercase tracking-wider font-bold text-cream-400">
+                      Active Gate Scanner Session:
+                    </span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${
+                      activeSession === 'PM'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                    }`}>
+                      {activeSession === 'PM' ? 'Session 2 · Post-Lunch Return (PM)' : 'Session 1 · Morning Entry (AM)'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-cream-300/80 mt-1">
+                    {activeSession === 'PM'
+                      ? 'Volunteer gate cameras are currently recording Post-Lunch Return attendance into the PM slot.'
+                      : 'Volunteer gate cameras are currently recording Morning Entry attendance into the AM slot.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Mode Toggle Buttons */}
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchSession('AM')}
+                  disabled={switchingSession || activeSession === 'AM'}
+                  className={`flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    activeSession === 'AM'
+                      ? 'bg-emerald-600 text-white shadow-lg border border-emerald-400 ring-2 ring-emerald-500/40'
+                      : 'bg-wine-950 text-cream-300 hover:text-white border border-wine-800 hover:border-wine-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-300" />
+                  <span>Session 1 (AM)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSwitchSession('PM')}
+                  disabled={switchingSession || activeSession === 'PM'}
+                  className={`flex-1 md:flex-none px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    activeSession === 'PM'
+                      ? 'bg-amber-600 text-white shadow-lg border border-amber-400 ring-2 ring-amber-500/40'
+                      : 'bg-wine-950 text-cream-300 hover:text-white border border-wine-800 hover:border-wine-700'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-300" />
+                  <span>Session 2 (Post-Lunch)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* METRICS CARDS GRID (5 Cards) */}
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
               
               {/* Card 1: Total Enrolled Students */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-cream-400">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
                     Total Enrolled
                   </span>
-                  <div className="w-8 h-8 rounded-xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-orange">
-                    <Users className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-orange">
+                    <Users className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                   {stats.total.toLocaleString()}
                 </div>
-                <div className="mt-2 text-[11px] text-cream-400/80 flex items-center gap-1.5">
-                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-                  <span>TAPMI Official Roster</span>
+                <div className="mt-1.5 text-[10px] text-cream-400/80 flex items-center gap-1">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>TAPMI Roster</span>
                 </div>
               </div>
 
               {/* Card 2: Passes Claimed / Downloaded */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-cream-400">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
                     Passes Claimed
                   </span>
-                  <div className="w-8 h-8 rounded-xl bg-emerald-950/80 border border-emerald-700/80 flex items-center justify-center text-emerald-400">
-                    <Download className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-700/80 flex items-center justify-center text-emerald-400">
+                    <Download className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                <div className="flex items-baseline gap-1.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     {stats.downloaded.toLocaleString()}
                   </div>
-                  <div className="text-xs font-bold text-emerald-400">
+                  <div className="text-[11px] font-bold text-emerald-400">
                     {stats.downloadedPercent}%
                   </div>
                 </div>
-                <div className="mt-2 w-full bg-wine-950 rounded-full h-1.5 overflow-hidden">
+                <div className="mt-1.5 w-full bg-wine-950 rounded-full h-1 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-1 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, Math.max(stats.downloadedPercent, 1))}%` }}
                   />
                 </div>
-                <div className="mt-1.5 text-[10px] text-cream-400/70">
-                  {stats.notDownloaded} students pending
+                <div className="mt-1 text-[9px] text-cream-400/70">
+                  {stats.notDownloaded} pending
                 </div>
               </div>
 
-              {/* Card 3: Auditorium Attendance Marked */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-cream-400">
-                    Auditorium Present
+              {/* Card 3: Morning Present (AM) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
+                    Morning Present (AM)
                   </span>
-                  <div className="w-8 h-8 rounded-xl bg-glc-magenta/20 border border-glc-magenta/40 flex items-center justify-center text-glc-magenta">
-                    <UserCheck className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-teal-950/80 border border-teal-700/80 flex items-center justify-center text-teal-400">
+                    <UserCheck className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                    {stats.present.toLocaleString()}
+                <div className="flex items-baseline gap-1.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    {(stats.presentAm ?? stats.present ?? 0).toLocaleString()}
                   </div>
-                  <div className="text-xs font-bold text-glc-orange">
-                    {stats.presentPercent}%
+                  <div className="text-[11px] font-bold text-teal-400">
+                    {stats.presentAmPercent ?? stats.presentPercent ?? 0}%
                   </div>
                 </div>
-                <div className="mt-2 w-full bg-wine-950 rounded-full h-1.5 overflow-hidden">
+                <div className="mt-1.5 w-full bg-wine-950 rounded-full h-1 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-glc-magenta to-glc-orange h-1.5 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(100, Math.max(stats.presentPercent, stats.present > 0 ? 2 : 0))}%` }}
+                    className="bg-gradient-to-r from-teal-500 to-emerald-400 h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(stats.presentAmPercent ?? 0, (stats.presentAm || 0) > 0 ? 2 : 0))}%` }}
                   />
                 </div>
-                <div className="mt-1.5 text-[10px] text-cream-400/70">
-                  {stats.absent} yet to enter gate
+                <div className="mt-1 text-[9px] text-cream-400/70">
+                  {(stats.absentAm ?? stats.absent ?? 0)} absent AM
                 </div>
               </div>
 
-              {/* Card 4: Total Download Events */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-cream-400">
-                    Download Events
+              {/* Card 4: Post-Lunch Present (PM) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
+                    Post-Lunch (PM)
                   </span>
-                  <div className="w-8 h-8 rounded-xl bg-purple-950/80 border border-purple-700/80 flex items-center justify-center text-purple-300">
-                    <TrendingUp className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-amber-950/80 border border-amber-700/80 flex items-center justify-center text-amber-400">
+                    <UserCheck className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                  {stats.totalDownloadEvents.toLocaleString()}
+                <div className="flex items-baseline gap-1.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    {(stats.presentPm ?? 0).toLocaleString()}
+                  </div>
+                  <div className="text-[11px] font-bold text-amber-400">
+                    {stats.presentPmPercent ?? 0}%
+                  </div>
                 </div>
-                <div className="mt-2 text-[11px] text-cream-400/80 flex items-center gap-1.5">
-                  <span className="text-purple-300 font-semibold">Includes re-downloads</span>
+                <div className="mt-1.5 w-full bg-wine-950 rounded-full h-1 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-amber-500 to-orange-400 h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(stats.presentPmPercent ?? 0, (stats.presentPm || 0) > 0 ? 2 : 0))}%` }}
+                  />
+                </div>
+                <div className="mt-1 text-[9px] text-cream-400/70">
+                  {(stats.absentPm ?? 0)} absent PM
+                </div>
+              </div>
+
+              {/* Card 5: Attended Both Sessions (Full Day) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group col-span-2 lg:col-span-1">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
+                    Full Day (Both AM+PM)
+                  </span>
+                  <div className="w-7 h-7 rounded-lg bg-glc-magenta/20 border border-glc-magenta/40 flex items-center justify-center text-glc-magenta">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    {(stats.presentBoth ?? 0).toLocaleString()}
+                  </div>
+                  <div className="text-[11px] font-bold text-glc-orange">
+                    {stats.presentBothPercent ?? 0}%
+                  </div>
+                </div>
+                <div className="mt-1.5 w-full bg-wine-950 rounded-full h-1 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-glc-magenta to-glc-orange h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(stats.presentBothPercent ?? 0, (stats.presentBoth || 0) > 0 ? 2 : 0))}%` }}
+                  />
+                </div>
+                <div className="mt-1 text-[9px] text-cream-400/70">
+                  Full day attendance credit
                 </div>
               </div>
 
@@ -648,14 +806,38 @@ export default function AdminDashboardPage() {
 
                 <button
                   type="button"
-                  onClick={() => setStatusFilter('PRESENT')}
+                  onClick={() => setStatusFilter('PRESENT_AM')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition-colors shrink-0 ${
-                    statusFilter === 'PRESENT'
-                      ? 'bg-glc-orange text-white shadow-sm'
+                    statusFilter === 'PRESENT_AM'
+                      ? 'bg-teal-600 text-white shadow-sm'
                       : 'bg-wine-950 text-cream-300 hover:text-white border border-wine-800'
                   }`}
                 >
-                  Present ({stats.present})
+                  Morning AM ({stats.presentAm ?? stats.present ?? 0})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter('PRESENT_PM')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition-colors shrink-0 ${
+                    statusFilter === 'PRESENT_PM'
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : 'bg-wine-950 text-cream-300 hover:text-white border border-wine-800'
+                  }`}
+                >
+                  Post-Lunch PM ({stats.presentPm ?? 0})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter('PRESENT_BOTH')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition-colors shrink-0 ${
+                    statusFilter === 'PRESENT_BOTH'
+                      ? 'bg-glc-magenta text-white shadow-sm'
+                      : 'bg-wine-950 text-cream-300 hover:text-white border border-wine-800'
+                  }`}
+                >
+                  Both Sessions ({stats.presentBoth ?? 0})
                 </button>
               </div>
 
@@ -690,14 +872,15 @@ export default function AdminDashboardPage() {
                       <th className="py-3 px-4">Email</th>
                       <th className="py-3 px-4">Pass Status</th>
                       <th className="py-3 px-4">First Claimed</th>
-                      <th className="py-3 px-4">Downloads</th>
-                      <th className="py-3 px-4">Auditorium Attendance</th>
+                      <th className="py-3 px-4 text-center">Downloads</th>
+                      <th className="py-3 px-4">Morning (AM)</th>
+                      <th className="py-3 px-4">Post-Lunch (PM)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-wine-800/50 text-cream-200">
                     {students.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-12 text-center text-cream-400">
+                        <td colSpan={8} className="py-12 text-center text-cream-400">
                           {loadingStudents ? (
                             <div className="flex items-center justify-center gap-2">
                               <RefreshCw className="w-4 h-4 animate-spin text-glc-magenta" />
@@ -710,7 +893,8 @@ export default function AdminDashboardPage() {
                       </tr>
                     ) : (
                       students.map((student) => {
-                        const isPresent = student.status === 'PRESENT'
+                        const isAmPresent = student.status === 'PRESENT'
+                        const isPmPresent = student.status_pm === 'PRESENT'
                         const hasClaimed = student.has_downloaded_pass
 
                         return (
@@ -757,17 +941,18 @@ export default function AdminDashboardPage() {
                                 <span className="text-cream-500 text-[11px]">—</span>
                               )}
                             </td>
+                            {/* Morning (AM) Attendance */}
                             <td className="py-3 px-4">
                               <span
                                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
-                                  isPresent
-                                    ? 'bg-glc-magenta/20 text-glc-orange border-glc-magenta/40'
+                                  isAmPresent
+                                    ? 'bg-teal-950/60 text-teal-300 border-teal-600/50'
                                     : 'bg-wine-900/60 text-cream-400 border-wine-800'
                                 }`}
                               >
-                                {isPresent ? (
+                                {isAmPresent ? (
                                   <>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-glc-orange animate-pulse" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
                                     <span>PRESENT</span>
                                   </>
                                 ) : (
@@ -777,9 +962,36 @@ export default function AdminDashboardPage() {
                                   </>
                                 )}
                               </span>
-                              {isPresent && student.marked_at && (
+                              {isAmPresent && student.marked_at && (
                                 <span className="block text-[10px] text-cream-400 mt-0.5">
                                   {formatDateTime(student.marked_at)} {student.marked_by ? `· ${student.marked_by}` : ''}
+                                </span>
+                              )}
+                            </td>
+                            {/* Post-Lunch (PM) Attendance */}
+                            <td className="py-3 px-4">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
+                                  isPmPresent
+                                    ? 'bg-amber-950/60 text-amber-300 border-amber-600/50'
+                                    : 'bg-wine-900/60 text-cream-400 border-wine-800'
+                                }`}
+                              >
+                                {isPmPresent ? (
+                                  <>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                    <span>PRESENT</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-cream-500" />
+                                    <span>ABSENT</span>
+                                  </>
+                                )}
+                              </span>
+                              {isPmPresent && student.marked_at_pm && (
+                                <span className="block text-[10px] text-cream-400 mt-0.5">
+                                  {formatDateTime(student.marked_at_pm)} {student.marked_by_pm ? `· ${student.marked_by_pm}` : ''}
                                 </span>
                               )}
                             </td>

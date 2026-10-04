@@ -45,10 +45,32 @@ export default function VolunteerScannerPage() {
     student?: StudentResult
   } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [activeSession, setActiveSession] = useState<'AM' | 'PM'>('AM')
   const [sessionCount, setSessionCount] = useState(0)
 
   const html5QrCodeRef = useRef<any>(null)
   const processingRef = useRef(false)
+
+  // Fetch current active session (AM vs PM) periodically
+  useEffect(() => {
+    const fetchActiveSession = async () => {
+      try {
+        const res = await fetch('/api/admin/session')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.activeSession === 'AM' || data.activeSession === 'PM') {
+            setActiveSession(data.activeSession)
+          }
+        }
+      } catch {
+        // silent fallback to current activeSession
+      }
+    }
+
+    fetchActiveSession()
+    const timer = setInterval(fetchActiveSession, 15000)
+    return () => clearInterval(timer)
+  }, [])
 
   // Audio synthesis feedback
   const playSound = (type: 'success' | 'warning' | 'error') => {
@@ -183,6 +205,7 @@ export default function VolunteerScannerPage() {
         body: JSON.stringify({
           token: rawText,
           sessionToken,
+          session: activeSession,
           volunteerName: volunteerGate ? `${volunteerName} (${volunteerGate})` : volunteerName
         })
       })
@@ -399,8 +422,17 @@ export default function VolunteerScannerPage() {
                 )}
               </div>
             </div>
-            <div className="text-[11px] text-cream-300">
-              Scanned: <strong className="text-glc-orange text-sm ml-0.5">{sessionCount}</strong>
+            <div className="flex items-center gap-2.5">
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                activeSession === 'PM' 
+                  ? 'bg-amber-950/80 text-amber-300 border-amber-700/80' 
+                  : 'bg-emerald-950/80 text-emerald-300 border-emerald-700/80'
+              }`}>
+                {activeSession === 'PM' ? 'Session 2 · Afternoon' : 'Session 1 · Morning'}
+              </span>
+              <div className="text-[11px] text-cream-300">
+                Scanned: <strong className="text-glc-orange text-sm ml-0.5">{sessionCount}</strong>
+              </div>
             </div>
           </div>
 

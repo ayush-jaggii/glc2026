@@ -39,12 +39,12 @@ export async function GET(request: Request) {
 
     const volunteers = await res.json()
 
-    // Also get scan counts from students table using pagination
+    // Also get scan counts from students table using pagination (both AM and PM sessions)
     const scanCounts: Record<string, number> = {}
     let scanOffset = 0
     while (true) {
       const scanCountRes = await fetch(
-        `${supabaseUrl}/rest/v1/students?status=eq.PRESENT&select=marked_by&offset=${scanOffset}&limit=1000`,
+        `${supabaseUrl}/rest/v1/students?select=marked_by,marked_by_pm&or=(status.eq.PRESENT,status_pm.eq.PRESENT)&offset=${scanOffset}&limit=1000`,
         {
           headers: {
             apikey: supabaseAnonKey,
@@ -58,6 +58,9 @@ export async function GET(request: Request) {
       records.forEach((r: any) => {
         if (r.marked_by) {
           scanCounts[r.marked_by] = (scanCounts[r.marked_by] || 0) + 1
+        }
+        if (r.marked_by_pm) {
+          scanCounts[r.marked_by_pm] = (scanCounts[r.marked_by_pm] || 0) + 1
         }
       })
       if (records.length < 1000) break

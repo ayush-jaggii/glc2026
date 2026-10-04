@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { token, volunteerName = 'Volunteer', pin, sessionToken } = body
+    const { token, volunteerName = 'Volunteer', session, sessionToken } = body
 
     if (!token) {
       return NextResponse.json({ error: 'Verification token / QR code is required.' }, { status: 400 })
@@ -68,7 +68,8 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         p_qr_token: token.trim(),
-        p_volunteer_name: effectiveVolunteerName.trim()
+        p_volunteer_name: effectiveVolunteerName.trim(),
+        p_session: session ? String(session).toUpperCase().trim() : null
       })
     })
 

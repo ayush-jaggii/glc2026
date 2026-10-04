@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     while (true) {
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,has_downloaded_pass,first_downloaded_at,last_downloaded_at,download_count,status,marked_at,marked_by&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
+        `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,has_downloaded_pass,first_downloaded_at,last_downloaded_at,download_count,status,marked_at,marked_by,status_pm,marked_at_pm,marked_by_pm&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
         {
           headers: {
             apikey: supabaseAnonKey,
@@ -75,14 +75,22 @@ export async function GET(request: Request) {
       'First Downloaded At (IST)',
       'Last Downloaded At (IST)',
       'Total Downloads',
-      'Attendance Status',
-      'Marked At (IST)',
-      'Marked By Volunteer'
+      'Morning Status (AM)',
+      'Morning Marked At (IST)',
+      'Morning Marked By',
+      'Afternoon Status (PM)',
+      'Afternoon Marked At (IST)',
+      'Afternoon Marked By',
+      'Attended Full Day (Both AM & PM)'
     ]
 
     const escape = (val: any) => `"${String(val ?? '').replace(/"/g, '""')}"`
 
     const rows = (students || []).map((s: any) => {
+      const isAmPresent = s.status === 'PRESENT'
+      const isPmPresent = s.status_pm === 'PRESENT'
+      const attendedBoth = isAmPresent && isPmPresent ? 'YES' : 'NO'
+
       return [
         escape(s.roll_number),
         escape(s.full_name),
@@ -93,7 +101,11 @@ export async function GET(request: Request) {
         escape(s.download_count || 0),
         escape(s.status || 'ABSENT'),
         escape(formatIst(s.marked_at)),
-        escape(s.marked_by || '')
+        escape(s.marked_by || ''),
+        escape(s.status_pm || 'ABSENT'),
+        escape(formatIst(s.marked_at_pm)),
+        escape(s.marked_by_pm || ''),
+        escape(attendedBoth)
       ].join(',')
     })
 
