@@ -46,6 +46,7 @@ export default function VolunteerScannerPage() {
   } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [activeSession, setActiveSession] = useState<'AM' | 'PM'>('AM')
+  const activeSessionRef = useRef<'AM' | 'PM'>('AM')
   const [sessionCount, setSessionCount] = useState(0)
 
   const html5QrCodeRef = useRef<any>(null)
@@ -60,6 +61,7 @@ export default function VolunteerScannerPage() {
           const data = await res.json()
           if (data.activeSession === 'AM' || data.activeSession === 'PM') {
             setActiveSession(data.activeSession)
+            activeSessionRef.current = data.activeSession
           }
         }
       } catch {
@@ -68,7 +70,7 @@ export default function VolunteerScannerPage() {
     }
 
     fetchActiveSession()
-    const timer = setInterval(fetchActiveSession, 15000)
+    const timer = setInterval(fetchActiveSession, 5000)
     return () => clearInterval(timer)
   }, [])
 
@@ -199,25 +201,35 @@ export default function VolunteerScannerPage() {
     setIsProcessing(true)
 
     try {
+      const currentSession = activeSessionRef.current || activeSession
       const res = await fetch('/api/volunteer/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: rawText,
           sessionToken,
-          session: activeSession,
+          session: currentSession,
           volunteerName: volunteerGate ? `${volunteerName} (${volunteerGate})` : volunteerName
         })
       })
 
       const data = await res.json()
 
+      // Normalize student fields across AM and PM responses
+      const normalizedStudent = data.student
+        ? {
+            ...data.student,
+            marked_at: data.student.marked_at || (currentSession === 'PM' ? data.student.marked_at_pm : data.student.marked_at_am),
+            marked_by: data.student.marked_by || (currentSession === 'PM' ? data.student.marked_by_pm : data.student.marked_by_am)
+          }
+        : undefined
+
       if (res.ok && data.success) {
         playSound('success')
         setScanResult({
           type: 'success',
           message: data.message || 'Attendance Marked Successfully!',
-          student: data.student
+          student: normalizedStudent
         })
         setSessionCount((prev) => prev + 1)
       } else if (data.code === 'ALREADY_MARKED') {
@@ -225,7 +237,7 @@ export default function VolunteerScannerPage() {
         setScanResult({
           type: 'warning',
           message: data.message || 'Already Recorded!',
-          student: data.student
+          student: normalizedStudent
         })
       } else {
         playSound('error')
