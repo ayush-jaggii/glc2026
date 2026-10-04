@@ -293,8 +293,12 @@ export default function PassDownloadActions({
       const imgData = clippedCanvas.toDataURL('image/png')
       pdf.addImage(imgData, 'PNG', 10, 10, ticketMmWidth, ticketMmHeight)
 
+      const isStudent = pass.categoryKey === 'student' || pass.category?.toLowerCase().includes('student')
+      const passTypePrefix = isStudent ? 'Student_Pass' : 'Delegate_Pass'
+      const passTitlePrefix = isStudent ? 'Student Pass' : 'Delegate Pass'
+
       const safeName = sanitizeFilename(pass.name)
-      pdf.save(`GLC2026_Delegate_Pass_${safeName}.pdf`)
+      pdf.save(`GLC2026_${passTypePrefix}_${safeName}.pdf`)
 
       // Track download event in database
       notifyDownloadServer()
@@ -315,8 +319,12 @@ export default function PassDownloadActions({
       const element = document.getElementById(cardElementId)
       if (!element) return
 
+      const isStudent = pass.categoryKey === 'student' || pass.category?.toLowerCase().includes('student')
+      const passTypePrefix = isStudent ? 'Student_Pass' : 'Delegate_Pass'
+      const passTitlePrefix = isStudent ? 'Student Pass' : 'Delegate Pass'
+
       const clippedCanvas = await captureAndClipTicket(element)
-      const filename = `GLC2026_Delegate_Pass_${sanitizeFilename(pass.name)}.png`
+      const filename = `GLC2026_${passTypePrefix}_${sanitizeFilename(pass.name)}.png`
 
       // Convert canvas to Blob for reliable cross-platform downloading
       const blob = await new Promise<Blob | null>((resolve) => {
@@ -337,8 +345,8 @@ export default function PassDownloadActions({
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               files: [file],
-              title: 'GLC 2026 Delegate Pass',
-              text: `GLC 2026 Delegate Pass for ${pass.name}`
+              title: `GLC 2026 ${passTitlePrefix}`,
+              text: `GLC 2026 ${passTitlePrefix} for ${pass.name}`
             })
             sharedViaNavigator = true
           }

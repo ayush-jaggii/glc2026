@@ -227,7 +227,7 @@ export default function TicketPrinterAnimation({
             <span>Re-print Pass</span>
           </button>
 
-          {onReset && (
+          {onReset && !(pass.categoryKey === 'student' || pass.category?.toLowerCase().includes('student')) && (
             <button
               type="button"
               onClick={onReset}
