@@ -10,10 +10,12 @@ import {
   XCircle,
   Armchair,
   ShieldCheck,
+  ShieldAlert,
   UserCheck,
   ArrowRight,
   Lock,
-  Loader2
+  Loader2,
+  ChevronLeft
 } from 'lucide-react'
 
 function VerifyContent() {
@@ -25,6 +27,7 @@ function VerifyContent() {
   const [password, setPassword] = useState('')
   const [sessionToken, setSessionToken] = useState<string | null>(null)
   const [isAuth, setIsAuth] = useState(false)
+  const [showLoginForm, setShowLoginForm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [authError, setAuthError] = useState('')
@@ -140,70 +143,128 @@ function VerifyContent() {
             </Link>
           </div>
         ) : !isAuth ? (
-          /* Volunteer Auth Required */
-          <div>
-            <div className="text-center mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3">
-                <Lock className="w-6 h-6" />
+          /* When student scans with regular phone camera and is not authenticated */
+          !showLoginForm ? (
+            <div className="text-center py-3">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mx-auto mb-3.5 shadow-lg shadow-amber-950/40">
+                🕵️‍♂️
               </div>
-              <h2 className="text-lg font-bold text-white">Volunteer Check-In Required</h2>
-              <p className="text-xs text-cream-400 mt-1">
-                Enter your Volunteer Login ID and Password to authenticate and record student attendance.
+              <span className="inline-block px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/60 text-[11px] font-bold text-amber-300 uppercase tracking-widest mb-2.5">
+                Self-Scan Blocked
+              </span>
+              <h2 className="text-2xl font-black text-white tracking-tight mb-1.5">
+                Nice try! 😉
+              </h2>
+              <p className="text-sm font-semibold text-amber-200 mb-3">
+                You cannot mark your own attendance.
               </p>
-            </div>
+              <p className="text-xs text-cream-300/80 leading-relaxed max-w-sm mx-auto mb-5">
+                Attendance can only be recorded by authorized GLC gate volunteers at the venue entrance. Show this pass to a volunteer on event day!
+              </p>
 
-            {authError && (
-              <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-800 text-xs text-red-200 text-center">
-                {authError}
-              </div>
-            )}
-
-            <form onSubmit={handleVolunteerLogin} className="space-y-4">
-              <div>
-                <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                  Volunteer Login ID / Username
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
-                  placeholder="e.g. rahul_gate1"
-                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
-                />
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-wine-800 text-left space-y-1.5 mb-5 text-xs">
+                <div className="flex items-center gap-1.5 text-glc-orange font-bold text-[11px] uppercase tracking-wider">
+                  <ShieldAlert className="w-3.5 h-3.5 text-glc-orange" /> Official Entry Procedure
+                </div>
+                <div className="text-cream-300 text-[11px] leading-relaxed">
+                  Present your digital pass with QR code at the registration gate. A volunteer will scan and confirm your check-in.
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter volunteer password"
-                  className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2 cursor-pointer"
-              >
-                Sign In & Confirm Attendance →
-              </button>
-            </form>
-
-            <div className="mt-4 pt-4 border-t border-wine-800/60 text-center">
               <Link
-                href="/volunteer"
-                className="text-xs text-glc-orange hover:underline font-medium"
+                href="/"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity"
               >
-                Or open Volunteer Camera Scanner →
+                Return to GLC Portal <ArrowRight className="w-3.5 h-3.5" />
               </Link>
+
+              <div className="mt-5 pt-4 border-t border-wine-900/60 text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowLoginForm(true)}
+                  className="text-[11px] text-cream-400 hover:text-glc-orange transition-colors underline cursor-pointer"
+                >
+                  Are you an authorized gate volunteer? Sign in here →
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Volunteer Auth Form (if volunteer opens on their own browser) */
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginForm(false)
+                  setAuthError('')
+                }}
+                className="inline-flex items-center gap-1 text-xs text-cream-400 hover:text-white mb-4 transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" /> Back
+              </button>
+
+              <div className="text-center mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-wine-900/80 border border-wine-700/80 flex items-center justify-center text-glc-magenta mx-auto mb-3">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h2 className="text-lg font-bold text-white">Volunteer Check-In</h2>
+                <p className="text-xs text-cream-400 mt-1">
+                  Enter your Volunteer Login ID and Password to authenticate and record student attendance.
+                </p>
+              </div>
+
+              {authError && (
+                <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-800 text-xs text-red-200 text-center">
+                  {authError}
+                </div>
+              )}
+
+              <form onSubmit={handleVolunteerLogin} className="space-y-4">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Volunteer Login ID / Username
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
+                    placeholder="e.g. rahul_gate1"
+                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-cream-300 font-semibold mb-1">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter volunteer password"
+                    className="w-full px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-sm text-cream-100 placeholder:text-cream-400 focus:outline-none focus:border-glc-magenta font-mono"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity mt-2 cursor-pointer"
+                >
+                  Sign In & Confirm Attendance →
+                </button>
+              </form>
+
+              <div className="mt-4 pt-4 border-t border-wine-800/60 text-center">
+                <Link
+                  href="/volunteer"
+                  className="text-xs text-glc-orange hover:underline font-medium"
+                >
+                  Or open Volunteer Camera Scanner →
+                </Link>
+              </div>
+            </div>
+          )
         ) : loading ? (
           <div className="text-center py-12">
             <Loader2 className="w-10 h-10 animate-spin text-glc-magenta mx-auto mb-3" />
@@ -294,20 +355,20 @@ function VerifyContent() {
                     Official Entry Procedure
                   </div>
                   <div className="text-cream-300/90 leading-relaxed">
-                    Show your official digital pass to a gate volunteer at the auditorium entrance on <strong>10th October</strong> to record your attendance.
+                    Show your official digital pass to a gate volunteer at the auditorium entrance to record your attendance.
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     localStorage.removeItem('glc_volunteer_name')
-                    localStorage.removeItem('glc_volunteer_pin')
+                    localStorage.removeItem('glc_volunteer_session')
                     setIsAuth(false)
                     setResult(null)
                   }}
                   className="text-xs text-glc-magenta hover:underline font-semibold"
                 >
-                  ← Return to Volunteer Sign-in
+                  ← Return to Verification Portal
                 </button>
               </div>
             ) : (
@@ -316,7 +377,7 @@ function VerifyContent() {
                 <h2 className="text-lg font-bold text-white mb-1">Pass Verification Failed</h2>
                 <p className="text-xs text-red-300 mb-4">{result.message || result.error}</p>
                 <div className="p-3 text-[10px] text-cream-400 border-t border-wine-900">
-                  Please direct student to the PACE Helpdesk Desk for assistance.
+                  Please direct student to the registration helpdesk for assistance.
                 </div>
               </div>
             )}
