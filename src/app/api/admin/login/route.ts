@@ -5,7 +5,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { password } = body
 
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'clankers'
+    const expectedPassword = process.env.ADMIN_PASSWORD
+    if (!expectedPassword) {
+      return NextResponse.json({ error: 'Admin authentication is not configured on the server.' }, { status: 500 })
+    }
 
     if (!password || password.trim() !== expectedPassword.trim()) {
       return NextResponse.json({ error: 'Invalid administrator password.' }, { status: 401 })

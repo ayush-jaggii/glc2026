@@ -4,7 +4,8 @@ function checkAdminAuth(request: Request): boolean {
   const authHeader = request.headers.get('authorization')
   if (!authHeader) return false
   const token = authHeader.replace('Bearer ', '').trim()
-  const expectedPassword = process.env.ADMIN_PASSWORD || 'clankers'
+  const expectedPassword = process.env.ADMIN_PASSWORD
+  if (!expectedPassword) return false
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf-8')
     return decoded.includes(expectedPassword)
