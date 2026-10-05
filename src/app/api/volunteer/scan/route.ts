@@ -42,14 +42,65 @@ export async function POST(request: Request) {
       }
     }
 
-    // 2. Reject unauthorized requests (no master PIN fallback)
+    // 2. Reject unauthorized requests (e.g. student camera scanning their pass)
     if (!isAuthenticated) {
+      // Record failed self-scan attempt asynchronously
+      try {
+        const userAgent = request.headers.get('user-agent') || ''
+        const ipAddress =
+          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+          request.headers.get('x-real-ip') ||
+          ''
+
+        // Look up student roll and name from token if valid
+        let studentRoll: string | null = null
+        let studentName: string | null = null
+
+        if (token && token !== 'PING_CHECK') {
+          const sRes = await fetch(
+            `${supabaseUrl}/rest/v1/students?qr_token=eq.${encodeURIComponent(token.trim())}&select=roll_number,full_name`,
+            {
+              headers: {
+                apikey: supabaseAnonKey,
+                Authorization: `Bearer ${supabaseAnonKey}`
+              }
+            }
+          )
+          if (sRes.ok) {
+            const sData = await sRes.json()
+            if (Array.isArray(sData) && sData.length > 0) {
+              studentRoll = sData[0].roll_number
+              studentName = sData[0].full_name
+            }
+          }
+        }
+
+        await fetch(`${supabaseUrl}/rest/v1/scan_attempts`, {
+          method: 'POST',
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            token: token || null,
+            student_roll: studentRoll,
+            student_name: studentName,
+            user_agent: userAgent,
+            ip_address: ipAddress,
+            attempt_type: 'SELF_SCAN_BLOCKED'
+          })
+        })
+      } catch (logErr) {
+        console.warn('Failed to record unauthorized scan attempt:', logErr)
+      }
+
       return NextResponse.json(
         {
           success: false,
-          code: 'UNAUTHORIZED_NICE_TRY',
-          error: 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.',
-          message: 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.'
+          code: 'UNAUTHORIZED_SELF_SCAN',
+          error: "Turns out Nexora outsmarts you. Marking attendance isn't that easy — you cannot mark your own attendance.",
+          message: "Turns out Nexora outsmarts you. Marking attendance isn't that easy — you cannot mark your own attendance."
         },
         { status: 401 }
       )

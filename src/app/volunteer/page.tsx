@@ -156,7 +156,7 @@ export default function VolunteerScannerPage() {
         setIsAuthenticated(true)
         setPassword('')
       } else {
-        setLoginError(data.error || 'Nice try! 😉 Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.')
+        setLoginError(data.error || "Turns out Nexora outsmarts you. Only authorized GLC gate volunteers can check in passes.")
       }
     } catch {
       setLoginError('Network connectivity error. Please verify your connection.')

@@ -40,6 +40,13 @@ function VerifyContent() {
       if (savedName) setVolunteerName(savedName)
       setIsAuth(true)
       executeVerification(token, savedToken, savedName || 'Volunteer Desk')
+    } else if (token) {
+      // Student opened page with token without volunteer session: log the self-scan attempt
+      fetch('/api/volunteer/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      }).catch(() => {})
     }
   }, [token])
 
@@ -145,46 +152,59 @@ function VerifyContent() {
         ) : !isAuth ? (
           /* When student scans with regular phone camera and is not authenticated */
           !showLoginForm ? (
-            <div className="text-center py-3">
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mx-auto mb-3.5 shadow-lg shadow-amber-950/40">
-                🕵️‍♂️
+            <div className="text-center py-2">
+              {/* Minimal Clean Icon */}
+              <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-wine-700/60 flex items-center justify-center text-glc-orange mx-auto mb-5 shadow-inner">
+                <Lock className="w-5 h-5 text-glc-orange/90" />
               </div>
-              <span className="inline-block px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/60 text-[11px] font-bold text-amber-300 uppercase tracking-widest mb-2.5">
-                Self-Scan Blocked
-              </span>
-              <h2 className="text-2xl font-black text-white tracking-tight mb-1.5">
-                Nice try! 😉
+
+              {/* Sub-label */}
+              <p className="text-[11px] font-mono tracking-widest text-glc-orange uppercase mb-2">
+                NEXORA ATTENDANCE VERIFICATION
+              </p>
+
+              {/* Bold Title */}
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+                Turns out Nexora outsmarts you.
               </h2>
-              <p className="text-sm font-semibold text-amber-200 mb-3">
-                You cannot mark your own attendance.
-              </p>
-              <p className="text-xs text-cream-300/80 leading-relaxed max-w-sm mx-auto mb-5">
-                Attendance can only be recorded by authorized GLC gate volunteers at the venue entrance. Show this pass to a volunteer on event day!
+
+              {/* Explanation */}
+              <p className="text-sm font-medium text-cream-200 mb-3">
+                Unfortunately, marking attendance isn't that easy.
               </p>
 
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-wine-800 text-left space-y-1.5 mb-5 text-xs">
-                <div className="flex items-center gap-1.5 text-glc-orange font-bold text-[11px] uppercase tracking-wider">
-                  <ShieldAlert className="w-3.5 h-3.5 text-glc-orange" /> Official Entry Procedure
+              <p className="text-xs text-cream-400 leading-relaxed max-w-sm mx-auto mb-6">
+                You cannot mark your own attendance. Attendance can only be recorded by designated gate volunteers at the auditorium entry.
+              </p>
+
+              {/* Official Procedure Card */}
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-wine-800/80 text-left space-y-1.5 mb-6 text-xs">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-cream-400 flex items-center gap-1.5 font-semibold">
+                  <ShieldAlert className="w-3.5 h-3.5 text-glc-orange" />
+                  Official Entry Procedure
                 </div>
-                <div className="text-cream-300 text-[11px] leading-relaxed">
-                  Present your digital pass with QR code at the registration gate. A volunteer will scan and confirm your check-in.
+                <div className="text-cream-300 text-xs leading-relaxed">
+                  Present your digital pass with QR code at the registration gate. An authorized volunteer will scan and confirm your check-in.
                 </div>
               </div>
 
+              {/* CTA Button */}
               <Link
                 href="/"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-95 transition-opacity"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-gradient-to-r from-glc-magenta to-glc-orange text-white text-xs font-semibold tracking-wider uppercase hover:opacity-95 transition-opacity shadow-lg"
               >
-                Return to GLC Portal <ArrowRight className="w-3.5 h-3.5" />
+                <span>Return to GLC Portal</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
 
-              <div className="mt-5 pt-4 border-t border-wine-900/60 text-center">
+              {/* Volunteer Gateway Link */}
+              <div className="mt-6 pt-4 border-t border-wine-900/60 text-center">
                 <button
                   type="button"
                   onClick={() => setShowLoginForm(true)}
-                  className="text-[11px] text-cream-400 hover:text-glc-orange transition-colors underline cursor-pointer"
+                  className="text-[11px] text-cream-400 hover:text-white transition-colors cursor-pointer"
                 >
-                  Are you an authorized gate volunteer? Sign in here →
+                  Authorized gate volunteer? <span className="underline text-glc-orange">Sign in here</span>
                 </button>
               </div>
             </div>
@@ -336,25 +356,29 @@ function VerifyContent() {
                   </div>
                 )}
               </div>
-            ) : result.code === 'UNAUTHORIZED_NICE_TRY' || (result.error && result.error.includes('Nice try')) ? (
-              <div className="text-center py-5 animate-fadeIn">
-                <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
-                  🕵️‍♂️
+            ) : result.code === 'UNAUTHORIZED_SELF_SCAN' || result.code === 'UNAUTHORIZED_NICE_TRY' || (result.error && (result.error.includes('outsmarts') || result.error.includes('Nice try'))) ? (
+              <div className="text-center py-4 animate-fadeIn">
+                <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-wine-700/60 flex items-center justify-center text-glc-orange mx-auto mb-4 shadow-inner">
+                  <Lock className="w-5 h-5 text-glc-orange/90" />
                 </div>
-                <span className="inline-block px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/80 text-[11px] font-bold text-amber-300 uppercase tracking-widest mb-2">
-                  Unauthorized Scan Detected
-                </span>
-                <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight">
-                  Nice Try! 😉
-                </h2>
-                <p className="text-xs text-amber-200/90 leading-relaxed mb-4 max-w-sm mx-auto">
-                  Caught red-handed! Nice attempt marking attendance yourself, but only authorized GLC gate volunteers can check in passes.
+                <p className="text-[11px] font-mono tracking-widest text-glc-orange uppercase mb-2">
+                  UNAUTHORIZED SCAN DETECTED
                 </p>
-                <div className="p-3.5 rounded-2xl bg-white/5 border border-wine-800 text-[11px] text-cream-300 space-y-1 mb-4 text-left">
-                  <div className="font-semibold text-glc-orange uppercase tracking-wider text-[10px]">
+                <h2 className="text-xl font-bold text-white mb-2 tracking-tight">
+                  Turns out Nexora outsmarts you.
+                </h2>
+                <p className="text-sm font-medium text-cream-200 mb-2">
+                  Unfortunately, marking attendance isn't that easy.
+                </p>
+                <p className="text-xs text-cream-400 leading-relaxed mb-5 max-w-sm mx-auto">
+                  You cannot mark your own attendance. Only designated gate volunteers can verify and record attendance at the venue entrance.
+                </p>
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-wine-800 text-[11px] text-cream-300 space-y-1 mb-5 text-left">
+                  <div className="font-semibold text-cream-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-glc-orange" />
                     Official Entry Procedure
                   </div>
-                  <div className="text-cream-300/90 leading-relaxed">
+                  <div className="text-cream-300 leading-relaxed">
                     Show your official digital pass to a gate volunteer at the auditorium entrance to record your attendance.
                   </div>
                 </div>
@@ -366,7 +390,7 @@ function VerifyContent() {
                     setIsAuth(false)
                     setResult(null)
                   }}
-                  className="text-xs text-glc-magenta hover:underline font-semibold"
+                  className="text-xs text-glc-orange hover:underline font-semibold"
                 >
                   ← Return to Verification Portal
                 </button>

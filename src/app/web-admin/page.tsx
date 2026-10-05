@@ -26,6 +26,7 @@ import {
   Eye,
   EyeOff,
   Shield,
+  ShieldAlert,
   KeyRound,
   DoorOpen
 } from 'lucide-react'
@@ -79,6 +80,17 @@ interface AdminStats {
   totalDownloadEvents: number
 }
 
+interface ScanAttempt {
+  id: string
+  created_at: string
+  token: string | null
+  student_roll: string | null
+  student_name: string | null
+  user_agent: string | null
+  ip_address: string | null
+  attempt_type: string
+}
+
 export default function AdminDashboardPage() {
   const [adminToken, setAdminToken] = useState<string | null>(null)
   const [adminPassword, setAdminPassword] = useState('')
@@ -86,7 +98,11 @@ export default function AdminDashboardPage() {
   const [loggingIn, setLoggingIn] = useState(false)
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<'students' | 'volunteers'>('students')
+  const [activeTab, setActiveTab] = useState<'students' | 'volunteers' | 'attempts'>('students')
+
+  // Attempts State
+  const [attempts, setAttempts] = useState<ScanAttempt[]>([])
+  const [loadingAttempts, setLoadingAttempts] = useState(false)
 
   // Stats & Students
   const [activeSession, setActiveSession] = useState<'AM' | 'PM'>('AM')
@@ -139,8 +155,10 @@ export default function AdminDashboardPage() {
     if (adminToken) {
       if (activeTab === 'students') {
         fetchStudents()
-      } else {
+      } else if (activeTab === 'volunteers') {
         fetchVolunteers()
+      } else if (activeTab === 'attempts') {
+        fetchAttempts()
       }
     }
   }, [adminToken, activeTab, statusFilter])
@@ -270,6 +288,33 @@ export default function AdminDashboardPage() {
       console.error('Failed to load volunteers:', err)
     } finally {
       setLoadingVolunteers(false)
+    }
+  }
+
+  const fetchAttempts = async () => {
+    if (!adminToken) return
+    setLoadingAttempts(true)
+
+    try {
+      const res = await fetch('/api/admin/attempts', {
+        headers: {
+          Authorization: `Bearer ${adminToken}`
+        }
+      })
+
+      if (res.status === 401) {
+        handleAdminLogout()
+        return
+      }
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setAttempts(data.attempts || [])
+      }
+    } catch (err) {
+      console.error('Failed to load scan attempts:', err)
+    } finally {
+      setLoadingAttempts(false)
     }
   }
 
@@ -510,11 +555,11 @@ export default function AdminDashboardPage() {
 
             <button
               type="button"
-              onClick={activeTab === 'students' ? fetchStudents : fetchVolunteers}
-              disabled={loadingStudents || loadingVolunteers}
+              onClick={activeTab === 'students' ? fetchStudents : activeTab === 'volunteers' ? fetchVolunteers : fetchAttempts}
+              disabled={loadingStudents || loadingVolunteers || loadingAttempts}
               className="inline-flex items-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold tracking-wider uppercase bg-wine-900 hover:bg-wine-800 border border-wine-700 text-cream-200 transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 ${(loadingStudents || loadingVolunteers) ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${(loadingStudents || loadingVolunteers || loadingAttempts) ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
             </button>
 
@@ -530,7 +575,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-3 border-b border-wine-800/80 pb-3">
+        <div className="flex flex-wrap items-center gap-3 border-b border-wine-800/80 pb-3">
           <button
             onClick={() => setActiveTab('students')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
@@ -552,6 +597,17 @@ export default function AdminDashboardPage() {
           >
             <Shield className="w-4 h-4" />
             <span>Volunteer Gate Access ({volunteers.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('attempts')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'attempts'
+                ? 'bg-amber-600 text-white shadow-lg'
+                : 'bg-wine-900/60 text-cream-300 hover:text-white border border-wine-800'
+            }`}
+          >
+            <ShieldAlert className="w-4 h-4 text-amber-400" />
+            <span>Self-Scan Attempts ({attempts.length})</span>
           </button>
         </div>
 
@@ -1235,6 +1291,127 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* ========================================== */}
+        {/* TAB 3: SELF-SCAN ATTEMPTS LOG             */}
+        {/* ========================================== */}
+        {activeTab === 'attempts' && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Summary card */}
+            <div className="p-5 rounded-2xl bg-[#170513] border border-wine-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                    <ShieldAlert className="w-4 h-4 text-amber-400" />
+                    Security Intercept Log
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 border border-amber-600/40 text-amber-300">
+                    {attempts.length} Recorded Intercepts
+                  </span>
+                </div>
+                <p className="text-xs text-cream-300/80">
+                  Real-time log of attendees attempting to self-scan passes using phone cameras or unofficial scanner apps without gate volunteer authentication.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={fetchAttempts}
+                disabled={loadingAttempts}
+                className="inline-flex items-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold tracking-wider uppercase bg-amber-950/60 hover:bg-amber-900 border border-amber-700/80 text-amber-200 transition-colors cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingAttempts ? 'animate-spin' : ''}`} />
+                <span>Refresh Log</span>
+              </button>
+            </div>
+
+            {/* Attempts Table */}
+            <div className="rounded-2xl bg-[#13030F] border border-wine-800/80 overflow-hidden shadow-2xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-wine-800 bg-wine-900/40 text-[10px] font-bold uppercase tracking-wider text-cream-400">
+                      <th className="py-3 px-4">Timestamp</th>
+                      <th className="py-3 px-4">Student Name</th>
+                      <th className="py-3 px-4">Roll Number</th>
+                      <th className="py-3 px-4">Pass Token</th>
+                      <th className="py-3 px-4">Device / User Agent</th>
+                      <th className="py-3 px-4 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-wine-900/60 text-cream-200">
+                    {loadingAttempts ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-cream-400">
+                          <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-glc-magenta" />
+                          <span>Loading scan attempts...</span>
+                        </td>
+                      </tr>
+                    ) : attempts.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-cream-400">
+                          No unauthorized self-scan attempts recorded yet.
+                        </td>
+                      </tr>
+                    ) : (
+                      attempts.map((att) => {
+                        const dateStr = att.created_at
+                          ? new Date(att.created_at).toLocaleString('en-IN', {
+                              timeZone: 'Asia/Kolkata',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            })
+                          : '—'
+
+                        return (
+                          <tr key={att.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="py-3 px-4 font-mono text-[11px] text-cream-400 whitespace-nowrap">
+                              {dateStr}
+                            </td>
+                            <td className="py-3 px-4 font-semibold text-white">
+                              {att.student_name || <span className="text-cream-500 italic">Unknown Attendee</span>}
+                            </td>
+                            <td className="py-3 px-4 font-mono text-glc-orange font-bold">
+                              {att.student_roll || <span className="text-cream-500 italic">—</span>}
+                            </td>
+                            <td className="py-3 px-4 font-mono text-[10px] text-cream-400">
+                              {att.token ? (
+                                <span className="truncate block max-w-[140px]" title={att.token}>
+                                  {att.token}
+                                </span>
+                              ) : (
+                                <span className="text-cream-500 italic">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-[10px] text-cream-400 max-w-xs truncate" title={att.user_agent || ''}>
+                              {att.user_agent ? (
+                                att.user_agent.includes('iPhone')
+                                  ? 'Apple iPhone / Safari'
+                                  : att.user_agent.includes('Android')
+                                  ? 'Android Mobile'
+                                  : att.user_agent.slice(0, 40) + '...'
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-center whitespace-nowrap">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-red-950/60 border border-red-800 text-red-300">
+                                <span>Blocked</span>
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
