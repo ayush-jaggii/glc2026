@@ -99,8 +99,8 @@ export async function POST(request: Request) {
         {
           success: false,
           code: 'UNAUTHORIZED_SELF_SCAN',
-          error: "Turns out Nexora outsmarts you. Marking attendance isn't that easy — you cannot mark your own attendance.",
-          message: "Turns out Nexora outsmarts you. Marking attendance isn't that easy — you cannot mark your own attendance."
+          error: "Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance.",
+          message: "Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance."
         },
         { status: 401 }
       )

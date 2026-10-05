@@ -160,7 +160,7 @@ function VerifyContent() {
 
               {/* Bold Title */}
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
-                Turns out Nexora outsmarts you.
+                Turns out Nexora outsmarts you, again.
               </h2>
 
               {/* Explanation */}
@@ -358,7 +358,7 @@ function VerifyContent() {
                   HA!
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2 tracking-tight">
-                  Turns out Nexora outsmarts you.
+                  Turns out Nexora outsmarts you, again.
                 </h2>
                 <p className="text-sm font-medium text-cream-200 mb-2">
                   Unfortunately, marking attendance isn't that easy.
