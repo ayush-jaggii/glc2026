@@ -3,6 +3,7 @@ import HeroSection from '@/components/HeroSection'
 import RevealSection from '@/components/RevealSection'
 import PastGlcGallery3D from '@/components/PastGlcGallery3D'
 import AwardsSection from '@/components/AwardsSection'
+import PartnersSection from '@/components/PartnersSection'
 import ArchiveGallery from '@/components/ArchiveGallery'
 import AgendaSection from '@/components/AgendaSection'
 import DelegateAdvantage from '@/components/DelegateAdvantage'
@@ -28,7 +29,10 @@ export default function HomePage() {
       {/* 5. Business Excellence Awards 2026 (Co-presented by Plugscale) */}
       <AwardsSection />
 
-      {/* 6. Historical Archive & Auditorium Retrospective Film */}
+      {/* 6. Our Partners: Digital Media Partner & Exhibitors Marquee */}
+      <PartnersSection />
+
+      {/* 7. Historical Archive & Auditorium Retrospective Film */}
       <ArchiveGallery />
 
       {/* 7. Executive Delegate ROI & Advantage Path */}
