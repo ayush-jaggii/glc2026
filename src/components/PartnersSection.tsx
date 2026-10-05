@@ -144,7 +144,7 @@ export default function PartnersSection() {
                 Hospitality Partner
               </span>
               <a
-                href="https://thevanya.in/"
+                href="https://www.instagram.com/vanya_bangalore/?hl=en"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Vanya Luxury Boutique Resort"
