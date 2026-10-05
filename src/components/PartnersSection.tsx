@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 
 interface PartnerLogo {
@@ -25,8 +25,19 @@ const PARTNERS: PartnerLogo[] = [
 ]
 
 export default function PartnersSection() {
+  useEffect(() => {
+    // Eagerly preload all partner logo images into memory so they never pop in while sliding
+    PARTNERS.forEach((partner) => {
+      const img = new window.Image()
+      img.src = partner.src
+    })
+  }, [])
+
   return (
     <section id="partners" className="relative py-20 sm:py-28 bg-[#0B0207] border-t border-wine-900/60 overflow-hidden">
+      {/* Target anchor for #sponsors or #partners navigation */}
+      <span id="sponsors" className="absolute -top-24 pointer-events-none" aria-hidden="true" />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Minimalist Section Header */}
@@ -108,7 +119,8 @@ export default function PartnersSection() {
                         src={item.src}
                         alt={item.name}
                         className={`${item.imageClass} object-contain`}
-                        loading="lazy"
+                        loading="eager"
+                        decoding="async"
                       />
                     </div>
                   ))}
@@ -125,7 +137,8 @@ export default function PartnersSection() {
                         src={item.src}
                         alt={item.name}
                         className={`${item.imageClass} object-contain`}
-                        loading="lazy"
+                        loading="eager"
+                        decoding="async"
                       />
                     </div>
                   ))}
