@@ -24,11 +24,11 @@ const SESSIONS: ScheduleSession[] = [
   { id: 's-lunch', time: '01:20 PM', duration: '1h 00m', durationMin: 60, title: 'Networking Lunch', type: 'break' },
   { id: 's-panel3', time: '02:30 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 3 — Automotive & EV (Shifting Gears)', type: 'panel', panelId: 'panel-4' },
   { id: 's-panel4', time: '03:45 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 4 — BFSI (Capital Without Borders)', type: 'panel', panelId: 'panel-3' },
+  { id: 's-tea2', time: '04:45 PM', duration: '15m', durationMin: 15, title: 'High Tea Break', type: 'break' },
   { id: 's-panel5', time: '05:00 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 5 — Media & Marketing (Going Viral, Staying Local)', type: 'panel', panelId: 'panel-5' },
-  { id: 's-tea2', time: '06:00 PM', duration: '15m', durationMin: 15, title: 'High Tea', type: 'break' },
-  { id: 's-awards', time: '06:15 PM', duration: '20m', durationMin: 20, title: 'GLC Excellence Awards', type: 'awards', anchorId: 'awards' },
-  { id: 's-closing', time: '06:40 PM', duration: '10m', durationMin: 10, title: 'Vote of Thanks & National Anthem', type: 'ceremony' },
-  { id: 's-dinner', time: '08:00 PM', duration: 'Evening', durationMin: 45, title: 'Gala Dinner', type: 'break' },
+  { id: 's-awards', time: '06:00 PM', duration: '15m', durationMin: 15, title: 'GLC Excellence Awards', type: 'awards', anchorId: 'awards' },
+  { id: 's-thanks', time: '06:15 PM', duration: '7m', durationMin: 7, title: 'Vote of Thanks', type: 'ceremony' },
+  { id: 's-anthem', time: '06:22 PM', duration: '3m', durationMin: 3, title: 'National Anthem & Event Concludes', type: 'ceremony' },
 ]
 
 const TOTAL_MINUTES = SESSIONS.reduce((sum, s) => sum + s.durationMin, 0)
@@ -113,10 +113,10 @@ export default function AgendaSection() {
         <div className="mb-10 p-4 sm:p-6 rounded-2xl bg-[#13030F] border border-wine-800 shadow-2xl">
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-cream-300/70 font-semibold tracking-wider uppercase mb-3">
             <span>09:30 AM</span>
-            <span>12:00 PM</span>
-            <span>03:00 PM</span>
-            <span>06:00 PM</span>
-            <span>08:00 PM+</span>
+            <span>11:30 AM</span>
+            <span>01:30 PM</span>
+            <span>03:30 PM</span>
+            <span>06:25 PM</span>
           </div>
 
           {/* Master Segmented Bar */}
