@@ -14,25 +14,25 @@ const PARTNERS: PartnerLogo[] = [
   {
     name: 'Yoga Bar',
     src: '/sponsors/yogabar.png',
-    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[150px]',
+    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
     href: 'https://yogabars.in'
   },
   {
     name: 'The Belgian Waffle Co',
     src: '/sponsors/belgian-waffle.svg',
-    imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]',
+    imageClass: 'h-14 sm:h-20 md:h-22 w-auto max-w-[125px] sm:max-w-[165px]',
     href: 'https://thebelgianwaffle.co/'
   },
   {
     name: 'SMH',
     src: '/sponsors/smh.png',
-    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[145px]',
+    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
     href: 'https://www.smharabia.com/'
   },
   {
     name: 'Farmley',
     src: '/sponsors/farmley.jpg',
-    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[155px]',
+    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
     href: 'https://www.farmley.com/'
   },
   {
@@ -44,7 +44,7 @@ const PARTNERS: PartnerLogo[] = [
   {
     name: 'Tazish',
     src: '/sponsors/tazish.jpeg',
-    imageClass: 'h-8 sm:h-13 md:h-15 w-auto max-w-[115px] sm:max-w-[160px]',
+    imageClass: 'h-11 sm:h-16 md:h-18 w-auto max-w-[130px] sm:max-w-[180px]',
     href: 'https://www.instagram.com/tazishpoket/?hl=en'
   },
   {
