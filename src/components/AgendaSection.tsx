@@ -27,8 +27,7 @@ const SESSIONS: ScheduleSession[] = [
   { id: 's-tea2', time: '04:45 PM', duration: '15m', durationMin: 15, title: 'High Tea Break', type: 'break' },
   { id: 's-panel5', time: '05:00 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 5 — Media & Marketing (Going Viral, Staying Local)', type: 'panel', panelId: 'panel-5' },
   { id: 's-awards', time: '06:00 PM', duration: '15m', durationMin: 15, title: 'GLC Excellence Awards', type: 'awards', anchorId: 'awards' },
-  { id: 's-thanks', time: '06:15 PM', duration: '7m', durationMin: 7, title: 'Vote of Thanks', type: 'ceremony' },
-  { id: 's-anthem', time: '06:22 PM', duration: '3m', durationMin: 3, title: 'National Anthem & Event Concludes', type: 'ceremony' },
+  { id: 's-closing', time: '06:15 PM', duration: '10m', durationMin: 10, title: 'Vote of Thanks & National Anthem', type: 'ceremony' },
 ]
 
 const TOTAL_MINUTES = SESSIONS.reduce((sum, s) => sum + s.durationMin, 0)
