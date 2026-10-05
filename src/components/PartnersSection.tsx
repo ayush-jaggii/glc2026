@@ -18,7 +18,7 @@ const PARTNERS: PartnerLogo[] = [
   { name: 'Tazish', src: '/sponsors/tazish.jpeg', imageClass: 'h-13 sm:h-15 w-auto max-w-[160px]' },
   { name: "Snap 'N' Stick", src: '/sponsors/snap-n-stick.svg', imageClass: 'h-16 sm:h-20 w-auto max-w-[165px]' },
   { name: 'The Chatpata Affair', src: '/sponsors/chatpata-affair.webp', imageClass: 'h-12 sm:h-14 w-auto max-w-[170px]' },
-  { name: 'Rescript', src: '/sponsors/rescript.svg', imageClass: 'h-11 sm:h-13 w-auto max-w-[165px]' },
+  // { name: 'Rescript', src: '/sponsors/rescript.svg', imageClass: 'h-11 sm:h-13 w-auto max-w-[165px]' },
   { name: 'Ownly', src: '/sponsors/ownly.svg', imageClass: 'h-11 sm:h-13 w-auto max-w-[165px]' },
   { name: 'Taurke', src: '/sponsors/taurke.png', imageClass: 'h-16 sm:h-18 w-auto max-w-[155px]' },
   { name: 'NikMish', src: '/sponsors/nikmish.png', imageClass: 'h-14 sm:h-16 w-auto max-w-[160px]' },
