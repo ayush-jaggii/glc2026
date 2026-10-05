@@ -14,49 +14,49 @@ const PARTNERS: PartnerLogo[] = [
   {
     name: 'Yoga Bar',
     src: '/sponsors/yogabar.png',
-    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
+    imageClass: 'h-11 sm:h-16 md:h-20 w-auto max-w-[100px] sm:max-w-[160px]',
     href: 'https://yogabars.in'
   },
   {
     name: 'The Belgian Waffle Co',
     src: '/sponsors/belgian-waffle.svg',
-    imageClass: 'h-14 sm:h-20 md:h-22 w-auto max-w-[125px] sm:max-w-[165px]',
+    imageClass: 'h-11 sm:h-16 md:h-20 w-auto max-w-[105px] sm:max-w-[165px]',
     href: 'https://thebelgianwaffle.co/'
   },
   {
     name: 'SMH',
     src: '/sponsors/smh.png',
-    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
+    imageClass: 'h-11 sm:h-16 md:h-20 w-auto max-w-[100px] sm:max-w-[160px]',
     href: 'https://www.smharabia.com/'
   },
   {
     name: 'Farmley',
     src: '/sponsors/farmley.jpg',
-    imageClass: 'h-14 sm:h-19 md:h-22 w-auto max-w-[135px] sm:max-w-[175px]',
+    imageClass: 'h-11 sm:h-14 md:h-14 w-auto max-w-[110px] sm:max-w-[175px]',
     href: 'https://www.farmley.com/'
   },
   {
     name: 'NEXTORK',
     src: '/sponsors/nextork.jpg',
-    imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[120px] sm:max-w-[170px]',
+    imageClass: 'h-7 sm:h-11 md:h-11 w-auto max-w-[110px] sm:max-w-[170px]',
     href: 'https://nextork.com/'
   },
   {
     name: 'Tazish',
     src: '/sponsors/tazish.jpeg',
-    imageClass: 'h-11 sm:h-16 md:h-18 w-auto max-w-[130px] sm:max-w-[180px]',
+    imageClass: 'h-10 sm:h-16 md:h-16 w-auto max-w-[115px] sm:max-w-[180px]',
     href: 'https://www.instagram.com/tazishpoket/?hl=en'
   },
   {
     name: "Snap 'N' Stick",
     src: '/sponsors/snap-n-stick.svg',
-    imageClass: 'h-10 sm:h-16 md:h-20 w-auto max-w-[120px] sm:max-w-[165px]',
+    imageClass: 'h-10 sm:h-16 md:h-20 w-auto max-w-[115px] sm:max-w-[165px]',
     href: 'https://snapnstick.vercel.app/'
   },
   {
     name: 'The Chatpata Affair',
     src: '/sponsors/chatpata-affair.webp',
-    imageClass: 'h-8 sm:h-12 md:h-14 w-auto max-w-[120px] sm:max-w-[170px]',
+    imageClass: 'h-8 sm:h-12 md:h-14 w-auto max-w-[115px] sm:max-w-[170px]',
     href: 'https://thechatpataaffair.com/'
   },
   // {
@@ -68,19 +68,19 @@ const PARTNERS: PartnerLogo[] = [
   {
     name: 'Ownly',
     src: '/sponsors/ownly.svg',
-    imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[115px] sm:max-w-[165px]',
+    imageClass: 'h-7 sm:h-11 md:h-11 w-auto max-w-[110px] sm:max-w-[165px]',
     href: 'https://ownly.food/'
   },
   {
     name: 'Taurke',
     src: '/sponsors/taurke.png',
-    imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]',
+    imageClass: 'h-10 sm:h-16 md:h-16 w-auto max-w-[110px] sm:max-w-[155px]',
     href: 'https://taurke.com'
   },
   {
     name: 'NikMish',
     src: '/sponsors/nikmish.png',
-    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[160px]',
+    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[160px]',
     href: 'https://www.instagram.com/nikmish.designs/'
   },
 ]
@@ -125,7 +125,7 @@ export default function PartnersSection() {
                 title="Bharat 24 - Vision of New India"
                 className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-44 sm:w-60 h-14 sm:h-18">
+                <div className="relative w-44 sm:w-60 h-14 sm:h-16">
                   <Image
                     src="/sponsors/bharat24.png"
                     alt="Bharat 24 - Vision of New India"
@@ -150,7 +150,7 @@ export default function PartnersSection() {
                 title="Vanya Luxury Boutique Resort"
                 className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-8 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-44 sm:w-60 h-18 sm:h-24">
+                <div className="relative w-44 sm:w-60 h-16 sm:h-24">
                   <Image
                     src="/sponsors/vanya.png"
                     alt="Vanya Luxury Boutique Resort"
@@ -184,7 +184,7 @@ export default function PartnersSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       title={`Visit ${item.name}`}
-                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer"
+                      className="bg-white rounded-xl sm:rounded-2xl px-3 sm:px-6 py-2 sm:py-4 h-20 sm:h-28 md:h-32 w-36 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer overflow-hidden"
                     >
                       <img
                         src={item.src}
@@ -207,7 +207,7 @@ export default function PartnersSection() {
                       rel="noopener noreferrer"
                       title={`Visit ${item.name}`}
                       tabIndex={-1}
-                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer"
+                      className="bg-white rounded-xl sm:rounded-2xl px-3 sm:px-6 py-2 sm:py-4 h-20 sm:h-28 md:h-32 w-36 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer overflow-hidden"
                     >
                       <img
                         src={item.src}
