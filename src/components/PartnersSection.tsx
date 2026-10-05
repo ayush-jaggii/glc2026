@@ -32,7 +32,7 @@ const PARTNERS: PartnerLogo[] = [
   {
     name: 'Farmley',
     src: '/sponsors/farmley.jpg',
-    imageClass: 'h-13 sm:h-18 md:h-20 w-auto max-w-[120px] sm:max-w-[160px]',
+    imageClass: 'h-14 sm:h-19 md:h-22 w-auto max-w-[135px] sm:max-w-[175px]',
     href: 'https://www.farmley.com/'
   },
   {
@@ -123,14 +123,14 @@ export default function PartnersSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Bharat 24 - Vision of New India"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28 group cursor-pointer"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-40 sm:w-52 h-12 sm:h-16">
+                <div className="relative w-44 sm:w-60 h-14 sm:h-18">
                   <Image
                     src="/sponsors/bharat24.png"
                     alt="Bharat 24 - Vision of New India"
                     fill
-                    sizes="(max-width: 640px) 160px, 208px"
+                    sizes="(max-width: 640px) 176px, 240px"
                     className="object-contain"
                     priority
                   />
@@ -148,14 +148,14 @@ export default function PartnersSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Vanya Luxury Boutique Resort"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-4 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28 group cursor-pointer"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-8 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-40 sm:w-52 h-12 sm:h-16">
+                <div className="relative w-44 sm:w-60 h-18 sm:h-24">
                   <Image
                     src="/sponsors/vanya.png"
                     alt="Vanya Luxury Boutique Resort"
                     fill
-                    sizes="(max-width: 640px) 160px, 208px"
+                    sizes="(max-width: 640px) 176px, 240px"
                     className="object-contain"
                     priority
                   />
