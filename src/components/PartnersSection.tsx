@@ -7,21 +7,82 @@ interface PartnerLogo {
   name: string
   src: string
   imageClass: string
+  href: string
 }
 
 const PARTNERS: PartnerLogo[] = [
-  { name: 'Yoga Bar', src: '/sponsors/yogabar.png', imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[150px]' },
-  { name: 'The Belgian Waffle Co', src: '/sponsors/belgian-waffle.svg', imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]' },
-  { name: 'SMH', src: '/sponsors/smh.png', imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[145px]' },
-  { name: 'Farmley', src: '/sponsors/farmley.jpg', imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[155px]' },
-  { name: 'NEXTORK', src: '/sponsors/nextork.jpg', imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[120px] sm:max-w-[170px]' },
-  { name: 'Tazish', src: '/sponsors/tazish.jpeg', imageClass: 'h-8 sm:h-13 md:h-15 w-auto max-w-[115px] sm:max-w-[160px]' },
-  { name: "Snap 'N' Stick", src: '/sponsors/snap-n-stick.svg', imageClass: 'h-10 sm:h-16 md:h-20 w-auto max-w-[120px] sm:max-w-[165px]' },
-  { name: 'The Chatpata Affair', src: '/sponsors/chatpata-affair.webp', imageClass: 'h-8 sm:h-12 md:h-14 w-auto max-w-[120px] sm:max-w-[170px]' },
-  // { name: 'Rescript', src: '/sponsors/rescript.svg', imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[115px] sm:max-w-[165px]' },
-  { name: 'Ownly', src: '/sponsors/ownly.svg', imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[115px] sm:max-w-[165px]' },
-  { name: 'Taurke', src: '/sponsors/taurke.png', imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]' },
-  { name: 'NikMish', src: '/sponsors/nikmish.png', imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[160px]' },
+  {
+    name: 'Yoga Bar',
+    src: '/sponsors/yogabar.png',
+    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[150px]',
+    href: 'https://yogabars.in'
+  },
+  {
+    name: 'The Belgian Waffle Co',
+    src: '/sponsors/belgian-waffle.svg',
+    imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]',
+    href: 'https://thebelgianwaffle.co/'
+  },
+  {
+    name: 'SMH',
+    src: '/sponsors/smh.png',
+    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[145px]',
+    href: 'https://www.smharabia.com/'
+  },
+  {
+    name: 'Farmley',
+    src: '/sponsors/farmley.jpg',
+    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[155px]',
+    href: 'https://www.farmley.com/'
+  },
+  {
+    name: 'NEXTORK',
+    src: '/sponsors/nextork.jpg',
+    imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[120px] sm:max-w-[170px]',
+    href: 'https://nextork.com/'
+  },
+  {
+    name: 'Tazish',
+    src: '/sponsors/tazish.jpeg',
+    imageClass: 'h-8 sm:h-13 md:h-15 w-auto max-w-[115px] sm:max-w-[160px]',
+    href: 'https://www.instagram.com/tazishpoket/?hl=en'
+  },
+  {
+    name: "Snap 'N' Stick",
+    src: '/sponsors/snap-n-stick.svg',
+    imageClass: 'h-10 sm:h-16 md:h-20 w-auto max-w-[120px] sm:max-w-[165px]',
+    href: 'https://snapnstick.vercel.app/'
+  },
+  {
+    name: 'The Chatpata Affair',
+    src: '/sponsors/chatpata-affair.webp',
+    imageClass: 'h-8 sm:h-12 md:h-14 w-auto max-w-[120px] sm:max-w-[170px]',
+    href: 'https://thechatpataaffair.com/'
+  },
+  // {
+  //   name: 'Rescript',
+  //   src: '/sponsors/rescript.svg',
+  //   imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[115px] sm:max-w-[165px]',
+  //   href: 'https://rescript.in/'
+  // },
+  {
+    name: 'Ownly',
+    src: '/sponsors/ownly.svg',
+    imageClass: 'h-7 sm:h-11 md:h-13 w-auto max-w-[115px] sm:max-w-[165px]',
+    href: 'https://ownly.food/'
+  },
+  {
+    name: 'Taurke',
+    src: '/sponsors/taurke.png',
+    imageClass: 'h-10 sm:h-16 md:h-18 w-auto max-w-[115px] sm:max-w-[155px]',
+    href: 'https://taurke.com'
+  },
+  {
+    name: 'NikMish',
+    src: '/sponsors/nikmish.png',
+    imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[115px] sm:max-w-[160px]',
+    href: 'https://www.instagram.com/nikmish.designs/'
+  },
 ]
 
 export default function PartnersSection() {
@@ -57,7 +118,13 @@ export default function PartnersSection() {
               <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] sm:tracking-[0.22em] uppercase text-cream-400 mb-2 sm:mb-3">
                 Digital Media Partner
               </span>
-              <div className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28">
+              <a
+                href="https://bharat24live.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Bharat 24 - Vision of New India"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28 group cursor-pointer"
+              >
                 <div className="relative w-40 sm:w-52 h-12 sm:h-16">
                   <Image
                     src="/sponsors/bharat24.png"
@@ -68,7 +135,7 @@ export default function PartnersSection() {
                     priority
                   />
                 </div>
-              </div>
+              </a>
             </div>
 
             {/* Hospitality Partner */}
@@ -77,11 +144,11 @@ export default function PartnersSection() {
                 Hospitality Partner
               </span>
               <a
-                href="http://www.thevanya.in/"
+                href="https://thevanya.in/"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Vanya Luxury Boutique Resort"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-4 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28 group"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-4 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-20 sm:h-28 group cursor-pointer"
               >
                 <div className="relative w-40 sm:w-52 h-12 sm:h-16">
                   <Image
@@ -100,7 +167,7 @@ export default function PartnersSection() {
           {/* Minimal Divider */}
           <div className="w-16 sm:w-24 h-px bg-wine-800/80 mx-auto mb-8 sm:mb-12" />
 
-          {/* 2. Partner Marquee Ticker (Responsive Cards, Optically Balanced) */}
+          {/* 2. Partner Marquee Ticker (Clickable Cards with External Redirects) */}
           <div className="flex flex-col items-center">
             {/* Seamless Infinite Loop with Gradient Edge Mask */}
             <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] py-2 sm:py-3">
@@ -111,9 +178,13 @@ export default function PartnersSection() {
                 {/* Track 1 */}
                 <div className="flex items-center gap-4 sm:gap-7 md:gap-8 shrink-0">
                   {PARTNERS.map((item) => (
-                    <div
+                    <a
                       key={item.name}
-                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Visit ${item.name}`}
+                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer"
                     >
                       <img
                         src={item.src}
@@ -122,16 +193,21 @@ export default function PartnersSection() {
                         loading="eager"
                         decoding="async"
                       />
-                    </div>
+                    </a>
                   ))}
                 </div>
 
                 {/* Track 2 (Duplicate for Seamless Infinite Marquee Loop) */}
                 <div className="flex items-center gap-4 sm:gap-7 md:gap-8 shrink-0" aria-hidden="true">
                   {PARTNERS.map((item, idx) => (
-                    <div
+                    <a
                       key={`${item.name}-dup-${idx}`}
-                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Visit ${item.name}`}
+                      tabIndex={-1}
+                      className="bg-white rounded-xl sm:rounded-2xl px-3.5 py-2 sm:px-6 sm:py-4 h-20 sm:h-28 md:h-32 w-40 sm:w-56 md:w-64 flex items-center justify-center shadow-md border border-white/90 shrink-0 transition-transform duration-200 hover:scale-105 group cursor-pointer"
                     >
                       <img
                         src={item.src}
@@ -140,7 +216,7 @@ export default function PartnersSection() {
                         loading="eager"
                         decoding="async"
                       />
-                    </div>
+                    </a>
                   ))}
                 </div>
               </div>
