@@ -153,15 +153,10 @@ function VerifyContent() {
           /* When student scans with regular phone camera and is not authenticated */
           !showLoginForm ? (
             <div className="text-center py-2">
-              {/* Minimal Clean Icon */}
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-wine-700/60 flex items-center justify-center text-glc-orange mx-auto mb-5 shadow-inner">
-                <Lock className="w-5 h-5 text-glc-orange/90" />
+              {/* Big HA! Callout */}
+              <div className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange mb-3 select-none">
+                HA!
               </div>
-
-              {/* Sub-label */}
-              <p className="text-[11px] font-mono tracking-widest text-glc-orange uppercase mb-2">
-                NEXORA ATTENDANCE VERIFICATION
-              </p>
 
               {/* Bold Title */}
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
@@ -358,12 +353,10 @@ function VerifyContent() {
               </div>
             ) : result.code === 'UNAUTHORIZED_SELF_SCAN' || result.code === 'UNAUTHORIZED_NICE_TRY' || (result.error && (result.error.includes('outsmarts') || result.error.includes('Nice try'))) ? (
               <div className="text-center py-4 animate-fadeIn">
-                <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-wine-700/60 flex items-center justify-center text-glc-orange mx-auto mb-4 shadow-inner">
-                  <Lock className="w-5 h-5 text-glc-orange/90" />
+                {/* Big HA! Callout */}
+                <div className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-glc-magenta via-glc-pink to-glc-orange mb-3 select-none">
+                  HA!
                 </div>
-                <p className="text-[11px] font-mono tracking-widest text-glc-orange uppercase mb-2">
-                  UNAUTHORIZED SCAN DETECTED
-                </p>
                 <h2 className="text-xl font-bold text-white mb-2 tracking-tight">
                   Turns out Nexora outsmarts you.
                 </h2>
