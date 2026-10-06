@@ -6,15 +6,14 @@ import Image from 'next/image'
 export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
-  const strokeGroupRef = useRef<SVGGElement>(null)
-  const curtainRef = useRef<SVGRectElement>(null)
+  const gradientTextGroupRef = useRef<SVGGElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
   const holeRemyaRef = useRef<SVGTextElement>(null)
   const holeMohanaRef = useRef<SVGTextElement>(null)
-  const strokeRemyaRef = useRef<SVGTextElement>(null)
-  const strokeMohanaRef = useRef<SVGTextElement>(null)
+  const gradRemyaRef = useRef<SVGTextElement>(null)
+  const gradMohanaRef = useRef<SVGTextElement>(null)
 
   const [isMobile, setIsMobile] = useState(false)
 
@@ -28,9 +27,9 @@ export default function KeynoteReveal() {
       const mohanaSize = mobile ? '42' : '64'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
-      if (strokeRemyaRef.current) strokeRemyaRef.current.setAttribute('font-size', remyaSize)
+      if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
       if (holeMohanaRef.current) holeMohanaRef.current.setAttribute('font-size', mohanaSize)
-      if (strokeMohanaRef.current) strokeMohanaRef.current.setAttribute('font-size', mohanaSize)
+      if (gradMohanaRef.current) gradMohanaRef.current.setAttribute('font-size', mohanaSize)
     }
 
     handleResize()
@@ -56,8 +55,8 @@ export default function KeynoteReveal() {
       // Progress p from 0 (entry) to 1 (exit)
       const p = Math.max(0, Math.min(1.0, -rect.top / totalScrollable))
 
-      // Exponential zoom through the letter M (zooming through the see-through letter interior)
-      const scale = 1 + Math.pow(p, 2.3) * 95
+      // Scale reaches up to 280, completely pushing the letter outside the frame
+      const scale = 1 + Math.pow(p, 2.4) * 260
       const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
 
       // 1. Zoom the see-through cutout mask directly through the letter M
@@ -65,41 +64,26 @@ export default function KeynoteReveal() {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 2. Scale the letter stroke and fade it gracefully as user steps inside the letter
-      if (strokeGroupRef.current) {
-        strokeGroupRef.current.setAttribute('transform', transformValue)
-        const strokeOpacity = Math.max(0, 1 - p / 0.32)
-        strokeGroupRef.current.style.opacity = strokeOpacity.toString()
+      // 2. Solid gradient text turns see-through smoothly as we begin zooming in
+      if (gradientTextGroupRef.current) {
+        gradientTextGroupRef.current.setAttribute('transform', transformValue)
+        const textOpacity = Math.max(0, 1 - p / 0.18)
+        gradientTextGroupRef.current.style.opacity = textOpacity.toString()
       }
 
       // 3. Initial badge above the name fades early
       if (badgeRef.current) {
-        const badgeOpacity = Math.max(0, 1 - p / 0.15)
+        const badgeOpacity = Math.max(0, 1 - p / 0.12)
         const badgeTranslateY = -p * 80
         badgeRef.current.style.opacity = badgeOpacity.toString()
         badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
       }
 
-      // 4. Curtain borders clear as the letter expands beyond screen boundaries
-      if (curtainRef.current) {
-        if (p > 0.7) {
-          const fadeProgress = (p - 0.7) / 0.15
-          curtainRef.current.style.opacity = Math.max(0, 1 - fadeProgress).toString()
-        } else {
-          curtainRef.current.style.opacity = '1'
-        }
-      }
-
-      // 5. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 4. Underlying speaker showcase transitions in subtly & activates pointer events once inside the frame
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         showcaseRef.current.style.transform = `scale(${showcaseScale})`
-
-        if (p >= 0.65) {
-          showcaseRef.current.style.pointerEvents = 'auto'
-        } else {
-          showcaseRef.current.style.pointerEvents = 'none'
-        }
+        showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
       }
     }
 
@@ -234,8 +218,8 @@ export default function KeynoteReveal() {
           preserveAspectRatio="xMidYMid slice"
         >
           <defs>
-            {/* Gradient definition for elegant glowing letter outlines */}
-            <linearGradient id="keynoteStrokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            {/* Gradient definition for solid initial typography */}
+            <linearGradient id="keynoteTextGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#F58232" />
               <stop offset="50%" stopColor="#FF2D8D" />
               <stop offset="100%" stopColor="#F45197" />
@@ -279,40 +263,35 @@ export default function KeynoteReveal() {
 
           {/* Opaque Curtain with Cutout Window */}
           <rect
-            ref={curtainRef}
             width="1000"
             height="1000"
             fill="#0B0207"
             mask="url(#keynoteHoleMask)"
           />
 
-          {/* Glowing letter outline in Helvetica scaling synchronously with the hole */}
-          <g ref={strokeGroupRef}>
+          {/* Solid Gradient Typography (Visible at start, fades to see-through as user begins zooming in) */}
+          <g ref={gradientTextGroupRef}>
             <text
-              ref={strokeRemyaRef}
+              ref={gradRemyaRef}
               x="500"
               y="465"
               textAnchor="middle"
               fontSize={isMobile ? '80' : '120'}
               fontWeight="900"
-              fill="none"
-              stroke="url(#keynoteStrokeGradient)"
-              strokeWidth={isMobile ? '1.4' : '2'}
+              fill="url(#keynoteTextGradient)"
               letterSpacing="-2"
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               REMYA
             </text>
             <text
-              ref={strokeMohanaRef}
+              ref={gradMohanaRef}
               x="500"
               y="555"
               textAnchor="middle"
               fontSize={isMobile ? '42' : '64'}
               fontWeight="900"
-              fill="none"
-              stroke="url(#keynoteStrokeGradient)"
-              strokeWidth={isMobile ? '1.2' : '1.6'}
+              fill="url(#keynoteTextGradient)"
               letterSpacing="-2"
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
