@@ -6,15 +6,15 @@ import Image from 'next/image'
 export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
-  const visibleGroupRef = useRef<SVGGElement>(null)
+  const strokeGroupRef = useRef<SVGGElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
   const holeRemyaRef = useRef<SVGTextElement>(null)
   const holeMohanaRef = useRef<SVGTextElement>(null)
-  const visRemyaRef = useRef<SVGTextElement>(null)
-  const visMohanaRef = useRef<SVGTextElement>(null)
+  const strokeRemyaRef = useRef<SVGTextElement>(null)
+  const strokeMohanaRef = useRef<SVGTextElement>(null)
 
   const [isMobile, setIsMobile] = useState(false)
 
@@ -24,13 +24,13 @@ export default function KeynoteReveal() {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
 
-      const remyaSize = mobile ? '82' : '130'
-      const mohanaSize = mobile ? '42' : '68'
+      const remyaSize = mobile ? '80' : '120'
+      const mohanaSize = mobile ? '42' : '64'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
-      if (visRemyaRef.current) visRemyaRef.current.setAttribute('font-size', remyaSize)
+      if (strokeRemyaRef.current) strokeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (holeMohanaRef.current) holeMohanaRef.current.setAttribute('font-size', mohanaSize)
-      if (visMohanaRef.current) visMohanaRef.current.setAttribute('font-size', mohanaSize)
+      if (strokeMohanaRef.current) strokeMohanaRef.current.setAttribute('font-size', mohanaSize)
     }
 
     handleResize()
@@ -42,6 +42,10 @@ export default function KeynoteReveal() {
   useEffect(() => {
     let animationFrameId: number | null = null
 
+    // Exact center inside the letter 'M' of REMYA (both desktop and mobile)
+    const ox = 500
+    const oy = 458
+
     const updateScrollAnimation = () => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
@@ -52,22 +56,23 @@ export default function KeynoteReveal() {
       // Progress p from 0 (entry) to 1 (exit)
       const p = Math.max(0, Math.min(1.0, -rect.top / totalScrollable))
 
-      // Exponential zoom curve: starts steady, then zooms dramatically through the text
-      const scale = 1 + Math.pow(p, 2.2) * 65
-      const transformValue = `translate(500, 500) scale(${scale}) translate(-500, -500)`
+      // Exponential zoom through the letter M (zooming through the see-through letter interior)
+      const scale = 1 + Math.pow(p, 2.3) * 95
+      const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
 
-      // 1. Transform the cut-out hole and the front visible gradient text
+      // 1. Zoom the see-through cutout mask directly through the letter M
       if (holeGroupRef.current) {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
-      if (visibleGroupRef.current) {
-        visibleGroupRef.current.setAttribute('transform', transformValue)
-        // Fade out front gradient text as zoom accelerates (0 to 0.28)
-        const textOpacity = Math.max(0, 1 - p / 0.28)
-        visibleGroupRef.current.style.opacity = textOpacity.toString()
+
+      // 2. Scale the letter stroke and fade it gracefully as user steps inside the letter
+      if (strokeGroupRef.current) {
+        strokeGroupRef.current.setAttribute('transform', transformValue)
+        const strokeOpacity = Math.max(0, 1 - p / 0.32)
+        strokeGroupRef.current.style.opacity = strokeOpacity.toString()
       }
 
-      // 2. Initial badge above the name fades out early
+      // 3. Initial badge above the name fades early
       if (badgeRef.current) {
         const badgeOpacity = Math.max(0, 1 - p / 0.15)
         const badgeTranslateY = -p * 80
@@ -75,25 +80,22 @@ export default function KeynoteReveal() {
         badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
       }
 
-      // 3. Black curtain fades out completely once the mask opens wide
+      // 4. Curtain borders clear as the letter expands beyond screen boundaries
       if (curtainRef.current) {
-        if (p > 0.6) {
-          const fadeProgress = (p - 0.6) / 0.18
-          const curtainOpacity = Math.max(0, 1 - fadeProgress)
-          curtainRef.current.style.opacity = curtainOpacity.toString()
+        if (p > 0.7) {
+          const fadeProgress = (p - 0.7) / 0.15
+          curtainRef.current.style.opacity = Math.max(0, 1 - fadeProgress).toString()
         } else {
           curtainRef.current.style.opacity = '1'
         }
       }
 
-      // 4. Underlying speaker showcase transitions in subtly
+      // 5. Underlying speaker showcase transitions in subtly & activates pointer events
       if (showcaseRef.current) {
-        // Showcase scales gently into focus (0.94 to 1.0)
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         showcaseRef.current.style.transform = `scale(${showcaseScale})`
 
-        // Enable clicks and interactivity once mask is revealed
-        if (p >= 0.68) {
+        if (p >= 0.65) {
           showcaseRef.current.style.pointerEvents = 'auto'
         } else {
           showcaseRef.current.style.pointerEvents = 'none'
@@ -157,24 +159,24 @@ export default function KeynoteReveal() {
               </div>
             </div>
 
-            {/* Right: Keynote Speaker Profile & Credentials */}
+            {/* Right: Keynote Speaker Profile & Credentials (All in Helvetica) */}
             <div className="lg:col-span-7 flex flex-col justify-center text-center lg:text-left space-y-4 sm:space-y-5">
               
               {/* Category Pill */}
               <div>
-                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-glc-magenta/20 to-glc-orange/20 border border-glc-orange/40 text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase text-glc-orange shadow-sm">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-glc-magenta/20 to-glc-orange/20 border border-glc-orange/40 text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase text-glc-orange shadow-sm font-sans">
                   <span className="w-1.5 h-1.5 rounded-full bg-glc-orange animate-pulse" />
                   Keynote Speaker
                 </span>
               </div>
 
-              {/* Speaker Full Name */}
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-cream-50 font-tektype leading-[1.08]">
+              {/* Speaker Full Name in Helvetica */}
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-cream-50 font-sans leading-[1.08]">
                 Remya Mohanakrishnan
               </h2>
 
-              {/* Designation & Organization */}
-              <div className="space-y-1">
+              {/* Designation & Organization in Helvetica */}
+              <div className="space-y-1 font-sans">
                 <p className="text-lg sm:text-2xl font-semibold text-cream-100">
                   Head – Education (South Asia)
                 </p>
@@ -186,8 +188,8 @@ export default function KeynoteReveal() {
               {/* Radiant Brand Divider Accent */}
               <div className="w-20 h-1 bg-gradient-to-r from-glc-magenta to-glc-orange rounded-full mx-auto lg:mx-0" />
 
-              {/* Comprehensive Professional Bio */}
-              <p className="text-xs sm:text-sm lg:text-base text-cream-200/90 leading-relaxed max-w-2xl font-light">
+              {/* Comprehensive Professional Bio in Helvetica */}
+              <p className="text-xs sm:text-sm lg:text-base text-cream-200/90 leading-relaxed max-w-2xl font-light font-sans">
                 Distinguished international trade and education leader with extensive experience driving high-level bilateral engagements between Australia, India, and South Asian markets. Leading strategic educational initiatives, transnational academic partnerships, and institutional research collaboration for the Queensland Government&apos;s global business agency.
               </p>
 
@@ -197,7 +199,7 @@ export default function KeynoteReveal() {
                   href="https://www.linkedin.com/in/remya-mohanakrishnan-25b8a128"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-glc-magenta/25 to-glc-orange/25 hover:from-glc-magenta/40 hover:to-glc-orange/40 border border-glc-orange/50 hover:border-glc-orange text-cream-50 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-lg hover:shadow-glc-orange/25 hover:scale-[1.02] active:scale-[0.98] group"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-glc-magenta/25 to-glc-orange/25 hover:from-glc-magenta/40 hover:to-glc-orange/40 border border-glc-orange/50 hover:border-glc-orange text-cream-50 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-lg hover:shadow-glc-orange/25 hover:scale-[1.02] active:scale-[0.98] group font-sans"
                 >
                   <svg
                     className="w-4 h-4 fill-[#0A66C2] group-hover:scale-110 transition-transform"
@@ -220,26 +222,26 @@ export default function KeynoteReveal() {
           ref={badgeRef}
           className="absolute top-12 sm:top-16 z-30 pointer-events-none transition-transform duration-75 text-center"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-wine-900/80 border border-glc-orange/40 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-glc-orange backdrop-blur-md shadow-xl">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-wine-900/80 border border-glc-orange/40 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-glc-orange backdrop-blur-md shadow-xl font-sans">
             Keynote Speaker
           </span>
         </div>
 
-        {/* LAYER 2: SVG Mask Layer (Curtain + Expanding Hole + Visible Gradient Text) */}
+        {/* LAYER 2: SVG Mask Layer (Curtain + Cutout Window in Helvetica) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-20"
           viewBox="0 0 1000 1000"
           preserveAspectRatio="xMidYMid slice"
         >
           <defs>
-            {/* Gradient definition for initial visible typography */}
-            <linearGradient id="keynoteTextGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            {/* Gradient definition for elegant glowing letter outlines */}
+            <linearGradient id="keynoteStrokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#F58232" />
               <stop offset="50%" stopColor="#FF2D8D" />
               <stop offset="100%" stopColor="#F45197" />
             </linearGradient>
 
-            {/* SVG Mask cutting out the expanding text */}
+            {/* SVG Mask cutting out the expanding letters in Helvetica */}
             <mask id="keynoteHoleMask">
               {/* White background preserves the opaque black curtain */}
               <rect width="1000" height="1000" fill="white" />
@@ -250,24 +252,24 @@ export default function KeynoteReveal() {
                   x="500"
                   y="465"
                   textAnchor="middle"
-                  fontSize={isMobile ? '82' : '130'}
+                  fontSize={isMobile ? '80' : '120'}
                   fontWeight="900"
                   fill="black"
                   letterSpacing="-2"
-                  style={{ fontFamily: 'var(--font-tektype), "Helvetica Neue", Arial, sans-serif' }}
+                  style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
                 >
                   REMYA
                 </text>
                 <text
                   ref={holeMohanaRef}
                   x="500"
-                  y="560"
+                  y="555"
                   textAnchor="middle"
-                  fontSize={isMobile ? '42' : '68'}
+                  fontSize={isMobile ? '42' : '64'}
                   fontWeight="900"
                   fill="black"
                   letterSpacing="-2"
-                  style={{ fontFamily: 'var(--font-tektype), "Helvetica Neue", Arial, sans-serif' }}
+                  style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
                 >
                   MOHANAKRISHNAN
                 </text>
@@ -284,31 +286,35 @@ export default function KeynoteReveal() {
             mask="url(#keynoteHoleMask)"
           />
 
-          {/* Initial Visible Gradient Typography (Fades away as text hole expands) */}
-          <g ref={visibleGroupRef}>
+          {/* Glowing letter outline in Helvetica scaling synchronously with the hole */}
+          <g ref={strokeGroupRef}>
             <text
-              ref={visRemyaRef}
+              ref={strokeRemyaRef}
               x="500"
               y="465"
               textAnchor="middle"
-              fontSize={isMobile ? '82' : '130'}
+              fontSize={isMobile ? '80' : '120'}
               fontWeight="900"
-              fill="url(#keynoteTextGradient)"
+              fill="none"
+              stroke="url(#keynoteStrokeGradient)"
+              strokeWidth={isMobile ? '1.4' : '2'}
               letterSpacing="-2"
-              style={{ fontFamily: 'var(--font-tektype), "Helvetica Neue", Arial, sans-serif' }}
+              style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               REMYA
             </text>
             <text
-              ref={visMohanaRef}
+              ref={strokeMohanaRef}
               x="500"
-              y="560"
+              y="555"
               textAnchor="middle"
-              fontSize={isMobile ? '42' : '68'}
+              fontSize={isMobile ? '42' : '64'}
               fontWeight="900"
-              fill="url(#keynoteTextGradient)"
+              fill="none"
+              stroke="url(#keynoteStrokeGradient)"
+              strokeWidth={isMobile ? '1.2' : '1.6'}
               letterSpacing="-2"
-              style={{ fontFamily: 'var(--font-tektype), "Helvetica Neue", Arial, sans-serif' }}
+              style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               MOHANAKRISHNAN
             </text>
