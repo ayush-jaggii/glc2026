@@ -75,7 +75,18 @@ export default function KeynoteReveal() {
         gradientTextGroupRef.current.style.opacity = textOpacity.toString()
       }
 
-      // 2. Initial badge above the name fades out early
+      // 2. The V-notch of M is opaque black curtain at p = 0 so NOTHING behind M can be seen.
+      // It only opens as camera zooms into M (p > 0.2) to pass through the letter.
+      if (polygonRef.current) {
+        if (p > 0.2) {
+          const polyOpacity = Math.min(1.0, (p - 0.2) / 0.12)
+          polygonRef.current.style.opacity = polyOpacity.toString()
+        } else {
+          polygonRef.current.style.opacity = '0'
+        }
+      }
+
+      // 3. Initial badge above the name fades out early
       if (badgeRef.current) {
         const badgeOpacity = Math.max(0, 1 - p / 0.12)
         const badgeTranslateY = -p * 80
@@ -83,7 +94,7 @@ export default function KeynoteReveal() {
         badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
       }
 
-      // 3. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
+      // 4. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
       // so it is 100% out of frame and can NEVER obscure any speaker information
       if (curtainRef.current) {
         if (p >= 0.65) {
@@ -93,10 +104,13 @@ export default function KeynoteReveal() {
         }
       }
 
-      // 4. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 5. Underlying speaker showcase transitions in subtly & activates pointer events
+      // At p = 0, opacity is 0 so absolutely nothing peeks through the text at rest.
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
+        const stageOpacity = Math.min(1.0, p / 0.12)
         showcaseRef.current.style.transform = `scale(${showcaseScale})`
+        showcaseRef.current.style.opacity = stageOpacity.toString()
         showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
       }
     }
@@ -137,6 +151,7 @@ export default function KeynoteReveal() {
         {/* LAYER 1: Underlying Full-Width Speaker Stage (Behind the Mask) */}
         <div
           ref={showcaseRef}
+          style={{ opacity: 0 }}
           className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 transition-transform duration-100 ease-out pointer-events-none max-h-[92dvh] overflow-y-auto lg:overflow-visible"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
@@ -246,11 +261,12 @@ export default function KeynoteReveal() {
 
               {/* Black shapes cut out the transparent window into Layer 1 */}
               <g ref={holeGroupRef}>
-                {/* The V-aperture of the letter M so zooming through M cleanly clears the viewport */}
+                {/* The V-aperture of M with initial opacity: 0 so nothing peeks through at rest */}
                 <polygon
                   ref={polygonRef}
                   points={isMobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'}
                   fill="black"
+                  style={{ opacity: 0 }}
                 />
 
                 <text
