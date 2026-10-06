@@ -7,7 +7,7 @@ export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
   const gradientTextGroupRef = useRef<SVGGElement>(null)
-  const circleRef = useRef<SVGCircleElement>(null)
+  const polygonRef = useRef<SVGPolygonElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
@@ -19,7 +19,7 @@ export default function KeynoteReveal() {
 
   const [isMobile, setIsMobile] = useState(false)
 
-  // Responsive font size adjustment for mobile viewports
+  // Responsive font size and geometry adjustment for mobile viewports
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768
@@ -27,11 +27,13 @@ export default function KeynoteReveal() {
 
       const remyaSize = mobile ? '80' : '120'
       const mohanaSize = mobile ? '42' : '64'
+      const polyPoints = mobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
       if (holeMohanaRef.current) holeMohanaRef.current.setAttribute('font-size', mohanaSize)
       if (gradMohanaRef.current) gradMohanaRef.current.setAttribute('font-size', mohanaSize)
+      if (polygonRef.current) polygonRef.current.setAttribute('points', polyPoints)
     }
 
     handleResize()
@@ -43,10 +45,6 @@ export default function KeynoteReveal() {
   useEffect(() => {
     let animationFrameId: number | null = null
 
-    // Exact center inside the letter 'M' of REMYA (both desktop and mobile)
-    const ox = 500
-    const oy = 458
-
     const updateScrollAnimation = () => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
@@ -57,36 +55,27 @@ export default function KeynoteReveal() {
       // Progress p from 0 (entry) to 1 (exit)
       const p = Math.max(0, Math.min(1.0, -rect.top / totalScrollable))
 
-      // 1. Text zooms in toward the camera
-      const scale = 1 + Math.pow(p, 2.2) * 55
+      // Center inside the letter M of REMYA
+      const mobile = window.innerWidth < 768
+      const ox = 500
+      const oy = mobile ? 435 : 420
+
+      // Natural zoom directly into the letter M so all strokes expand completely out of view
+      const scale = 1 + Math.pow(p, 2.3) * 65
       const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 2. Solid gradient text smoothly turns see-through as user begins zooming in
+      // 1. Solid gradient text smoothly turns see-through as user begins zooming in
       if (gradientTextGroupRef.current) {
         gradientTextGroupRef.current.setAttribute('transform', transformValue)
         const textOpacity = Math.max(0, 1 - p / 0.18)
         gradientTextGroupRef.current.style.opacity = textOpacity.toString()
       }
 
-      // 3. As camera enters the letter M (p > 0.32), the aperture smoothly expands
-      // outward from the center of the letter in all 360° directions, pushing the curtain
-      // and letters completely outside the frame without clipping or leaving diagonal slabs
-      if (circleRef.current) {
-        if (p > 0.32) {
-          const cp = (p - 0.32) / 0.32 // 0 to 1 between p = 0.32 and p = 0.64
-          const clampedCp = Math.min(1.0, Math.max(0, cp))
-          const r = Math.pow(clampedCp, 1.8) * 1400
-          circleRef.current.setAttribute('r', r.toFixed(1))
-        } else {
-          circleRef.current.setAttribute('r', '0')
-        }
-      }
-
-      // 4. Initial badge above the name fades out early
+      // 2. Initial badge above the name fades out early
       if (badgeRef.current) {
         const badgeOpacity = Math.max(0, 1 - p / 0.12)
         const badgeTranslateY = -p * 80
@@ -94,21 +83,21 @@ export default function KeynoteReveal() {
         badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
       }
 
-      // 5. Once the camera has fully passed through (p >= 0.64), ensure the curtain
-      // is completely removed so it can NEVER cover the underlying info
+      // 3. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
+      // so it is 100% out of frame and can NEVER obscure any speaker information
       if (curtainRef.current) {
-        if (p >= 0.64) {
+        if (p >= 0.65) {
           curtainRef.current.style.display = 'none'
         } else {
           curtainRef.current.style.display = 'block'
         }
       }
 
-      // 6. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 4. Underlying speaker showcase transitions in subtly & activates pointer events
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         showcaseRef.current.style.transform = `scale(${showcaseScale})`
-        showcaseRef.current.style.pointerEvents = p >= 0.64 ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
       }
     }
 
@@ -254,18 +243,16 @@ export default function KeynoteReveal() {
             <mask id="keynoteHoleMask">
               {/* White background preserves the opaque black curtain */}
               <rect width="1000" height="1000" fill="white" />
-              
-              {/* Pass-through aperture expanding outward from the letter M as camera passes through */}
-              <circle
-                ref={circleRef}
-                cx="500"
-                cy="458"
-                r="0"
-                fill="black"
-              />
 
-              {/* Black text cuts out a transparent see-through window into Layer 1 */}
+              {/* Black shapes cut out the transparent window into Layer 1 */}
               <g ref={holeGroupRef}>
+                {/* The V-aperture of the letter M so zooming through M cleanly clears the viewport */}
+                <polygon
+                  ref={polygonRef}
+                  points={isMobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'}
+                  fill="black"
+                />
+
                 <text
                   ref={holeRemyaRef}
                   x="500"
