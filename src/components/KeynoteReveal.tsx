@@ -7,6 +7,8 @@ export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
   const gradientTextGroupRef = useRef<SVGGElement>(null)
+  const circleRef = useRef<SVGCircleElement>(null)
+  const curtainRef = useRef<SVGRectElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
@@ -55,23 +57,36 @@ export default function KeynoteReveal() {
       // Progress p from 0 (entry) to 1 (exit)
       const p = Math.max(0, Math.min(1.0, -rect.top / totalScrollable))
 
-      // Scale reaches up to 280, completely pushing the letter outside the frame
-      const scale = 1 + Math.pow(p, 2.4) * 260
+      // 1. Text zooms in toward the camera
+      const scale = 1 + Math.pow(p, 2.2) * 55
       const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
 
-      // 1. Zoom the see-through cutout mask directly through the letter M
       if (holeGroupRef.current) {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 2. Solid gradient text turns see-through smoothly as we begin zooming in
+      // 2. Solid gradient text smoothly turns see-through as user begins zooming in
       if (gradientTextGroupRef.current) {
         gradientTextGroupRef.current.setAttribute('transform', transformValue)
         const textOpacity = Math.max(0, 1 - p / 0.18)
         gradientTextGroupRef.current.style.opacity = textOpacity.toString()
       }
 
-      // 3. Initial badge above the name fades early
+      // 3. As camera enters the letter M (p > 0.32), the aperture smoothly expands
+      // outward from the center of the letter in all 360° directions, pushing the curtain
+      // and letters completely outside the frame without clipping or leaving diagonal slabs
+      if (circleRef.current) {
+        if (p > 0.32) {
+          const cp = (p - 0.32) / 0.32 // 0 to 1 between p = 0.32 and p = 0.64
+          const clampedCp = Math.min(1.0, Math.max(0, cp))
+          const r = Math.pow(clampedCp, 1.8) * 1400
+          circleRef.current.setAttribute('r', r.toFixed(1))
+        } else {
+          circleRef.current.setAttribute('r', '0')
+        }
+      }
+
+      // 4. Initial badge above the name fades out early
       if (badgeRef.current) {
         const badgeOpacity = Math.max(0, 1 - p / 0.12)
         const badgeTranslateY = -p * 80
@@ -79,11 +94,21 @@ export default function KeynoteReveal() {
         badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
       }
 
-      // 4. Underlying speaker showcase transitions in subtly & activates pointer events once inside the frame
+      // 5. Once the camera has fully passed through (p >= 0.64), ensure the curtain
+      // is completely removed so it can NEVER cover the underlying info
+      if (curtainRef.current) {
+        if (p >= 0.64) {
+          curtainRef.current.style.display = 'none'
+        } else {
+          curtainRef.current.style.display = 'block'
+        }
+      }
+
+      // 6. Underlying speaker showcase transitions in subtly & activates pointer events
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         showcaseRef.current.style.transform = `scale(${showcaseScale})`
-        showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= 0.64 ? 'auto' : 'none'
       }
     }
 
@@ -229,6 +254,16 @@ export default function KeynoteReveal() {
             <mask id="keynoteHoleMask">
               {/* White background preserves the opaque black curtain */}
               <rect width="1000" height="1000" fill="white" />
+              
+              {/* Pass-through aperture expanding outward from the letter M as camera passes through */}
+              <circle
+                ref={circleRef}
+                cx="500"
+                cy="458"
+                r="0"
+                fill="black"
+              />
+
               {/* Black text cuts out a transparent see-through window into Layer 1 */}
               <g ref={holeGroupRef}>
                 <text
@@ -263,6 +298,7 @@ export default function KeynoteReveal() {
 
           {/* Opaque Curtain with Cutout Window */}
           <rect
+            ref={curtainRef}
             width="1000"
             height="1000"
             fill="#0B0207"
