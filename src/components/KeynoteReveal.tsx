@@ -156,20 +156,20 @@ export default function KeynoteReveal() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             
-            {/* Left: Original Portrait Photo with Smooth Hover Micro-Interaction */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group/photo cursor-pointer w-full max-w-[280px] sm:max-w-sm lg:max-w-md aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden border border-glc-pink/30 hover:border-glc-pink/70 transition-all duration-500 shadow-[0_25px_70px_rgba(0,0,0,0.95)] hover:shadow-[0_30px_80px_rgba(244,81,151,0.3)] bg-[#14040F] hover:scale-[1.02]">
+            {/* Left: Cutout PNG Portrait with Ambient Backlight Glow & Hover Lift */}
+            <div className="lg:col-span-5 flex justify-center items-center relative">
+              {/* Vibrant radial halo backlight behind cutout silhouette */}
+              <div className="absolute w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/25 via-glc-pink/20 to-glc-orange/20 blur-3xl pointer-events-none" />
+
+              <div className="relative group/photo cursor-pointer w-full max-w-[280px] sm:max-w-sm lg:max-w-md aspect-[3/4.2] flex items-end justify-center">
                 <Image
-                  src="/images/remya-mohanakrishnan.webp"
+                  src="/images/remya-keynote-cutout.webp"
                   alt="Remya Mohanakrishnan - Keynote Speaker"
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 450px"
-                  className="object-cover object-top select-none transition-transform duration-700 ease-out group-hover/photo:scale-105"
+                  className="object-contain object-bottom select-none transition-transform duration-700 ease-out group-hover/photo:scale-105 drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)] group-hover/photo:drop-shadow-[0_30px_60px_rgba(244,81,151,0.35)]"
                 />
-                {/* Subtle vignette and ring lighting */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover/photo:opacity-20 transition-opacity duration-500 pointer-events-none" />
-                <div className="absolute inset-0 rounded-2xl sm:rounded-3xl ring-1 ring-inset ring-white/10 group-hover/photo:ring-glc-pink/40 transition-all duration-500 pointer-events-none" />
               </div>
             </div>
 
