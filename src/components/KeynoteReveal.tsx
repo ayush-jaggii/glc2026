@@ -9,13 +9,13 @@ export default function KeynoteReveal() {
   const gradientTextGroupRef = useRef<SVGGElement>(null)
   const polygonRef = useRef<SVGPolygonElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
-  const badgeRef = useRef<HTMLDivElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
   const holeRemyaRef = useRef<SVGTextElement>(null)
   const holeMohanaRef = useRef<SVGTextElement>(null)
   const gradRemyaRef = useRef<SVGTextElement>(null)
   const gradMohanaRef = useRef<SVGTextElement>(null)
+  const gradSubRef = useRef<SVGTextElement>(null)
 
   const [isMobile, setIsMobile] = useState(false)
 
@@ -27,12 +27,20 @@ export default function KeynoteReveal() {
 
       const remyaSize = mobile ? '80' : '120'
       const mohanaSize = mobile ? '42' : '64'
+      const subSize = mobile ? '11' : '14'
+      const subSpacing = mobile ? '4' : '7'
+      const subY = mobile ? '598' : '612'
       const polyPoints = mobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
       if (holeMohanaRef.current) holeMohanaRef.current.setAttribute('font-size', mohanaSize)
       if (gradMohanaRef.current) gradMohanaRef.current.setAttribute('font-size', mohanaSize)
+      if (gradSubRef.current) {
+        gradSubRef.current.setAttribute('font-size', subSize)
+        gradSubRef.current.setAttribute('letter-spacing', subSpacing)
+        gradSubRef.current.setAttribute('y', subY)
+      }
       if (polygonRef.current) polygonRef.current.setAttribute('points', polyPoints)
     }
 
@@ -68,15 +76,15 @@ export default function KeynoteReveal() {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 1. Solid gradient text smoothly turns see-through as user begins zooming in
+      // 1. Solid gradient typography and subtitle smoothly fade to see-through as user begins zooming in
       if (gradientTextGroupRef.current) {
         gradientTextGroupRef.current.setAttribute('transform', transformValue)
         const textOpacity = Math.max(0, 1 - p / 0.18)
         gradientTextGroupRef.current.style.opacity = textOpacity.toString()
       }
 
-      // 2. The V-notch of M is opaque black curtain at p = 0 so NOTHING behind M can be seen.
-      // It only opens as camera zooms into M (p > 0.2) to pass through the letter.
+      // 2. The V-notch of M is opaque black curtain at p = 0 so NOTHING behind M can be seen at rest.
+      // It only opens as camera zooms into M (p > 0.2) to pass cleanly through the letter.
       if (polygonRef.current) {
         if (p > 0.2) {
           const polyOpacity = Math.min(1.0, (p - 0.2) / 0.12)
@@ -86,15 +94,7 @@ export default function KeynoteReveal() {
         }
       }
 
-      // 3. Initial badge above the name fades out early
-      if (badgeRef.current) {
-        const badgeOpacity = Math.max(0, 1 - p / 0.12)
-        const badgeTranslateY = -p * 80
-        badgeRef.current.style.opacity = badgeOpacity.toString()
-        badgeRef.current.style.transform = `translateY(${badgeTranslateY}px)`
-      }
-
-      // 4. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
+      // 3. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
       // so it is 100% out of frame and can NEVER obscure any speaker information
       if (curtainRef.current) {
         if (p >= 0.65) {
@@ -104,7 +104,7 @@ export default function KeynoteReveal() {
         }
       }
 
-      // 5. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 4. Underlying speaker showcase transitions in subtly & activates pointer events
       // At p = 0, opacity is 0 so absolutely nothing peeks through the text at rest.
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
@@ -148,7 +148,7 @@ export default function KeynoteReveal() {
         {/* Ambient atmospheric backdrop glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(244,81,151,0.12)_0%,rgba(245,130,50,0.06)_45%,transparent_75%)] pointer-events-none" />
 
-        {/* LAYER 1: Underlying Full-Width Speaker Stage (Behind the Mask) */}
+        {/* LAYER 1: Underlying Clean Keynote Stage (Behind the Mask) */}
         <div
           ref={showcaseRef}
           style={{ opacity: 0 }}
@@ -156,32 +156,30 @@ export default function KeynoteReveal() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             
-            {/* Left: Original Portrait Photo with Natural Background & Elegant Frame */}
+            {/* Left: Original Portrait Photo with Smooth Hover Micro-Interaction */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-[280px] sm:max-w-sm lg:max-w-md aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden border border-glc-pink/35 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(244,81,151,0.2)] bg-[#14040F]">
+              <div className="relative group/photo cursor-pointer w-full max-w-[280px] sm:max-w-sm lg:max-w-md aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden border border-glc-pink/30 hover:border-glc-pink/70 transition-all duration-500 shadow-[0_25px_70px_rgba(0,0,0,0.95)] hover:shadow-[0_30px_80px_rgba(244,81,151,0.3)] bg-[#14040F] hover:scale-[1.02]">
                 <Image
                   src="/images/remya-mohanakrishnan.webp"
                   alt="Remya Mohanakrishnan - Keynote Speaker"
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 450px"
-                  className="object-cover object-top select-none"
+                  className="object-cover object-top select-none transition-transform duration-700 ease-out group-hover/photo:scale-105"
                 />
-                {/* Subtle inner ambient ring */}
-                <div className="absolute inset-0 rounded-2xl sm:rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none" />
+                {/* Subtle vignette and ring lighting */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover/photo:opacity-20 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 rounded-2xl sm:rounded-3xl ring-1 ring-inset ring-white/10 group-hover/photo:ring-glc-pink/40 transition-all duration-500 pointer-events-none" />
               </div>
             </div>
 
-            {/* Right: Keynote Speaker Profile & Credentials (All in Helvetica) */}
-            <div className="lg:col-span-7 flex flex-col justify-center text-center lg:text-left space-y-4 sm:space-y-5">
+            {/* Right: Clean, Prestigious Executive Details (No AI Pills, No Bloated Text) */}
+            <div className="lg:col-span-7 flex flex-col justify-center text-center lg:text-left space-y-3 sm:space-y-4">
               
-              {/* Category Pill */}
-              <div>
-                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-glc-magenta/20 to-glc-orange/20 border border-glc-orange/40 text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase text-glc-orange shadow-sm font-sans">
-                  <span className="w-1.5 h-1.5 rounded-full bg-glc-orange animate-pulse" />
-                  Keynote Speaker
-                </span>
-              </div>
+              {/* Clean Editorial Category Label - No Pill, No Blinking Dot */}
+              <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-glc-orange font-sans">
+                Keynote Speaker
+              </p>
 
               {/* Speaker Full Name in Helvetica */}
               <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-cream-50 font-sans leading-[1.08]">
@@ -198,21 +196,18 @@ export default function KeynoteReveal() {
                 </p>
               </div>
 
-              {/* Radiant Brand Divider Accent */}
-              <div className="w-20 h-1 bg-gradient-to-r from-glc-magenta to-glc-orange rounded-full mx-auto lg:mx-0" />
-
-              {/* Comprehensive Professional Bio in Helvetica */}
-              <p className="text-xs sm:text-sm lg:text-base text-cream-200/90 leading-relaxed max-w-2xl font-light font-sans">
-                Distinguished international trade and education leader with extensive experience driving high-level bilateral engagements between Australia, India, and South Asian markets. Leading strategic educational initiatives, transnational academic partnerships, and institutional research collaboration for the Queensland Government&apos;s global business agency.
+              {/* Clean, Impactful Executive Bio (Crisp and Focused) */}
+              <p className="text-xs sm:text-sm lg:text-base text-cream-200/85 leading-relaxed max-w-xl font-normal font-sans pt-1">
+                Driving strategic bilateral education partnerships and transnational initiatives between Queensland, Australia, and South Asia.
               </p>
 
-              {/* Interactive LinkedIn Connection */}
-              <div className="pt-2">
+              {/* Clean Minimalist LinkedIn Link */}
+              <div className="pt-3">
                 <a
                   href="https://www.linkedin.com/in/remya-mohanakrishnan-25b8a128"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-glc-magenta/25 to-glc-orange/25 hover:from-glc-magenta/40 hover:to-glc-orange/40 border border-glc-orange/50 hover:border-glc-orange text-cream-50 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 shadow-lg hover:shadow-glc-orange/25 hover:scale-[1.02] active:scale-[0.98] group font-sans"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 hover:border-glc-orange text-cream-50 font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-glc-orange/20 hover:scale-[1.02] active:scale-[0.98] group font-sans"
                 >
                   <svg
                     className="w-4 h-4 fill-[#0A66C2] group-hover:scale-110 transition-transform"
@@ -221,23 +216,13 @@ export default function KeynoteReveal() {
                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                   </svg>
                   <span>Connect on LinkedIn</span>
-                  <span className="text-glc-orange group-hover:translate-x-0.5 transition-transform">→</span>
+                  <span className="text-glc-orange group-hover:translate-x-1 transition-transform">→</span>
                 </a>
               </div>
 
             </div>
 
           </div>
-        </div>
-
-        {/* Top Tag Pill visible at the beginning before zooming */}
-        <div
-          ref={badgeRef}
-          className="absolute top-12 sm:top-16 z-30 pointer-events-none transition-transform duration-75 text-center"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-wine-900/80 border border-glc-orange/40 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-glc-orange backdrop-blur-md shadow-xl font-sans">
-            Keynote Speaker
-          </span>
         </div>
 
         {/* LAYER 2: SVG Mask Layer (Curtain + Cutout Window in Helvetica) */}
@@ -308,7 +293,7 @@ export default function KeynoteReveal() {
             mask="url(#keynoteHoleMask)"
           />
 
-          {/* Solid Gradient Typography (Visible at start, fades to see-through as user begins zooming in) */}
+          {/* Solid Gradient Typography with Subtitle Positioned Directly Below the Name */}
           <g ref={gradientTextGroupRef}>
             <text
               ref={gradRemyaRef}
@@ -335,6 +320,21 @@ export default function KeynoteReveal() {
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               MOHANAKRISHNAN
+            </text>
+
+            {/* Clean Subtitle Directly Below Name (No Pills, No Border, Tight Typography) */}
+            <text
+              ref={gradSubRef}
+              x="500"
+              y={isMobile ? '598' : '612'}
+              textAnchor="middle"
+              fontSize={isMobile ? '11' : '14'}
+              fontWeight="700"
+              fill="#F58232"
+              letterSpacing={isMobile ? '4' : '7'}
+              style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+            >
+              KEYNOTE SPEAKER
             </text>
           </g>
         </svg>
