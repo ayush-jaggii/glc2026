@@ -338,6 +338,17 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/CGD/SidhuBiswal_CGD.jpeg',
     tags: ['AI Growth', 'Venture Creation', 'Product Leadership'],
   },
+  {
+    id: 'cgd-4',
+    name: 'Supratik Shankar',
+    company: 'Dview',
+    designation: 'Co-founder',
+    linkedin: 'https://www.linkedin.com/in/supratikshankar',
+    trackCode: 'CGD',
+    trackName: 'Closed Group Discussion',
+    photo: '/images/panelists/CGD/Supratik_Shankar_CGD.png',
+    tags: ['Data Intelligence', 'Enterprise AI', 'AI Operations'],
+  },
 ]
 
 /**

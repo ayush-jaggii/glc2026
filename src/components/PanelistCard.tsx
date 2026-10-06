@@ -37,9 +37,9 @@ const TRACK_PANEL_MAP: Record<string, { number: string; title: string; subtitle:
     subtitle: 'Cultural Resonance vs. International Scale',
   },
   CGD: {
-    number: '02',
-    title: 'Aisle Be There',
-    subtitle: 'Global Supply Networks & Consumer Resonance',
+    number: 'RT',
+    title: 'Executive Roundtable',
+    subtitle: 'Closed Group Strategic Discussion',
   },
 }
 
