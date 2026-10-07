@@ -85,9 +85,11 @@ export default function KeynoteReveal() {
       // Zoom directly into the optical center of the inner V gap of M
       const oy = mobile ? 423 : 397
 
-      // Lightweight scale factor ensures silky 120FPS on mobile GPUs without raster buffer overflow
-      const maxScale = mobile ? 34 : 55
-      const scale = 1 + Math.pow(p, 2.0) * maxScale
+      // On portrait phones, the viewport is much taller (1000 units in viewBox vs 562 on widescreen desktop).
+      // Scale curve pow(p, 1.8) * 48 ensures M expands past all screen edges before the curtain dissolves.
+      const scaleExponent = mobile ? 1.8 : 2.0
+      const maxScale = mobile ? 48 : 55
+      const scale = 1 + Math.pow(p, scaleExponent) * maxScale
       const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
@@ -122,14 +124,18 @@ export default function KeynoteReveal() {
         }
       }
 
-      // 3. Curtain layer - soft feathered opacity dissolve between p=0.48 and p=0.64
+      // 3. Curtain layer - dissolves ONLY AFTER the letter M has completely exited the viewport!
+      // On mobile portrait: starts dissolving at p=0.64 (when M is already ~26x and off-screen) through p=0.78.
+      // On desktop widescreen: dissolves between p=0.48 and p=0.62 where M naturally exits earlier.
+      const curtainStart = mobile ? 0.64 : 0.48
+      const curtainEnd = mobile ? 0.78 : 0.62
       if (curtainRef.current) {
-        if (p >= 0.64) {
+        if (p >= curtainEnd) {
           curtainRef.current.style.visibility = 'hidden'
           curtainRef.current.style.opacity = '0'
         } else {
           curtainRef.current.style.visibility = 'visible'
-          const curtainAlpha = p <= 0.48 ? 1.0 : Math.max(0, (0.64 - p) / 0.16)
+          const curtainAlpha = p <= curtainStart ? 1.0 : Math.max(0, (curtainEnd - p) / (curtainEnd - curtainStart))
           curtainRef.current.style.opacity = curtainAlpha.toFixed(3)
         }
       }
@@ -140,7 +146,7 @@ export default function KeynoteReveal() {
         const stageOpacity = Math.min(1.0, p / 0.14)
         showcaseRef.current.style.transform = `scale(${showcaseScale.toFixed(3)})`
         showcaseRef.current.style.opacity = stageOpacity.toFixed(3)
-        showcaseRef.current.style.pointerEvents = p >= 0.58 ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= (mobile ? 0.70 : 0.58) ? 'auto' : 'none'
       }
     }
 
