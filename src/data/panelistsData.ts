@@ -211,6 +211,17 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/Auto/AnuragB_Auto.jpeg',
     tags: ['EV Transition', 'Hardware Innovation', 'Clean Mobility'],
   },
+  {
+    id: 'auto-3',
+    name: 'Mohit Jindal',
+    company: 'Suzuki India Limited',
+    designation: 'Chief Commercial Officer - South Zone',
+    linkedin: '',
+    trackCode: 'Auto',
+    trackName: 'Automotive & EV Mobility',
+    photo: '/images/panelists/Auto/MohitJindal_Auto.jpeg',
+    tags: ['Automotive Leadership', 'Commercial Strategy', 'Mobility Scale'],
+  },
 
   // BFSI Panel
   {
