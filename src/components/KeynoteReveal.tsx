@@ -242,7 +242,7 @@ export default function KeynoteReveal() {
               {/* Inaugural Session Timing */}
               <div className="self-center lg:self-start pt-0.5">
                 <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-cream-100 font-sans text-xs sm:text-sm font-medium tracking-wide shadow-sm">
-                  Addressing at the inaugural session 9:30 - 10:30
+                  Addressing at the inaugural session: 9:30 AM – 10:30 AM
                 </span>
               </div>
 
