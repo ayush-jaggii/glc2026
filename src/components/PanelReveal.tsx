@@ -33,9 +33,9 @@ const LinkedinIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => 
 const PANEL_TRACK_MAP: Record<string, 'IT' | 'Auto' | 'FMCG' | 'BFSI' | 'Media'> = {
   'panel-1': 'IT',
   'panel-2': 'FMCG',
-  'panel-3': 'BFSI',
-  'panel-4': 'Auto',
-  'panel-5': 'Media',
+  'panel-3': 'Media',
+  'panel-4': 'BFSI',
+  'panel-5': 'Auto',
 }
 
 export default function PanelReveal() {

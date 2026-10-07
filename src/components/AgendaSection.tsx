@@ -19,15 +19,15 @@ const SESSIONS: ScheduleSession[] = [
   { id: 's-vc', time: '10:00 AM', duration: '10m', durationMin: 10, title: 'Address by Pro Vice-Chancellor, MAHE Bengaluru', type: 'address' },
   { id: 's-keynote', time: '10:10 AM', duration: '20m', durationMin: 20, title: 'Keynote Address & Felicitation', type: 'keynote' },
   { id: 's-tea1', time: '10:30 AM', duration: '30m', durationMin: 30, title: 'Morning Tea Break', type: 'break' },
-  { id: 's-panel1', time: '11:00 AM', duration: '1h 00m', durationMin: 60, title: 'Panel 1 — IT (Ctrl + Alt + Global)', type: 'panel', panelId: 'panel-1' },
+  { id: 's-panel1', time: '11:00 AM', duration: '1h 15m', durationMin: 75, title: 'Panel 1 — IT (Ctrl + Alt + Global)', type: 'panel', panelId: 'panel-1' },
   { id: 's-panel2', time: '12:15 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 2 — FMCG (Aisle Be There)', type: 'panel', panelId: 'panel-2' },
-  { id: 's-lunch', time: '01:20 PM', duration: '1h 00m', durationMin: 60, title: 'Networking Lunch', type: 'break' },
-  { id: 's-panel3', time: '02:30 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 3 — Automotive & EV (Shifting Gears)', type: 'panel', panelId: 'panel-4' },
-  { id: 's-panel4', time: '03:45 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 4 — BFSI (Capital Without Borders)', type: 'panel', panelId: 'panel-3' },
-  { id: 's-tea2', time: '04:45 PM', duration: '15m', durationMin: 15, title: 'High Tea Break', type: 'break' },
-  { id: 's-panel5', time: '05:00 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 5 — Media & Marketing (Going Viral, Staying Local)', type: 'panel', panelId: 'panel-5' },
-  { id: 's-awards', time: '06:00 PM', duration: '15m', durationMin: 15, title: 'GLC Excellence Awards', type: 'awards', anchorId: 'awards' },
-  { id: 's-closing', time: '06:15 PM', duration: '10m', durationMin: 10, title: 'Vote of Thanks & National Anthem', type: 'ceremony' },
+  { id: 's-lunch', time: '01:15 PM', duration: '1h 00m', durationMin: 60, title: 'Networking Lunch', type: 'break' },
+  { id: 's-panel3', time: '02:15 PM', duration: '1h 15m', durationMin: 75, title: 'Panel 3 — Media & Marketing (Going Viral, Staying Local)', type: 'panel', panelId: 'panel-3' },
+  { id: 's-panel4', time: '03:30 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 4 — BFSI (Capital Without Borders)', type: 'panel', panelId: 'panel-4' },
+  { id: 's-tea2', time: '04:30 PM', duration: '15m', durationMin: 15, title: 'Evening Tea Break', type: 'break' },
+  { id: 's-panel5', time: '04:45 PM', duration: '1h 00m', durationMin: 60, title: 'Panel 5 — Automotive & EV (Shifting Gears)', type: 'panel', panelId: 'panel-5' },
+  { id: 's-awards', time: '05:45 PM', duration: '15m', durationMin: 15, title: 'GLC Excellence Awards', type: 'awards', anchorId: 'awards' },
+  { id: 's-closing', time: '06:00 PM', duration: '10m', durationMin: 10, title: 'Vote of Thanks & National Anthem', type: 'ceremony' },
 ]
 
 const TOTAL_MINUTES = SESSIONS.reduce((sum, s) => sum + s.durationMin, 0)
@@ -113,9 +113,9 @@ export default function AgendaSection() {
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-cream-300/70 font-semibold tracking-wider uppercase mb-3">
             <span>09:30 AM</span>
             <span>11:30 AM</span>
-            <span>01:30 PM</span>
+            <span>01:15 PM</span>
             <span>03:30 PM</span>
-            <span>06:25 PM</span>
+            <span>06:00 PM+</span>
           </div>
 
           {/* Master Segmented Bar */}

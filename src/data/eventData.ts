@@ -106,6 +106,21 @@ export const PANELS_LIST: PanelSchema[] = [
   {
     id: "panel-3",
     number: "03",
+    title: "Going Viral, Staying Local",
+    category: "Media & Marketing",
+    topic: "Cultural Resonance vs. International Scale: Navigating Borderless Media",
+    subtitle: "Balancing Global Brand Trust with Localized Consumer Empathy",
+    image: "/panels/media-brands.jpg",
+    description: "What does it take to stay ahead when the rules of media and marketing are constantly changing? As global markets become more connected and emerging technologies reshape the industry, businesses are navigating new opportunities, challenges, and possibilities across borders. The panel, featuring industry leaders, will discuss these shifts, perspectives from the field, and the changing landscape of media and marketing.",
+    keyQuestions: [
+      "How enterprise marketing teams maintain global brand trust during geopolitical friction.",
+      "Leveraging generative media without eroding regional consumer empathy."
+    ],
+    isRevealed: false,
+  },
+  {
+    id: "panel-4",
+    number: "04",
     title: "Capital Without Borders",
     category: "Finance & BFSI",
     topic: "Global Liquidity, Sovereign Wealth & Next-Gen International Settlement",
@@ -119,8 +134,8 @@ export const PANELS_LIST: PanelSchema[] = [
     isRevealed: false,
   },
   {
-    id: "panel-4",
-    number: "04",
+    id: "panel-5",
+    number: "05",
     title: "Shifting Gears",
     category: "Automotive & EV Mobility",
     topic: "Clean-Tech Alliances, Battery Mineral Chains & Trade Tariffs in EV Mobility",
@@ -130,21 +145,6 @@ export const PANELS_LIST: PanelSchema[] = [
     keyQuestions: [
       "Mitigating critical mineral bottlenecks and battery recycling corridors.",
       "Navigating cross-border tariffs and localized manufacturing incentives in EV adoption."
-    ],
-    isRevealed: false,
-  },
-  {
-    id: "panel-5",
-    number: "05",
-    title: "Going Viral, Staying Local",
-    category: "Media & Entertainment",
-    topic: "Cultural Resonance vs. International Scale: Navigating Borderless Media",
-    subtitle: "Balancing Global Brand Trust with Localized Consumer Empathy",
-    image: "/panels/media-brands.jpg",
-    description: "What does it take to stay ahead when the rules of media and marketing are constantly changing? As global markets become more connected and emerging technologies reshape the industry, businesses are navigating new opportunities, challenges, and possibilities across borders. The panel, featuring industry leaders, will discuss these shifts, perspectives from the field, and the changing landscape of media and marketing.",
-    keyQuestions: [
-      "How enterprise marketing teams maintain global brand trust during geopolitical friction.",
-      "Leveraging generative media without eroding regional consumer empathy."
     ],
     isRevealed: false,
   },

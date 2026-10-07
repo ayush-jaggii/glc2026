@@ -21,20 +21,20 @@ const TRACK_PANEL_MAP: Record<string, { number: string; title: string; subtitle:
     title: 'Aisle Be There',
     subtitle: 'Global Supply Networks & Consumer Resonance',
   },
-  BFSI: {
+  Media: {
     number: '03',
+    title: 'Going Viral, Staying Local',
+    subtitle: 'Cultural Resonance vs. International Scale',
+  },
+  BFSI: {
+    number: '04',
     title: 'Capital Without Borders',
     subtitle: 'Global Liquidity & International Settlement',
   },
   Auto: {
-    number: '04',
+    number: '05',
     title: 'Shifting Gears',
     subtitle: 'Clean-Tech Alliances & Trade Tariffs',
-  },
-  Media: {
-    number: '05',
-    title: 'Going Viral, Staying Local',
-    subtitle: 'Cultural Resonance vs. International Scale',
   },
   CGD: {
     number: 'RT',
