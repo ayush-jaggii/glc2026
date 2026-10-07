@@ -12,6 +12,24 @@ export default function SpeakerReveal() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
 
+  // Constants
+  const TARGET_CRUISE_SPEED = 0.14 // ~140px/s (~2.3px per frame at 60Hz, ~1.15px at 120Hz ProMotion)
+
+  // Interaction & momentum tracking refs
+  const isTouchingRef = useRef(false)
+  const isHoveredRef = useRef(false)
+  const isButtonNavigatingRef = useRef(false)
+  const isWheelScrollingRef = useRef(false)
+  const buttonNavTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const wheelTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const lastFrameTimeRef = useRef(0)
+  const lastScrollLeftRef = useRef(0)
+  const measuredVelocityRef = useRef(0) // px/ms
+  const currentAutoSpeedRef = useRef(0) // px/ms
+  const lastTouchEndTimeRef = useRef(0)
+  const isAutoScrollingRef = useRef(false)
+
   // Duplicate list for infinite loop feel
   const allSpeakers = [...SHUFFLED_PANELISTS, ...SHUFFLED_PANELISTS]
 
@@ -28,14 +46,18 @@ export default function SpeakerReveal() {
     const el = scrollContainerRef.current
     if (!el) return
 
-    // Pause auto-scroll briefly during button click, then quickly resume
-    isInteractingRef.current = true
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    resumeTimerRef.current = setTimeout(() => {
-      isInteractingRef.current = false
-    }, 1200)
+    isButtonNavigatingRef.current = true
+    isAutoScrollingRef.current = false
+    currentAutoSpeedRef.current = 0
+    if (buttonNavTimerRef.current) clearTimeout(buttonNavTimerRef.current)
+    buttonNavTimerRef.current = setTimeout(() => {
+      isButtonNavigatingRef.current = false
+      if (scrollContainerRef.current) {
+        lastScrollLeftRef.current = scrollContainerRef.current.scrollLeft
+        lastTouchEndTimeRef.current = performance.now()
+      }
+    }, 700)
 
-    // Scroll by roughly 1 card width + gap (300px + 24px) on desktop
     const scrollAmount = Math.max(340, Math.floor(el.clientWidth * 0.75))
     const targetScroll = direction === 'left' ? el.scrollLeft - scrollAmount : el.scrollLeft + scrollAmount
 
@@ -45,25 +67,129 @@ export default function SpeakerReveal() {
     })
   }
 
-  // Smooth continuous auto-scroll loop
+  // Smooth momentum-aware continuous auto-scroll loop
   useEffect(() => {
     const el = scrollContainerRef.current
     if (!el) return
 
     let animationFrameId: number
 
-    const autoScrollLoop = () => {
-      if (!isInteractingRef.current && el) {
-        // Half-width of content (the first copy of the list)
-        const halfScroll = el.scrollWidth / 2
+    const autoScrollLoop = (now: DOMHighResTimeStamp) => {
+      if (!el) {
+        animationFrameId = requestAnimationFrame(autoScrollLoop)
+        return
+      }
 
+      if (!lastFrameTimeRef.current) {
+        lastFrameTimeRef.current = now
+        lastScrollLeftRef.current = el.scrollLeft
+        animationFrameId = requestAnimationFrame(autoScrollLoop)
+        return
+      }
+
+      // Elapsed time in ms, clamped between 1ms and 35ms (handles frame drops / background tabs)
+      const dt = Math.min(35, Math.max(1, now - lastFrameTimeRef.current))
+      lastFrameTimeRef.current = now
+
+      const halfScroll = el.scrollWidth / 2
+      const currentScroll = el.scrollLeft
+
+      // 1. If actively touching with finger
+      if (isTouchingRef.current) {
+        isAutoScrollingRef.current = false
+        currentAutoSpeedRef.current = 0
+        const dx = currentScroll - lastScrollLeftRef.current
+        if (Math.abs(dx) < halfScroll / 2) {
+          const instantV = dx / dt
+          measuredVelocityRef.current = measuredVelocityRef.current * 0.6 + instantV * 0.4
+        }
         if (el.scrollLeft >= halfScroll) {
-          // Seamlessly reset back to start without user noticing
           el.scrollLeft -= halfScroll
+        } else if (el.scrollLeft < 0) {
+          el.scrollLeft += halfScroll
+        }
+        lastScrollLeftRef.current = el.scrollLeft
+        animationFrameId = requestAnimationFrame(autoScrollLoop)
+        return
+      }
+
+      // 2. If desktop hovering, manual button navigating, or wheel scrolling
+      if (isHoveredRef.current || isButtonNavigatingRef.current || isWheelScrollingRef.current) {
+        isAutoScrollingRef.current = false
+        currentAutoSpeedRef.current = 0
+        measuredVelocityRef.current = 0
+        lastScrollLeftRef.current = currentScroll
+        animationFrameId = requestAnimationFrame(autoScrollLoop)
+        return
+      }
+
+      // 3. User released finger: track native inertia / momentum
+      if (!isAutoScrollingRef.current) {
+        const dx = currentScroll - lastScrollLeftRef.current
+        const instantV = dx / dt
+        if (Math.abs(dx) < halfScroll / 2) {
+          measuredVelocityRef.current = measuredVelocityRef.current * 0.65 + instantV * 0.35
         } else {
-          el.scrollLeft += 2.4 // Brisk, fluid ~145px per second
+          measuredVelocityRef.current *= 0.8
+        }
+
+        // Loop wrap during native momentum
+        if (el.scrollLeft >= halfScroll) {
+          el.scrollLeft -= halfScroll
+        } else if (el.scrollLeft < 0) {
+          el.scrollLeft += halfScroll
+        }
+        lastScrollLeftRef.current = el.scrollLeft
+
+        const timeSinceRelease = now - lastTouchEndTimeRef.current
+        const v = measuredVelocityRef.current
+
+        // If native momentum is still cruising forward faster than target cruise speed:
+        // Wait for it to naturally decelerate so there is zero abrupt speed jump!
+        if (v > TARGET_CRUISE_SPEED) {
+          animationFrameId = requestAnimationFrame(autoScrollLoop)
+          return
+        }
+
+        // If native momentum is moving backward (swiped left):
+        // Wait until backward motion settles to a stop.
+        if (v < -0.05) {
+          animationFrameId = requestAnimationFrame(autoScrollLoop)
+          return
+        }
+
+        // Momentum is now <= TARGET_CRUISE_SPEED and not moving backward.
+        // If it was a fast swipe that naturally glided down to cruise speed, OR if it has been settled for >= 250ms:
+        const isSmoothTakeover = (v > 0.04 && v <= TARGET_CRUISE_SPEED) || timeSinceRelease >= 250
+
+        if (isSmoothTakeover || timeSinceRelease >= 2000) {
+          isAutoScrollingRef.current = true
+          // Match the current glide velocity for a 100% seamless transition
+          currentAutoSpeedRef.current = Math.max(0.02, Math.min(TARGET_CRUISE_SPEED, v))
+        } else {
+          animationFrameId = requestAnimationFrame(autoScrollLoop)
+          return
         }
       }
+
+      // 4. Actively Auto-Scrolling:
+      // Smoothly ease speed to TARGET_CRUISE_SPEED (gentle ramp up prevents any sudden kick)
+      if (currentAutoSpeedRef.current < TARGET_CRUISE_SPEED) {
+        currentAutoSpeedRef.current = Math.min(
+          TARGET_CRUISE_SPEED,
+          currentAutoSpeedRef.current + 0.005 * (dt / 16.67)
+        )
+      }
+
+      const moveAmount = currentAutoSpeedRef.current * dt
+      el.scrollLeft += moveAmount
+
+      // Seamless infinite wrap
+      if (el.scrollLeft >= halfScroll) {
+        el.scrollLeft -= halfScroll
+      }
+
+      lastScrollLeftRef.current = el.scrollLeft
       animationFrameId = requestAnimationFrame(autoScrollLoop)
     }
 
@@ -73,34 +199,47 @@ export default function SpeakerReveal() {
       checkScrollState()
     }
 
-    // Touch events for mobile: pause while finger is down/swiping, resume immediately when released
+    // Touch events for mobile
     const onTouchStart = () => {
-      isInteractingRef.current = true
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+      isTouchingRef.current = true
+      isAutoScrollingRef.current = false
+      currentAutoSpeedRef.current = 0
+      measuredVelocityRef.current = 0
+      if (scrollContainerRef.current) {
+        lastScrollLeftRef.current = scrollContainerRef.current.scrollLeft
+      }
     }
 
     const onTouchEnd = () => {
-      // Immediately resume auto-scrolling as soon as finger leaves the screen
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-      resumeTimerRef.current = setTimeout(() => {
-        isInteractingRef.current = false
-      }, 400)
+      isTouchingRef.current = false
+      lastTouchEndTimeRef.current = performance.now()
     }
 
     const onTouchCancel = () => {
-      isInteractingRef.current = false
+      isTouchingRef.current = false
+      lastTouchEndTimeRef.current = performance.now()
     }
 
-    // Mouse events for desktop: pause ONLY when cursor is hovering or clicking over a card
+    // Mouse events for desktop
     const onMouseEnter = () => {
-      isInteractingRef.current = true
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+      isHoveredRef.current = true
+      isAutoScrollingRef.current = false
     }
 
     const onMouseLeave = () => {
-      // Immediately resume auto-scrolling as soon as mouse leaves the container
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-      isInteractingRef.current = false
+      isHoveredRef.current = false
+      lastTouchEndTimeRef.current = performance.now()
+    }
+
+    // Wheel/trackpad events for desktop
+    const onWheel = () => {
+      isWheelScrollingRef.current = true
+      isAutoScrollingRef.current = false
+      if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current)
+      wheelTimerRef.current = setTimeout(() => {
+        isWheelScrollingRef.current = false
+        lastTouchEndTimeRef.current = performance.now()
+      }, 400)
     }
 
     el.addEventListener('scroll', onScroll, { passive: true })
@@ -109,18 +248,21 @@ export default function SpeakerReveal() {
     el.addEventListener('touchcancel', onTouchCancel, { passive: true })
     el.addEventListener('mouseenter', onMouseEnter, { passive: true })
     el.addEventListener('mouseleave', onMouseLeave, { passive: true })
+    el.addEventListener('wheel', onWheel, { passive: true })
 
     checkScrollState()
 
     return () => {
       cancelAnimationFrame(animationFrameId)
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
+      if (buttonNavTimerRef.current) clearTimeout(buttonNavTimerRef.current)
+      if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current)
       el.removeEventListener('scroll', onScroll)
       el.removeEventListener('touchstart', onTouchStart)
       el.removeEventListener('touchend', onTouchEnd)
       el.removeEventListener('touchcancel', onTouchCancel)
       el.removeEventListener('mouseenter', onMouseEnter)
       el.removeEventListener('mouseleave', onMouseLeave)
+      el.removeEventListener('wheel', onWheel)
     }
   }, [checkScrollState])
 
