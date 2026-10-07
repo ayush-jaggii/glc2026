@@ -7,7 +7,6 @@ export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
   const gradientTextGroupRef = useRef<SVGGElement>(null)
-  const polygonRef = useRef<SVGPolygonElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
@@ -32,10 +31,6 @@ export default function KeynoteReveal() {
       const subSize = mobile ? '10' : '14'
       const subSpacing = mobile ? '3' : '7'
       const subY = mobile ? '575' : '612'
-      // Exact inner vertices of the V in Helvetica Black capital M:
-      // Mobile: cap height reaches y=411 at baseline 465, inner V apex at y=447, inner stem corners at 479 and 521
-      // Desktop: cap height reaches y=379 at baseline 465, inner V apex at y=434, inner stem corners at 469 and 533
-      const polyPoints = mobile ? '479,411 521,411 500,447' : '469,379 533,379 501,434'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
@@ -54,7 +49,6 @@ export default function KeynoteReveal() {
         gradSubRef.current.setAttribute('letter-spacing', subSpacing)
         gradSubRef.current.setAttribute('y', subY)
       }
-      if (polygonRef.current) polygonRef.current.setAttribute('points', polyPoints)
     }
 
     handleResize()
@@ -81,15 +75,15 @@ export default function KeynoteReveal() {
 
     const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
-      const ox = 500
-      // Zoom directly into the optical center of the inner V gap of M
-      const oy = mobile ? 423 : 397
+      // Zoom directly through the solid vertical stick (stem) of the letter M!
+      // In Helvetica Black, this stick is a solid cutout through the curtain into the keynote stage.
+      // As you zoom in, the stick expands to fill 100% of the screen seamlessly, with no transparency tricks needed.
+      const ox = mobile ? 473 : 458
+      const oy = mobile ? 438 : 422
 
-      // On portrait phones, the viewport is much taller (1000 units in viewBox vs 562 on widescreen desktop).
-      // Scale curve pow(p, 1.8) * 48 ensures M expands past all screen edges before the curtain dissolves.
-      const scaleExponent = mobile ? 1.8 : 2.0
-      const maxScale = mobile ? 48 : 55
-      const scale = 1 + Math.pow(p, scaleExponent) * maxScale
+      // Scaling curve: Quadratic ease provides immediate tactile thumb response and flies completely through the stick
+      const maxScale = mobile ? 42 : 55
+      const scale = 1 + Math.pow(p, 2.0) * maxScale
       const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
@@ -98,55 +92,35 @@ export default function KeynoteReveal() {
 
       // 1. Solid gradient typography fades out smoothly as user begins zooming in
       if (gradientTextGroupRef.current) {
-        if (p <= 0.26) {
+        if (p <= 0.24) {
           gradientTextGroupRef.current.style.visibility = 'visible'
           gradientTextGroupRef.current.setAttribute('transform', transformValue)
-          const textOpacity = Math.max(0, 1 - p / 0.20)
+          const textOpacity = Math.max(0, 1 - p / 0.18)
           gradientTextGroupRef.current.style.opacity = textOpacity.toFixed(3)
         } else {
           gradientTextGroupRef.current.style.visibility = 'hidden'
         }
       }
 
-      // 2. The diagonal gap inside M blooms open ONLY once the letter is already magnified (p >= 0.28)
-      // At p < 0.28, it is completely invisible (opacity 0) so NO static V-notch is EVER visible!
-      if (polygonRef.current) {
-        if (p >= 0.28 && p < 0.65) {
-          polygonRef.current.style.visibility = 'visible'
-          const polyOpacity = Math.min(1.0, (p - 0.28) / 0.14)
-          polygonRef.current.style.opacity = polyOpacity.toFixed(3)
-        } else if (p >= 0.65) {
-          polygonRef.current.style.visibility = 'visible'
-          polygonRef.current.style.opacity = '1'
-        } else {
-          polygonRef.current.style.visibility = 'hidden'
-          polygonRef.current.style.opacity = '0'
-        }
-      }
-
-      // 3. Curtain layer - dissolves ONLY AFTER the letter M has completely exited the viewport!
-      // On mobile portrait: starts dissolving at p=0.64 (when M is already ~26x and off-screen) through p=0.78.
-      // On desktop widescreen: dissolves between p=0.48 and p=0.62 where M naturally exits earlier.
-      const curtainStart = mobile ? 0.64 : 0.48
-      const curtainEnd = mobile ? 0.78 : 0.62
+      // 2. Curtain layer - remains solid while the stick expands to fill the entire viewport!
+      // Once the stick has naturally expanded past the screen edges (p >= 0.65), simply hide the curtain to release GPU.
       if (curtainRef.current) {
-        if (p >= curtainEnd) {
+        if (p >= 0.65) {
           curtainRef.current.style.visibility = 'hidden'
           curtainRef.current.style.opacity = '0'
         } else {
           curtainRef.current.style.visibility = 'visible'
-          const curtainAlpha = p <= curtainStart ? 1.0 : Math.max(0, (curtainEnd - p) / (curtainEnd - curtainStart))
-          curtainRef.current.style.opacity = curtainAlpha.toFixed(3)
+          curtainRef.current.style.opacity = '1'
         }
       }
 
-      // 4. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 3. Underlying speaker showcase transitions in subtly & activates pointer events
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
-        const stageOpacity = Math.min(1.0, p / 0.14)
+        const stageOpacity = Math.min(1.0, p / 0.12)
         showcaseRef.current.style.transform = `scale(${showcaseScale.toFixed(3)})`
         showcaseRef.current.style.opacity = stageOpacity.toFixed(3)
-        showcaseRef.current.style.pointerEvents = p >= (mobile ? 0.70 : 0.58) ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= 0.55 ? 'auto' : 'none'
       }
     }
 
@@ -317,14 +291,6 @@ export default function KeynoteReveal() {
 
               {/* Black shapes cut out the transparent window into Layer 1 */}
               <g ref={holeGroupRef}>
-                {/* The diagonal gap / V-aperture inside M, initialized to opacity 0 */}
-                <polygon
-                  ref={polygonRef}
-                  points={isMobile ? '479,411 521,411 500,447' : '469,379 533,379 501,434'}
-                  fill="black"
-                  style={{ opacity: 0 }}
-                />
-
                 <text
                   ref={holeRemyaRef}
                   x="500"
