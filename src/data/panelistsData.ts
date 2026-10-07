@@ -146,8 +146,8 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'fmcg-1',
     name: 'Satrajit Hui',
-    company: 'Britannia Industries',
-    designation: 'Sr Manager - Logistics & Customer service',
+    company: 'Britannia',
+    designation: 'Head - Supply Chain and Logistics',
     linkedin: 'https://www.linkedin.com/in/satrajithui/',
     trackCode: 'FMCG',
     trackName: 'FMCG & Consumer Dynamics',
@@ -176,17 +176,6 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/FMCG/PriyaPrasad_FMCG.jpeg',
     tags: ['Consumer Advisory', 'Market Strategy', 'Value Chains'],
   },
-  {
-    id: 'fmcg-4',
-    name: 'Mohan Sitharam',
-    company: 'Shadowfax',
-    designation: 'CHRO',
-    linkedin: 'https://www.linkedin.com/in/mohan-sitharam-87b0624/',
-    trackCode: 'FMCG',
-    trackName: 'FMCG & Consumer Dynamics',
-    photo: '/images/panelists/FMCG/MohanSitharam_FMCG.jpeg',
-    tags: ['Workforce Agility', 'Operations Culture', 'Talent Systems'],
-  },
 
   // Automotive & EV Panel
   {
@@ -214,7 +203,7 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'auto-3',
     name: 'Mohit Jindal',
-    company: 'Suzuki India Limited',
+    company: 'Maruti Suzuki India Ltd.',
     designation: 'Chief Commercial Officer - South Zone',
     linkedin: 'https://www.linkedin.com/in/mohit-jindal-27178a93',
     trackCode: 'Auto',
@@ -295,8 +284,8 @@ export const PANELISTS_DATA: Panelist[] = [
   {
     id: 'media-2',
     name: 'Bhavna Lalchandani',
-    company: '',
-    designation: 'Chief Content & Innovation Strategy Officer',
+    company: 'Condé Nast India',
+    designation: 'Chief Content and Innovation Strategy Officer',
     linkedin: 'https://www.linkedin.com/in/bhavnalalchandani/',
     trackCode: 'Media',
     trackName: 'Media, Content & Brand Strategy',
@@ -351,13 +340,13 @@ export const PANELISTS_DATA: Panelist[] = [
   },
   {
     id: 'cgd-3',
-    name: 'Sidhu Biswal',
+    name: 'Sindhu Biswas',
     company: 'Buzzlabs',
     designation: 'Founder',
     linkedin: 'https://www.linkedin.com/in/sindhubiswal/',
     trackCode: 'CGD',
     trackName: 'Closed Group Discussion',
-    photo: '/images/panelists/CGD/SidhuBiswal_CGD.jpeg',
+    photo: '/images/panelists/CGD/SindhuBiswas_CGD.jpeg',
     tags: ['AI Growth', 'Venture Creation', 'Product Leadership'],
   },
   {
