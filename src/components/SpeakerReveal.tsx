@@ -61,7 +61,7 @@ export default function SpeakerReveal() {
           // Seamlessly reset back to start without user noticing
           el.scrollLeft -= halfScroll
         } else {
-          el.scrollLeft += 0.75 // Silky smooth ~45px per second
+          el.scrollLeft += 1.8 // Lively and brisk continuous drift (~110px per second)
         }
       }
       animationFrameId = requestAnimationFrame(autoScrollLoop)
@@ -163,19 +163,25 @@ export default function SpeakerReveal() {
       {/* Interactive Carousel with Touch Swipe and Desktop Click Controls */}
       <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 py-2">
         
-        {/* Floating Side Scroll Buttons on Desktop for Fast Navigation */}
+        {/* Floating Side Scroll Buttons on Desktop - z-50 ensures they always stay above hovered cards (z-30) */}
         <button
-          onClick={() => handleScroll('left')}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleScroll('left')
+          }}
           aria-label="Scroll speakers left"
-          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/75 hover:bg-black/95 border border-white/20 hover:border-glc-magenta text-white items-center justify-center shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
+          className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
 
         <button
-          onClick={() => handleScroll('right')}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleScroll('right')
+          }}
           aria-label="Scroll speakers right"
-          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/75 hover:bg-black/95 border border-white/20 hover:border-glc-magenta text-white items-center justify-center shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
+          className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
@@ -183,7 +189,7 @@ export default function SpeakerReveal() {
         {/* Scrollable Container - Touch drag enabled with momentum on iOS & Android */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing"
+          className="flex gap-4 sm:gap-6 px-6 sm:px-10 lg:px-12 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing"
           style={{
             WebkitOverflowScrolling: 'touch',
           }}
@@ -198,8 +204,8 @@ export default function SpeakerReveal() {
         </div>
 
         {/* Subtle Edge Fade Hints */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-wine-950 via-wine-950/60 to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-wine-950 via-wine-950/60 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-wine-950 via-wine-950/60 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-wine-950 via-wine-950/60 to-transparent z-10" />
 
       </div>
 
