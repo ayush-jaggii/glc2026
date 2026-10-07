@@ -32,7 +32,10 @@ export default function KeynoteReveal() {
       const subSize = mobile ? '10' : '14'
       const subSpacing = mobile ? '3' : '7'
       const subY = mobile ? '575' : '612'
-      const polyPoints = mobile ? '482,410 518,410 500,458' : '468,380 532,380 500,458'
+      // Exact inner vertices of the V in Helvetica Black capital M:
+      // Mobile: cap height reaches y=411 at baseline 465, inner V apex at y=447, inner stem corners at 479 and 521
+      // Desktop: cap height reaches y=379 at baseline 465, inner V apex at y=434, inner stem corners at 469 and 533
+      const polyPoints = mobile ? '479,411 521,411 500,447' : '469,379 533,379 501,434'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
@@ -79,8 +82,8 @@ export default function KeynoteReveal() {
     const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
       const ox = 500
-      // Zoom directly into the diagonal gap / V-aperture inside the letter M
-      const oy = mobile ? 428 : 410
+      // Zoom directly into the optical center of the inner V gap of M
+      const oy = mobile ? 423 : 397
 
       // Lightweight scale factor ensures silky 120FPS on mobile GPUs without raster buffer overflow
       const maxScale = mobile ? 34 : 55
@@ -311,7 +314,7 @@ export default function KeynoteReveal() {
                 {/* The diagonal gap / V-aperture inside M, initialized to opacity 0 */}
                 <polygon
                   ref={polygonRef}
-                  points={isMobile ? '482,410 518,410 500,458' : '468,380 532,380 500,458'}
+                  points={isMobile ? '479,411 521,411 500,447' : '469,379 533,379 501,434'}
                   fill="black"
                   style={{ opacity: 0 }}
                 />
