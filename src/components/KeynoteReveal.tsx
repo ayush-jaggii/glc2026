@@ -75,14 +75,14 @@ export default function KeynoteReveal() {
 
     const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
-      // Zoom directly through the solid vertical stick (stem) of the letter M!
-      // In Helvetica Black, this stick is a solid cutout through the curtain into the keynote stage.
-      // As you zoom in, the stick expands to fill 100% of the screen seamlessly, with no transparency tricks needed.
-      const ox = mobile ? 473 : 458
-      const oy = mobile ? 438 : 422
+      // Zoom directly into the exact dead center of the left vertical stick (stem) of M:
+      // Mobile (font-size 76): stem is between x=471 and x=483 -> center is exactly 477.0, y=437.5
+      // Desktop (font-size 120): stem is between x=455 and x=473 -> center is exactly 464.0, y=421.5
+      const ox = mobile ? 477 : 464
+      const oy = mobile ? 437.5 : 421.5
 
-      // Scaling curve: Quadratic ease provides immediate tactile thumb response and flies completely through the stick
-      const maxScale = mobile ? 42 : 55
+      // Scaling curve: Quadratic ease provides immediate tactile response
+      const maxScale = mobile ? 45 : 55
       const scale = 1 + Math.pow(p, 2.0) * maxScale
       const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
@@ -102,15 +102,15 @@ export default function KeynoteReveal() {
         }
       }
 
-      // 2. Curtain layer - remains solid while the stick expands to fill the entire viewport!
-      // Once the stick has naturally expanded past the screen edges (p >= 0.65), simply hide the curtain to release GPU.
+      // 2. Curtain layer - feather dissolves softly between p=0.42 and p=0.58 so no black wall appears towards the end
       if (curtainRef.current) {
-        if (p >= 0.65) {
+        if (p >= 0.58) {
           curtainRef.current.style.visibility = 'hidden'
           curtainRef.current.style.opacity = '0'
         } else {
           curtainRef.current.style.visibility = 'visible'
-          curtainRef.current.style.opacity = '1'
+          const curtainAlpha = p <= 0.42 ? 1.0 : Math.max(0, (0.58 - p) / 0.16)
+          curtainRef.current.style.opacity = curtainAlpha.toFixed(3)
         }
       }
 
