@@ -83,6 +83,18 @@ const PARTNERS: PartnerLogo[] = [
     imageClass: 'h-9 sm:h-14 md:h-16 w-auto max-w-[110px] sm:max-w-[160px]',
     href: 'https://www.instagram.com/nikmish.designs/'
   },
+  {
+    name: 'Pocket FM',
+    src: '/sponsors/pocketfm.svg',
+    imageClass: 'h-8 sm:h-12 md:h-14 w-auto max-w-[120px] sm:max-w-[170px]',
+    href: 'https://pocketfm.com/'
+  },
+  {
+    name: 'FirstClub',
+    src: '/sponsors/firstclub.svg',
+    imageClass: 'h-6 sm:h-9 md:h-11 w-auto max-w-[130px] sm:max-w-[185px]',
+    href: 'https://www.firstclub.site/'
+  },
 ]
 
 export default function PartnersSection() {
