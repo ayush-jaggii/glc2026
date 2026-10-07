@@ -7,6 +7,7 @@ export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
   const gradientTextGroupRef = useRef<SVGGElement>(null)
+  const polygonRef = useRef<SVGPolygonElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
@@ -31,6 +32,7 @@ export default function KeynoteReveal() {
       const subSize = mobile ? '10' : '14'
       const subSpacing = mobile ? '3' : '7'
       const subY = mobile ? '575' : '612'
+      const polyPoints = mobile ? '482,410 518,410 500,458' : '468,380 532,380 500,458'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
@@ -49,6 +51,7 @@ export default function KeynoteReveal() {
         gradSubRef.current.setAttribute('letter-spacing', subSpacing)
         gradSubRef.current.setAttribute('y', subY)
       }
+      if (polygonRef.current) polygonRef.current.setAttribute('points', polyPoints)
     }
 
     handleResize()
@@ -76,13 +79,11 @@ export default function KeynoteReveal() {
     const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
       const ox = 500
-      // In REMYA, the letter M is the 3rd letter. Its center sits horizontally around 500,
-      // and baseline is 465 (height ~76-120). Mid-height of M is ~435-442.
-      const oy = mobile ? 438 : 442
+      // Zoom directly into the diagonal gap / V-aperture inside the letter M
+      const oy = mobile ? 428 : 410
 
-      // Natural zoom directly into the letter M
-      // Quadratic ease Math.pow(p, 2.0) with high scale factor so M engulfs screen before curtain dissolves
-      const maxScale = mobile ? 65 : 75
+      // Lightweight scale factor ensures silky 120FPS on mobile GPUs without raster buffer overflow
+      const maxScale = mobile ? 34 : 55
       const scale = 1 + Math.pow(p, 2.0) * maxScale
       const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
@@ -91,38 +92,52 @@ export default function KeynoteReveal() {
       }
 
       // 1. Solid gradient typography fades out smoothly as user begins zooming in
-      // Visible until p = 0.32 so the letters stay crisp and dramatic as they grow
       if (gradientTextGroupRef.current) {
-        if (p <= 0.35) {
+        if (p <= 0.26) {
           gradientTextGroupRef.current.style.visibility = 'visible'
           gradientTextGroupRef.current.setAttribute('transform', transformValue)
-          const textOpacity = Math.max(0, 1 - p / 0.28)
+          const textOpacity = Math.max(0, 1 - p / 0.20)
           gradientTextGroupRef.current.style.opacity = textOpacity.toFixed(3)
         } else {
           gradientTextGroupRef.current.style.visibility = 'hidden'
         }
       }
 
-      // 2. Curtain layer - dissolves only AFTER M has zoomed into a massive window (p=0.55 to 0.72)
-      // This ensures user clearly flies *through* the M first before the black background dissolves into stage
+      // 2. The diagonal gap inside M blooms open ONLY once the letter is already magnified (p >= 0.28)
+      // At p < 0.28, it is completely invisible (opacity 0) so NO static V-notch is EVER visible!
+      if (polygonRef.current) {
+        if (p >= 0.28 && p < 0.65) {
+          polygonRef.current.style.visibility = 'visible'
+          const polyOpacity = Math.min(1.0, (p - 0.28) / 0.14)
+          polygonRef.current.style.opacity = polyOpacity.toFixed(3)
+        } else if (p >= 0.65) {
+          polygonRef.current.style.visibility = 'visible'
+          polygonRef.current.style.opacity = '1'
+        } else {
+          polygonRef.current.style.visibility = 'hidden'
+          polygonRef.current.style.opacity = '0'
+        }
+      }
+
+      // 3. Curtain layer - soft feathered opacity dissolve between p=0.48 and p=0.64
       if (curtainRef.current) {
-        if (p >= 0.72) {
+        if (p >= 0.64) {
           curtainRef.current.style.visibility = 'hidden'
           curtainRef.current.style.opacity = '0'
         } else {
           curtainRef.current.style.visibility = 'visible'
-          const curtainAlpha = p <= 0.55 ? 1.0 : Math.max(0, (0.72 - p) / 0.17)
+          const curtainAlpha = p <= 0.48 ? 1.0 : Math.max(0, (0.64 - p) / 0.16)
           curtainRef.current.style.opacity = curtainAlpha.toFixed(3)
         }
       }
 
-      // 3. Underlying speaker showcase transitions in subtly & activates pointer events
+      // 4. Underlying speaker showcase transitions in subtly & activates pointer events
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
-        const stageOpacity = Math.min(1.0, p / 0.15)
+        const stageOpacity = Math.min(1.0, p / 0.14)
         showcaseRef.current.style.transform = `scale(${showcaseScale.toFixed(3)})`
         showcaseRef.current.style.opacity = stageOpacity.toFixed(3)
-        showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= 0.58 ? 'auto' : 'none'
       }
     }
 
@@ -182,7 +197,7 @@ export default function KeynoteReveal() {
     <section
       ref={containerRef}
       id="keynote"
-      className="relative w-full h-[280vh] sm:h-[300vh] bg-wine-950 scroll-mt-24"
+      className="relative w-full h-[240vh] sm:h-[300vh] bg-wine-950 scroll-mt-24"
     >
       {/* Sticky full-viewport frame - uses 100svh to prevent mobile browser address bar resize jitter */}
       <div className="sticky top-0 w-full h-screen h-[100svh] overflow-hidden flex items-center justify-center bg-wine-950 select-none">
@@ -293,6 +308,14 @@ export default function KeynoteReveal() {
 
               {/* Black shapes cut out the transparent window into Layer 1 */}
               <g ref={holeGroupRef}>
+                {/* The diagonal gap / V-aperture inside M, initialized to opacity 0 */}
+                <polygon
+                  ref={polygonRef}
+                  points={isMobile ? '482,410 518,410 500,458' : '468,380 532,380 500,458'}
+                  fill="black"
+                  style={{ opacity: 0 }}
+                />
+
                 <text
                   ref={holeRemyaRef}
                   x="500"
