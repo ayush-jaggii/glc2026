@@ -165,10 +165,10 @@ export default function SpeakerReveal() {
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Scrollable Container - Touch drag enabled with momentum on iOS & Android */}
+        {/* Scrollable Container - Touch drag enabled with momentum on iOS & Android (no CSS scroll-smooth conflict) */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 px-6 sm:px-10 lg:px-12 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing"
+          className="flex gap-4 sm:gap-6 px-6 sm:px-10 lg:px-12 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden touch-pan-x cursor-grab active:cursor-grabbing"
           style={{
             WebkitOverflowScrolling: 'touch',
           }}
@@ -186,13 +186,6 @@ export default function SpeakerReveal() {
         <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-wine-950 via-wine-950/60 to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-wine-950 via-wine-950/60 to-transparent z-10" />
 
-      </div>
-
-      {/* Mobile Swipe Hint */}
-      <div className="sm:hidden text-center -mt-3">
-        <p className="text-[11px] text-cream-400/70 tracking-wider uppercase font-medium">
-          ← Swipe to explore all speakers →
-        </p>
       </div>
 
     </div>
