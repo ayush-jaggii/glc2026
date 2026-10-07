@@ -7,7 +7,6 @@ export default function KeynoteReveal() {
   const containerRef = useRef<HTMLElement>(null)
   const holeGroupRef = useRef<SVGGElement>(null)
   const gradientTextGroupRef = useRef<SVGGElement>(null)
-  const polygonRef = useRef<SVGPolygonElement>(null)
   const curtainRef = useRef<SVGRectElement>(null)
   const showcaseRef = useRef<HTMLDivElement>(null)
 
@@ -32,7 +31,6 @@ export default function KeynoteReveal() {
       const subSize = mobile ? '10' : '14'
       const subSpacing = mobile ? '3' : '7'
       const subY = mobile ? '575' : '612'
-      const polyPoints = mobile ? '480,412 520,412 500,464' : '466,379 534,379 500,464'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
@@ -51,7 +49,6 @@ export default function KeynoteReveal() {
         gradSubRef.current.setAttribute('letter-spacing', subSpacing)
         gradSubRef.current.setAttribute('y', subY)
       }
-      if (polygonRef.current) polygonRef.current.setAttribute('points', polyPoints)
     }
 
     handleResize()
@@ -79,7 +76,7 @@ export default function KeynoteReveal() {
     const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
       const ox = 500
-      const oy = mobile ? 438 : 420
+      const oy = mobile ? 448 : 446
 
       // Natural zoom directly into the letter M
       // Quadratic ease Math.pow(p, 2.0) provides immediate tactile thumb response with cinematic fly-through
@@ -101,17 +98,6 @@ export default function KeynoteReveal() {
           gradientTextGroupRef.current.style.opacity = textOpacity.toFixed(3)
         } else {
           gradientTextGroupRef.current.style.visibility = 'hidden'
-        }
-      }
-
-      // 2. The V-notch of M opens smoothly as camera zooms into M
-      if (polygonRef.current) {
-        if (p > 0.16 && p < 0.62) {
-          polygonRef.current.style.visibility = 'visible'
-          const polyOpacity = Math.min(1.0, (p - 0.16) / 0.12)
-          polygonRef.current.style.opacity = polyOpacity.toFixed(3)
-        } else {
-          polygonRef.current.style.visibility = 'hidden'
         }
       }
 
@@ -305,14 +291,6 @@ export default function KeynoteReveal() {
 
               {/* Black shapes cut out the transparent window into Layer 1 */}
               <g ref={holeGroupRef}>
-                {/* The V-aperture of M with initial opacity: 0 so nothing peeks through at rest */}
-                <polygon
-                  ref={polygonRef}
-                  points={isMobile ? '480,412 520,412 500,464' : '466,379 534,379 500,464'}
-                  fill="black"
-                  style={{ opacity: 0 }}
-                />
-
                 <text
                   ref={holeRemyaRef}
                   x="500"
