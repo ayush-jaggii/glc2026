@@ -99,7 +99,7 @@ export default function PartnersSection() {
       {/* Target anchor for #sponsors or #partners navigation */}
       <span id="sponsors" className="absolute -top-24 pointer-events-none" aria-hidden="true" />
       
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
+      <div className="w-full max-w-[1536px] mx-auto px-2 sm:px-4 lg:px-6 relative z-10">
         
         {/* Minimalist Section Header */}
         <div className="text-center mb-8 sm:mb-14">
@@ -108,11 +108,11 @@ export default function PartnersSection() {
           </h2>
         </div>
 
-        {/* Minimalist Card Container */}
-        <div className="rounded-2xl sm:rounded-3xl bg-[#13030F] border border-wine-800/80 p-4 sm:p-10 lg:p-14 shadow-2xl relative backdrop-blur-md">
+        {/* Minimalist Card Container - Expanded width with optimized padding */}
+        <div className="rounded-2xl sm:rounded-3xl bg-[#13030F] border border-wine-800/80 p-3 sm:p-6 lg:p-8 shadow-2xl relative backdrop-blur-md">
           
           {/* 1. Featured Main Partners (Top Grid) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 max-w-3xl mx-auto mb-8 sm:mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 max-w-4xl mx-auto mb-8 sm:mb-12">
             {/* Digital Media Partner */}
             <div className="flex flex-col items-center justify-center w-full">
               <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] sm:tracking-[0.22em] uppercase text-cream-400 mb-2 sm:mb-3">
@@ -168,15 +168,15 @@ export default function PartnersSection() {
           <div className="w-16 sm:w-24 h-px bg-wine-800/80 mx-auto mb-8 sm:mb-12" />
 
           {/* 2. Partner Marquee Ticker (Clickable Cards with External Redirects) */}
-          <div className="flex flex-col items-center">
-            {/* Seamless Infinite Loop with Gradient Edge Mask */}
-            <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] py-2 sm:py-3">
+          <div className="flex flex-col items-center w-full">
+            {/* Seamless Infinite Loop with Tight Edge Mask (only 1.5% edge fade so cards span wall-to-wall) */}
+            <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_2%,black_98%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_2%,black_98%,transparent_100%)] py-2 sm:py-3">
               <div
-                className="animate-marquee flex items-center gap-4 sm:gap-7 md:gap-8"
+                className="animate-marquee flex items-center gap-4 sm:gap-6 md:gap-7"
                 style={{ animationDuration: '30s' }}
               >
                 {/* Track 1 */}
-                <div className="flex items-center gap-4 sm:gap-7 md:gap-8 shrink-0">
+                <div className="flex items-center gap-4 sm:gap-6 md:gap-7 shrink-0">
                   {PARTNERS.map((item) => (
                     <a
                       key={item.name}
