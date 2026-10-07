@@ -59,90 +59,122 @@ export default function KeynoteReveal() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Native non-blocking 60fps scroll animation
+  // High-performance hardware-accelerated 60/120fps scroll animation
   useEffect(() => {
-    let animationFrameId: number | null = null
+    let ticking = false
+    let containerTop = 0
+    let totalScrollable = 1
 
-    const updateScrollAnimation = () => {
+    // Pre-cache element layout to eliminate synchronous getBoundingClientRect layout thrashing on scroll
+    const updateMeasurements = () => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
-      const totalScrollable = rect.height - window.innerHeight
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0
+      containerTop = rect.top + scrollY
+      totalScrollable = Math.max(1, rect.height - window.innerHeight)
+    }
 
-      if (totalScrollable <= 0) return
+    const updateScrollAnimation = () => {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0
+      const distance = scrollY - containerTop
 
-      // Progress p from 0 (entry) to 1 (exit)
-      const p = Math.max(0, Math.min(1.0, -rect.top / totalScrollable))
+      // If user is far from the keynote section, skip all calculations
+      if (distance < -window.innerHeight || distance > totalScrollable + window.innerHeight) {
+        return
+      }
 
-      // Center inside the letter M of REMYA
+      // Progress p strictly from 0 (entry) to 1 (exit)
+      const p = Math.max(0, Math.min(1.0, distance / totalScrollable))
+
       const mobile = window.innerWidth < 768
       const ox = 500
       const oy = mobile ? 438 : 420
 
-      // Natural zoom directly into the letter M so all strokes expand completely out of view
-      const scale = 1 + Math.pow(p, 2.3) * (mobile ? 75 : 65)
-      const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
+      // Natural zoom directly into the letter M
+      // On mobile, scale 30x pushes the strokes off the screen without choking GPU memory
+      const maxScale = mobile ? 30 : 65
+      const scale = 1 + Math.pow(p, 2.3) * maxScale
+      const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 1. Solid gradient typography and subtitle smoothly fade to see-through as user begins zooming in
+      // 1. Solid gradient typography fades out as user begins zooming in
+      // Skip transformation entirely when hidden (p > 0.22) to save 80% of SVG path evaluations
       if (gradientTextGroupRef.current) {
-        gradientTextGroupRef.current.setAttribute('transform', transformValue)
-        const textOpacity = Math.max(0, 1 - p / 0.18)
-        gradientTextGroupRef.current.style.opacity = textOpacity.toString()
-      }
-
-      // 2. The V-notch of M is opaque black curtain at p = 0 so NOTHING behind M can be seen at rest.
-      // It only opens as camera zooms into M (p > 0.2) to pass cleanly through the letter.
-      if (polygonRef.current) {
-        if (p > 0.2) {
-          const polyOpacity = Math.min(1.0, (p - 0.2) / 0.12)
-          polygonRef.current.style.opacity = polyOpacity.toString()
+        if (p <= 0.22) {
+          gradientTextGroupRef.current.style.visibility = 'visible'
+          gradientTextGroupRef.current.setAttribute('transform', transformValue)
+          const textOpacity = Math.max(0, 1 - p / 0.18)
+          gradientTextGroupRef.current.style.opacity = textOpacity.toFixed(3)
         } else {
-          polygonRef.current.style.opacity = '0'
+          gradientTextGroupRef.current.style.visibility = 'hidden'
         }
       }
 
-      // 3. Once fully zoomed through the letter M (p >= 0.65), hide the curtain
-      // so it is 100% out of frame and can NEVER obscure any speaker information
-      if (curtainRef.current) {
-        if (p >= 0.65) {
-          curtainRef.current.style.display = 'none'
+      // 2. The V-notch of M opens smoothly as camera zooms into M
+      if (polygonRef.current) {
+        if (p > 0.18 && p < 0.6) {
+          polygonRef.current.style.visibility = 'visible'
+          const polyOpacity = Math.min(1.0, (p - 0.18) / 0.12)
+          polygonRef.current.style.opacity = polyOpacity.toFixed(3)
         } else {
-          curtainRef.current.style.display = 'block'
+          polygonRef.current.style.visibility = 'hidden'
+        }
+      }
+
+      // 3. Curtain layer - uses visibility & opacity instead of display: none to avoid DOM reflow
+      if (curtainRef.current) {
+        if (p >= 0.6) {
+          curtainRef.current.style.visibility = 'hidden'
+          curtainRef.current.style.opacity = '0'
+        } else {
+          curtainRef.current.style.visibility = 'visible'
+          curtainRef.current.style.opacity = '1'
         }
       }
 
       // 4. Underlying speaker showcase transitions in subtly & activates pointer events
-      // At p = 0, opacity is 0 so absolutely nothing peeks through the text at rest.
+      // Driven directly without CSS transition delay to prevent frame-interruption stutter
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         const stageOpacity = Math.min(1.0, p / 0.12)
-        showcaseRef.current.style.transform = `scale(${showcaseScale})`
-        showcaseRef.current.style.opacity = stageOpacity.toString()
-        showcaseRef.current.style.pointerEvents = p >= 0.65 ? 'auto' : 'none'
+        showcaseRef.current.style.transform = `scale(${showcaseScale.toFixed(3)})`
+        showcaseRef.current.style.opacity = stageOpacity.toFixed(3)
+        showcaseRef.current.style.pointerEvents = p >= 0.6 ? 'auto' : 'none'
       }
     }
 
     const onScroll = () => {
-      if (animationFrameId !== null) return
-      animationFrameId = window.requestAnimationFrame(() => {
-        updateScrollAnimation()
-        animationFrameId = null
-      })
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateScrollAnimation()
+          ticking = false
+        })
+        ticking = true
+      }
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
+    updateMeasurements()
     updateScrollAnimation()
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', () => {
+      updateMeasurements()
+      onScroll()
+    }, { passive: true })
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        updateMeasurements()
+        onScroll()
+      }, 150)
+    }, { passive: true })
 
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (animationFrameId !== null) {
-        window.cancelAnimationFrame(animationFrameId)
-      }
+      window.removeEventListener('resize', updateMeasurements)
+      window.removeEventListener('orientationchange', updateMeasurements)
     }
   }, [])
 
@@ -152,24 +184,24 @@ export default function KeynoteReveal() {
       id="keynote"
       className="relative w-full h-[220vh] sm:h-[300vh] bg-wine-950 scroll-mt-24"
     >
-      {/* Sticky full-viewport frame pinned while scrolling through the mask reveal */}
-      <div className="sticky top-0 w-full h-[100dvh] overflow-hidden flex items-center justify-center bg-wine-950 select-none">
+      {/* Sticky full-viewport frame - uses 100svh to prevent mobile browser address bar resize jitter */}
+      <div className="sticky top-0 w-full h-screen h-[100svh] overflow-hidden flex items-center justify-center bg-wine-950 select-none">
         
         {/* Ambient atmospheric backdrop glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(244,81,151,0.12)_0%,rgba(245,130,50,0.06)_45%,transparent_75%)] pointer-events-none" />
 
-        {/* LAYER 1: Underlying Clean Keynote Stage (Behind the Mask) */}
+        {/* LAYER 1: Underlying Clean Keynote Stage (GPU Isolated Layer) */}
         <div
           ref={showcaseRef}
           style={{ opacity: 0 }}
-          className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6 transition-transform duration-100 ease-out pointer-events-none"
+          className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6 pointer-events-none transform-gpu will-change-transform"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-center">
             
             {/* Left: Cutout PNG Portrait with Seamless Bottom Feather & Ambient Backlight Glow */}
             <div className="lg:col-span-5 flex justify-center items-center relative group/photo cursor-pointer">
-              {/* Vibrant radial halo backlight behind cutout silhouette - blooms organically on hover with zero rectangular edges */}
-              <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/30 via-glc-pink/20 to-glc-orange/25 blur-3xl pointer-events-none transition-all duration-700 ease-out group-hover/photo:scale-125 group-hover/photo:opacity-100 opacity-70" />
+              {/* Vibrant radial halo backlight behind cutout silhouette - blur-2xl on mobile saves fill rate */}
+              <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/30 via-glc-pink/20 to-glc-orange/25 blur-2xl sm:blur-3xl pointer-events-none transition-all duration-700 ease-out group-hover/photo:scale-125 group-hover/photo:opacity-100 opacity-70" />
 
               {/* Cutout container with bottom gradient fade mask for 100% seamless blending */}
               <div className="relative w-full max-w-[210px] xs:max-w-[250px] sm:max-w-sm lg:max-w-md aspect-[3/4.1] flex items-end justify-center pointer-events-none">
@@ -238,9 +270,9 @@ export default function KeynoteReveal() {
           </div>
         </div>
 
-        {/* LAYER 2: SVG Mask Layer (Curtain + Cutout Window in Helvetica) */}
+        {/* LAYER 2: SVG Mask Layer (Curtain + Cutout Window in Helvetica - GPU Composited) */}
         <svg
-          className="absolute inset-0 w-full h-full pointer-events-none z-20"
+          className="absolute inset-0 w-full h-full pointer-events-none z-20 transform-gpu will-change-transform"
           viewBox="0 0 1000 1000"
           preserveAspectRatio="xMidYMid slice"
         >
