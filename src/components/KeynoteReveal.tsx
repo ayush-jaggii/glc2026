@@ -59,9 +59,11 @@ export default function KeynoteReveal() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // High-performance hardware-accelerated 60/120fps scroll animation
+  // Silky 120FPS Damped Physics Animation Engine with Lerp Interpolation
   useEffect(() => {
-    let ticking = false
+    let targetP = 0
+    let currentP = 0
+    let isAnimating = false
     let containerTop = 0
     let totalScrollable = 1
 
@@ -74,36 +76,25 @@ export default function KeynoteReveal() {
       totalScrollable = Math.max(1, rect.height - window.innerHeight)
     }
 
-    const updateScrollAnimation = () => {
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0
-      const distance = scrollY - containerTop
-
-      // If user is far from the keynote section, skip all calculations
-      if (distance < -window.innerHeight || distance > totalScrollable + window.innerHeight) {
-        return
-      }
-
-      // Progress p strictly from 0 (entry) to 1 (exit)
-      const p = Math.max(0, Math.min(1.0, distance / totalScrollable))
-
+    const renderFrame = (p: number) => {
       const mobile = window.innerWidth < 768
       const ox = 500
       const oy = mobile ? 438 : 420
 
       // Natural zoom directly into the letter M
-      // On mobile, scale 30x pushes the strokes off the screen without choking GPU memory
+      // Quadratic ease Math.pow(p, 2.0) provides immediate tactile thumb response with cinematic fly-through
       const maxScale = mobile ? 30 : 65
-      const scale = 1 + Math.pow(p, 2.3) * maxScale
+      const scale = 1 + Math.pow(p, 2.0) * maxScale
       const transformValue = `translate(${ox}, ${oy}) scale(${scale.toFixed(3)}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
         holeGroupRef.current.setAttribute('transform', transformValue)
       }
 
-      // 1. Solid gradient typography fades out as user begins zooming in
-      // Skip transformation entirely when hidden (p > 0.22) to save 80% of SVG path evaluations
+      // 1. Solid gradient typography fades out smoothly as user begins zooming in
+      // Skip transformation entirely when hidden (p > 0.24) to save 80% of SVG path evaluations
       if (gradientTextGroupRef.current) {
-        if (p <= 0.22) {
+        if (p <= 0.24) {
           gradientTextGroupRef.current.style.visibility = 'visible'
           gradientTextGroupRef.current.setAttribute('transform', transformValue)
           const textOpacity = Math.max(0, 1 - p / 0.18)
@@ -115,49 +106,70 @@ export default function KeynoteReveal() {
 
       // 2. The V-notch of M opens smoothly as camera zooms into M
       if (polygonRef.current) {
-        if (p > 0.18 && p < 0.6) {
+        if (p > 0.16 && p < 0.62) {
           polygonRef.current.style.visibility = 'visible'
-          const polyOpacity = Math.min(1.0, (p - 0.18) / 0.12)
+          const polyOpacity = Math.min(1.0, (p - 0.16) / 0.12)
           polygonRef.current.style.opacity = polyOpacity.toFixed(3)
         } else {
           polygonRef.current.style.visibility = 'hidden'
         }
       }
 
-      // 3. Curtain layer - uses visibility & opacity instead of display: none to avoid DOM reflow
+      // 3. Curtain layer - soft feathered opacity transition between p=0.48 and p=0.62
+      // Instead of an abrupt on/off switch, the dark curtain softly dissolves into the stage!
       if (curtainRef.current) {
-        if (p >= 0.6) {
+        if (p >= 0.62) {
           curtainRef.current.style.visibility = 'hidden'
           curtainRef.current.style.opacity = '0'
         } else {
           curtainRef.current.style.visibility = 'visible'
-          curtainRef.current.style.opacity = '1'
+          const curtainAlpha = p <= 0.48 ? 1.0 : Math.max(0, (0.62 - p) / 0.14)
+          curtainRef.current.style.opacity = curtainAlpha.toFixed(3)
         }
       }
 
       // 4. Underlying speaker showcase transitions in subtly & activates pointer events
-      // Driven directly without CSS transition delay to prevent frame-interruption stutter
       if (showcaseRef.current) {
         const showcaseScale = Math.min(1.0, 0.94 + p * 0.08)
         const stageOpacity = Math.min(1.0, p / 0.12)
         showcaseRef.current.style.transform = `scale(${showcaseScale.toFixed(3)})`
         showcaseRef.current.style.opacity = stageOpacity.toFixed(3)
-        showcaseRef.current.style.pointerEvents = p >= 0.6 ? 'auto' : 'none'
+        showcaseRef.current.style.pointerEvents = p >= 0.58 ? 'auto' : 'none'
       }
     }
 
+    const animationLoop = () => {
+      // Damping factor: 0.16 provides an ultra-responsive ~90ms half-life (zero lag, zero jitter)
+      const damping = 0.16
+      currentP += (targetP - currentP) * damping
+
+      // Settle check
+      if (Math.abs(targetP - currentP) < 0.0006) {
+        currentP = targetP
+        renderFrame(currentP)
+        isAnimating = false
+        return
+      }
+
+      renderFrame(currentP)
+      requestAnimationFrame(animationLoop)
+    }
+
     const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          updateScrollAnimation()
-          ticking = false
-        })
-        ticking = true
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0
+      const distance = scrollY - containerTop
+
+      // Progress p strictly between 0 and 1
+      targetP = Math.max(0, Math.min(1.0, distance / totalScrollable))
+
+      if (!isAnimating) {
+        isAnimating = true
+        requestAnimationFrame(animationLoop)
       }
     }
 
     updateMeasurements()
-    updateScrollAnimation()
+    renderFrame(0)
 
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', () => {
@@ -200,7 +212,7 @@ export default function KeynoteReveal() {
             
             {/* Left: Cutout PNG Portrait with Seamless Bottom Feather & Ambient Backlight Glow */}
             <div className="lg:col-span-5 flex justify-center items-center relative group/photo cursor-pointer">
-              {/* Vibrant radial halo backlight behind cutout silhouette - blur-2xl on mobile saves fill rate */}
+              {/* Vibrant radial halo backlight behind cutout silhouette */}
               <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/30 via-glc-pink/20 to-glc-orange/25 blur-2xl sm:blur-3xl pointer-events-none transition-all duration-700 ease-out group-hover/photo:scale-125 group-hover/photo:opacity-100 opacity-70" />
 
               {/* Cutout container with bottom gradient fade mask for 100% seamless blending */}
@@ -275,6 +287,8 @@ export default function KeynoteReveal() {
           className="absolute inset-0 w-full h-full pointer-events-none z-20 transform-gpu will-change-transform"
           viewBox="0 0 1000 1000"
           preserveAspectRatio="xMidYMid slice"
+          shapeRendering="geometricPrecision"
+          textRendering="geometricPrecision"
         >
           <defs>
             {/* Gradient definition for solid initial typography */}
