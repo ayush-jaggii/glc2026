@@ -147,7 +147,7 @@ export const PANELISTS_DATA: Panelist[] = [
     id: 'fmcg-1',
     name: 'Satrajit Hui',
     company: 'Britannia Industries',
-    designation: 'Head - Supply Chain & Logistics',
+    designation: 'Sr Manager - Logistics & Customer service',
     linkedin: 'https://www.linkedin.com/in/satrajithui/',
     trackCode: 'FMCG',
     trackName: 'FMCG & Consumer Dynamics',
