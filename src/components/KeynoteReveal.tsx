@@ -167,12 +167,12 @@ export default function KeynoteReveal() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-center">
             
             {/* Left: Cutout PNG Portrait with Seamless Bottom Feather & Ambient Backlight Glow */}
-            <div className="lg:col-span-5 flex justify-center items-center relative">
-              {/* Vibrant radial halo backlight behind cutout silhouette */}
-              <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/25 via-glc-pink/20 to-glc-orange/20 blur-3xl pointer-events-none" />
+            <div className="lg:col-span-5 flex justify-center items-center relative group/photo cursor-pointer">
+              {/* Vibrant radial halo backlight behind cutout silhouette - blooms organically on hover with zero rectangular edges */}
+              <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/30 via-glc-pink/20 to-glc-orange/25 blur-3xl pointer-events-none transition-all duration-700 ease-out group-hover/photo:scale-125 group-hover/photo:opacity-100 opacity-70" />
 
               {/* Cutout container with bottom gradient fade mask for 100% seamless blending */}
-              <div className="relative group/photo cursor-pointer w-full max-w-[210px] xs:max-w-[250px] sm:max-w-sm lg:max-w-md aspect-[3/4.1] flex items-end justify-center">
+              <div className="relative w-full max-w-[210px] xs:max-w-[250px] sm:max-w-sm lg:max-w-md aspect-[3/4.1] flex items-end justify-center pointer-events-none">
                 <div className="relative w-full h-full flex items-end justify-center [mask-image:linear-gradient(to_top,transparent_0%,transparent_3%,black_22%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,transparent_3%,black_22%,black_100%)]">
                   <Image
                     src="/images/remya-keynote-cutout.webp"
@@ -180,7 +180,7 @@ export default function KeynoteReveal() {
                     fill
                     priority
                     sizes="(max-width: 640px) 250px, (max-width: 1024px) 380px, 450px"
-                    className="object-contain object-bottom select-none transition-transform duration-700 ease-out group-hover/photo:scale-105 drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] group-hover/photo:drop-shadow-[0_25px_50px_rgba(244,81,151,0.35)]"
+                    className="object-contain object-bottom select-none transition-transform duration-700 ease-out group-hover/photo:scale-105"
                   />
                 </div>
               </div>
