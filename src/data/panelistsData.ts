@@ -216,7 +216,7 @@ export const PANELISTS_DATA: Panelist[] = [
     name: 'Mohit Jindal',
     company: 'Suzuki India Limited',
     designation: 'Chief Commercial Officer - South Zone',
-    linkedin: '',
+    linkedin: 'https://www.linkedin.com/in/mohit-jindal-27178a93',
     trackCode: 'Auto',
     trackName: 'Automotive & EV Mobility',
     photo: '/images/panelists/Auto/MohitJindal_Auto.jpeg',
