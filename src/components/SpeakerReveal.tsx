@@ -28,15 +28,15 @@ export default function SpeakerReveal() {
     const el = scrollContainerRef.current
     if (!el) return
 
-    // Pause auto-scroll on manual interaction
+    // Pause auto-scroll briefly during button click, then quickly resume
     isInteractingRef.current = true
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
     resumeTimerRef.current = setTimeout(() => {
       isInteractingRef.current = false
-    }, 4000)
+    }, 1200)
 
-    // Scroll by roughly 1 card width + gap (300px + 24px) on desktop or container width / 2
-    const scrollAmount = Math.max(320, Math.floor(el.clientWidth * 0.75))
+    // Scroll by roughly 1 card width + gap (300px + 24px) on desktop
+    const scrollAmount = Math.max(340, Math.floor(el.clientWidth * 0.75))
     const targetScroll = direction === 'left' ? el.scrollLeft - scrollAmount : el.scrollLeft + scrollAmount
 
     el.scrollTo({
@@ -45,7 +45,7 @@ export default function SpeakerReveal() {
     })
   }
 
-  // Smooth auto-scroll loop when idle
+  // Smooth continuous auto-scroll loop
   useEffect(() => {
     const el = scrollContainerRef.current
     if (!el) return
@@ -61,7 +61,7 @@ export default function SpeakerReveal() {
           // Seamlessly reset back to start without user noticing
           el.scrollLeft -= halfScroll
         } else {
-          el.scrollLeft += 1.8 // Lively and brisk continuous drift (~110px per second)
+          el.scrollLeft += 2.4 // Brisk, fluid ~145px per second
         }
       }
       animationFrameId = requestAnimationFrame(autoScrollLoop)
@@ -73,33 +73,40 @@ export default function SpeakerReveal() {
       checkScrollState()
     }
 
+    // Touch events for mobile: pause while finger is down/swiping, resume immediately when released
     const onTouchStart = () => {
       isInteractingRef.current = true
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
     }
 
     const onTouchEnd = () => {
+      // Immediately resume auto-scrolling as soon as finger leaves the screen
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
       resumeTimerRef.current = setTimeout(() => {
         isInteractingRef.current = false
-      }, 3500)
+      }, 400)
     }
 
+    const onTouchCancel = () => {
+      isInteractingRef.current = false
+    }
+
+    // Mouse events for desktop: pause ONLY when cursor is hovering or clicking over a card
     const onMouseEnter = () => {
       isInteractingRef.current = true
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
     }
 
     const onMouseLeave = () => {
+      // Immediately resume auto-scrolling as soon as mouse leaves the container
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-      resumeTimerRef.current = setTimeout(() => {
-        isInteractingRef.current = false
-      }, 2500)
+      isInteractingRef.current = false
     }
 
     el.addEventListener('scroll', onScroll, { passive: true })
     el.addEventListener('touchstart', onTouchStart, { passive: true })
     el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchCancel, { passive: true })
     el.addEventListener('mouseenter', onMouseEnter, { passive: true })
     el.addEventListener('mouseleave', onMouseLeave, { passive: true })
 
@@ -111,6 +118,7 @@ export default function SpeakerReveal() {
       el.removeEventListener('scroll', onScroll)
       el.removeEventListener('touchstart', onTouchStart)
       el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchCancel)
       el.removeEventListener('mouseenter', onMouseEnter)
       el.removeEventListener('mouseleave', onMouseLeave)
     }
@@ -119,44 +127,15 @@ export default function SpeakerReveal() {
   return (
     <div id="speakers" className="relative space-y-8 sm:space-y-10 scroll-mt-24">
       
-      {/* Header Banner */}
+      {/* Header Banner - Restored to clean, centered layout without extra labels or arrows */}
       <div className="rounded-2xl p-5 sm:p-10 bg-gradient-to-br from-[#1A0415] via-[#10020D] to-[#080006] border border-wine-800/80 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-glc-magenta/10 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-glc-orange/10 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-glc-orange font-sans block mb-1">
-              Global Leadership Conclave
-            </span>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-cream-50 uppercase">
-              MEET OUR SPEAKERS
-            </h2>
-          </div>
-
-          {/* Desktop Manual Navigation Arrows */}
-          <div className="hidden sm:flex items-center gap-2.5">
-            <button
-              onClick={() => handleScroll('left')}
-              disabled={!canScrollLeft}
-              aria-label="Scroll left"
-              className={`w-11 h-11 rounded-full border border-wine-700/80 bg-wine-950/80 hover:bg-wine-900/90 text-cream-100 flex items-center justify-center transition-all duration-200 backdrop-blur-md shadow-lg active:scale-95 ${
-                !canScrollLeft ? 'opacity-40 cursor-not-allowed' : 'hover:border-glc-magenta hover:text-white cursor-pointer'
-              }`}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => handleScroll('right')}
-              disabled={!canScrollRight}
-              aria-label="Scroll right"
-              className={`w-11 h-11 rounded-full border border-wine-700/80 bg-wine-950/80 hover:bg-wine-900/90 text-cream-100 flex items-center justify-center transition-all duration-200 backdrop-blur-md shadow-lg active:scale-95 ${
-                !canScrollRight ? 'opacity-40 cursor-not-allowed' : 'hover:border-glc-magenta hover:text-white cursor-pointer'
-              }`}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-cream-50 uppercase">
+            MEET OUR SPEAKERS
+          </h2>
         </div>
       </div>
 
