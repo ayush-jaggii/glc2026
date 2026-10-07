@@ -94,31 +94,22 @@ export default function RibbonFlowCanvas() {
 
       // Screen & texture aspect ratios
       const screenAspect = width / Math.max(height, 1)
-      const texAspect = 1674 / 940
       const isMobile = screenAspect < 1.0
 
-      // Dynamic nexus focal point aligned with ribbon intersection in both mobile cover and desktop
-      let nexusX: number
-      let nexusY: number
-
-      if (screenAspect < texAspect) {
-        // Match FlowingRibbonCanvas mobile cover projection
-        const scale = screenAspect / texAspect
-        const focusX = 0.5 + (0.63 - 0.5) * Math.min(Math.max((1.0 - screenAspect) * 1.4, 0), 1)
-        const stX = (0.7312 - focusX) / scale + 0.5
-        nexusX = Math.min(Math.max(stX, 0.15), 0.94) * width + (mouseRef.current.x - 0.5) * 20
-        nexusY = height * 0.59 + (mouseRef.current.y - 0.5) * 15
-      } else {
-        nexusX = width * 0.72 + (mouseRef.current.x - 0.5) * 25
-        nexusY = height * 0.58 + (mouseRef.current.y - 0.5) * 18
-      }
+      // Dynamic nexus focal point aligned with ribbon intersection on desktop and mobile
+      const nexusX = isMobile
+        ? width * 0.56 + (mouseRef.current.x - 0.5) * 15
+        : width * 0.72 + (mouseRef.current.x - 0.5) * 25
+      const nexusY = isMobile
+        ? height * 0.51 + (mouseRef.current.y - 0.5) * 12
+        : height * 0.58 + (mouseRef.current.y - 0.5) * 18
 
       // Render flowing light impulse particles
       for (const p of particles) {
         p.t += p.speed
         if (p.t > 1) {
           p.t = 0
-          p.offsetY = (Math.random() - 0.5) * (isMobile ? 30 : 45)
+          p.offsetY = (Math.random() - 0.5) * (isMobile ? 24 : 45)
         }
 
         let px = 0
@@ -126,10 +117,10 @@ export default function RibbonFlowCanvas() {
 
         if (p.stream === 'magenta') {
           // Magenta stream enters from left, sweeping smoothly into the nexus
-          const startX = 0
-          const startY = height * (isMobile ? 0.35 : 0.32) + p.offsetY
-          const cpX = nexusX * 0.44
-          const cpY = height * (isMobile ? 0.50 : 0.58) + Math.sin(time * 0.6 + p.offsetY) * 14 + p.offsetY
+          const startX = -25
+          const startY = height * (isMobile ? 0.45 : 0.32) + p.offsetY
+          const cpX = nexusX * (isMobile ? 0.48 : 0.44)
+          const cpY = height * (isMobile ? 0.48 : 0.58) + Math.sin(time * 0.6 + p.offsetY) * (isMobile ? 8 : 14) + p.offsetY
 
           // Quadratic Bezier interpolation
           const u = 1 - p.t
@@ -142,11 +133,11 @@ export default function RibbonFlowCanvas() {
           ctx.fillStyle = `rgba(244, 81, 151, ${p.alpha * fade})`
           ctx.shadowColor = '#F45197'
         } else {
-          // Orange stream leaves nexus and sweeps toward right edge
-          const endX = width
-          const endY = height * (isMobile ? 0.72 : 0.68) + p.offsetY
+          // Orange stream leaves nexus and sweeps across and cleanly OUT of the right screen edge
+          const endX = width + (isMobile ? 35 : 50)
+          const endY = height * (isMobile ? 0.56 : 0.68) + p.offsetY
           const cpX = nexusX + (width - nexusX) * 0.52
-          const cpY = height * (isMobile ? 0.60 : 0.52) + Math.cos(time * 0.6 + p.offsetY) * 14 + p.offsetY
+          const cpY = height * (isMobile ? 0.53 : 0.52) + Math.cos(time * 0.6 + p.offsetY) * (isMobile ? 8 : 14) + p.offsetY
 
           const u = 1 - p.t
           const tt = p.t * p.t
