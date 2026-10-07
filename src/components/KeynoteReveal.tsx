@@ -25,17 +25,27 @@ export default function KeynoteReveal() {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
 
-      const remyaSize = mobile ? '80' : '120'
-      const mohanaSize = mobile ? '42' : '64'
-      const subSize = mobile ? '11' : '14'
-      const subSpacing = mobile ? '4' : '7'
-      const subY = mobile ? '598' : '612'
-      const polyPoints = mobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'
+      const remyaSize = mobile ? '76' : '120'
+      const mohanaSize = mobile ? '38' : '64'
+      const mohanaY = mobile ? '535' : '555'
+      const mohanaSpacing = mobile ? '-1' : '-2'
+      const subSize = mobile ? '10' : '14'
+      const subSpacing = mobile ? '3' : '7'
+      const subY = mobile ? '575' : '612'
+      const polyPoints = mobile ? '480,412 520,412 500,464' : '466,379 534,379 500,464'
 
       if (holeRemyaRef.current) holeRemyaRef.current.setAttribute('font-size', remyaSize)
       if (gradRemyaRef.current) gradRemyaRef.current.setAttribute('font-size', remyaSize)
-      if (holeMohanaRef.current) holeMohanaRef.current.setAttribute('font-size', mohanaSize)
-      if (gradMohanaRef.current) gradMohanaRef.current.setAttribute('font-size', mohanaSize)
+      if (holeMohanaRef.current) {
+        holeMohanaRef.current.setAttribute('font-size', mohanaSize)
+        holeMohanaRef.current.setAttribute('y', mohanaY)
+        holeMohanaRef.current.setAttribute('letter-spacing', mohanaSpacing)
+      }
+      if (gradMohanaRef.current) {
+        gradMohanaRef.current.setAttribute('font-size', mohanaSize)
+        gradMohanaRef.current.setAttribute('y', mohanaY)
+        gradMohanaRef.current.setAttribute('letter-spacing', mohanaSpacing)
+      }
       if (gradSubRef.current) {
         gradSubRef.current.setAttribute('font-size', subSize)
         gradSubRef.current.setAttribute('letter-spacing', subSpacing)
@@ -66,10 +76,10 @@ export default function KeynoteReveal() {
       // Center inside the letter M of REMYA
       const mobile = window.innerWidth < 768
       const ox = 500
-      const oy = mobile ? 435 : 420
+      const oy = mobile ? 438 : 420
 
       // Natural zoom directly into the letter M so all strokes expand completely out of view
-      const scale = 1 + Math.pow(p, 2.3) * 65
+      const scale = 1 + Math.pow(p, 2.3) * (mobile ? 75 : 65)
       const transformValue = `translate(${ox}, ${oy}) scale(${scale}) translate(-${ox}, -${oy})`
 
       if (holeGroupRef.current) {
@@ -140,7 +150,7 @@ export default function KeynoteReveal() {
     <section
       ref={containerRef}
       id="keynote"
-      className="relative w-full h-[280vh] sm:h-[320vh] bg-wine-950 scroll-mt-24"
+      className="relative w-full h-[220vh] sm:h-[300vh] bg-wine-950 scroll-mt-24"
     >
       {/* Sticky full-viewport frame pinned while scrolling through the mask reveal */}
       <div className="sticky top-0 w-full h-[100dvh] overflow-hidden flex items-center justify-center bg-wine-950 select-none">
@@ -152,62 +162,65 @@ export default function KeynoteReveal() {
         <div
           ref={showcaseRef}
           style={{ opacity: 0 }}
-          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 transition-transform duration-100 ease-out pointer-events-none max-h-[92dvh] overflow-y-auto lg:overflow-visible"
+          className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6 transition-transform duration-100 ease-out pointer-events-none"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-center">
             
-            {/* Left: Cutout PNG Portrait with Ambient Backlight Glow & Hover Lift */}
+            {/* Left: Cutout PNG Portrait with Seamless Bottom Feather & Ambient Backlight Glow */}
             <div className="lg:col-span-5 flex justify-center items-center relative">
               {/* Vibrant radial halo backlight behind cutout silhouette */}
-              <div className="absolute w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/25 via-glc-pink/20 to-glc-orange/20 blur-3xl pointer-events-none" />
+              <div className="absolute w-56 sm:w-80 h-56 sm:h-80 rounded-full bg-gradient-to-tr from-glc-magenta/25 via-glc-pink/20 to-glc-orange/20 blur-3xl pointer-events-none" />
 
-              <div className="relative group/photo cursor-pointer w-full max-w-[280px] sm:max-w-sm lg:max-w-md aspect-[3/4.2] flex items-end justify-center">
-                <Image
-                  src="/images/remya-keynote-cutout.webp"
-                  alt="Remya Mohanakrishnan - Keynote Speaker"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 450px"
-                  className="object-contain object-bottom select-none transition-transform duration-700 ease-out group-hover/photo:scale-105 drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)] group-hover/photo:drop-shadow-[0_30px_60px_rgba(244,81,151,0.35)]"
-                />
+              {/* Cutout container with bottom gradient fade mask for 100% seamless blending */}
+              <div className="relative group/photo cursor-pointer w-full max-w-[210px] xs:max-w-[250px] sm:max-w-sm lg:max-w-md aspect-[3/4.1] flex items-end justify-center">
+                <div className="relative w-full h-full flex items-end justify-center [mask-image:linear-gradient(to_top,transparent_0%,transparent_3%,black_22%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,transparent_3%,black_22%,black_100%)]">
+                  <Image
+                    src="/images/remya-keynote-cutout.webp"
+                    alt="Remya Mohanakrishnan - Keynote Speaker"
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 250px, (max-width: 1024px) 380px, 450px"
+                    className="object-contain object-bottom select-none transition-transform duration-700 ease-out group-hover/photo:scale-105 drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] group-hover/photo:drop-shadow-[0_25px_50px_rgba(244,81,151,0.35)]"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Right: Clean, Prestigious Executive Details (No AI Pills, No Bloated Text) */}
-            <div className="lg:col-span-7 flex flex-col justify-center text-center lg:text-left space-y-3 sm:space-y-4">
+            {/* Right: Clean, Prestigious Executive Details (Optimized for Mobile & Desktop) */}
+            <div className="lg:col-span-7 flex flex-col justify-center text-center lg:text-left space-y-2.5 sm:space-y-4">
               
-              {/* Clean Editorial Category Label - No Pill, No Blinking Dot */}
-              <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-glc-orange font-sans">
+              {/* Clean Editorial Category Label */}
+              <p className="text-[11px] sm:text-sm font-bold uppercase tracking-[0.25em] text-glc-orange font-sans">
                 Keynote Speaker
               </p>
 
               {/* Speaker Full Name in Helvetica */}
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-cream-50 font-sans leading-[1.08]">
+              <h2 className="text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-cream-50 font-sans leading-[1.08]">
                 Remya Mohanakrishnan
               </h2>
 
               {/* Designation & Organization in Helvetica */}
-              <div className="space-y-1 font-sans">
-                <p className="text-lg sm:text-2xl font-semibold text-cream-100">
+              <div className="space-y-0.5 sm:space-y-1 font-sans">
+                <p className="text-base sm:text-xl lg:text-2xl font-semibold text-cream-100">
                   Head – Education (South Asia)
                 </p>
-                <p className="text-sm sm:text-base text-glc-pink font-medium">
+                <p className="text-xs sm:text-sm lg:text-base text-glc-pink font-medium">
                   Trade & Investment Queensland · Queensland Government
                 </p>
               </div>
 
               {/* Clean, Impactful Executive Bio (Crisp and Focused) */}
-              <p className="text-xs sm:text-sm lg:text-base text-cream-200/85 leading-relaxed max-w-xl font-normal font-sans pt-1">
+              <p className="text-xs sm:text-sm lg:text-base text-cream-200/85 leading-relaxed max-w-xl font-normal font-sans pt-0.5 sm:pt-1 mx-auto lg:mx-0">
                 Driving strategic bilateral education partnerships and transnational initiatives between Queensland, Australia, and South Asia.
               </p>
 
               {/* Clean Minimalist LinkedIn Link */}
-              <div className="pt-3">
+              <div className="pt-2 sm:pt-3">
                 <a
                   href="https://www.linkedin.com/in/remya-mohanakrishnan-25b8a128"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 hover:border-glc-orange text-cream-50 font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-glc-orange/20 hover:scale-[1.02] active:scale-[0.98] group font-sans"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 hover:border-glc-orange text-cream-50 font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-glc-orange/20 hover:scale-[1.02] active:scale-[0.98] group font-sans"
                 >
                   <svg
                     className="w-4 h-4 fill-[#0A66C2] group-hover:scale-110 transition-transform"
@@ -249,7 +262,7 @@ export default function KeynoteReveal() {
                 {/* The V-aperture of M with initial opacity: 0 so nothing peeks through at rest */}
                 <polygon
                   ref={polygonRef}
-                  points={isMobile ? '477,409 523,409 500,464' : '466,379 534,379 500,464'}
+                  points={isMobile ? '480,412 520,412 500,464' : '466,379 534,379 500,464'}
                   fill="black"
                   style={{ opacity: 0 }}
                 />
@@ -259,7 +272,7 @@ export default function KeynoteReveal() {
                   x="500"
                   y="465"
                   textAnchor="middle"
-                  fontSize={isMobile ? '80' : '120'}
+                  fontSize={isMobile ? '76' : '120'}
                   fontWeight="900"
                   fill="black"
                   letterSpacing="-2"
@@ -270,12 +283,12 @@ export default function KeynoteReveal() {
                 <text
                   ref={holeMohanaRef}
                   x="500"
-                  y="555"
+                  y={isMobile ? '535' : '555'}
                   textAnchor="middle"
-                  fontSize={isMobile ? '42' : '64'}
+                  fontSize={isMobile ? '38' : '64'}
                   fontWeight="900"
                   fill="black"
-                  letterSpacing="-2"
+                  letterSpacing={isMobile ? '-1' : '-2'}
                   style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
                 >
                   MOHANAKRISHNAN
@@ -300,7 +313,7 @@ export default function KeynoteReveal() {
               x="500"
               y="465"
               textAnchor="middle"
-              fontSize={isMobile ? '80' : '120'}
+              fontSize={isMobile ? '76' : '120'}
               fontWeight="900"
               fill="url(#keynoteTextGradient)"
               letterSpacing="-2"
@@ -311,12 +324,12 @@ export default function KeynoteReveal() {
             <text
               ref={gradMohanaRef}
               x="500"
-              y="555"
+              y={isMobile ? '535' : '555'}
               textAnchor="middle"
-              fontSize={isMobile ? '42' : '64'}
+              fontSize={isMobile ? '38' : '64'}
               fontWeight="900"
               fill="url(#keynoteTextGradient)"
-              letterSpacing="-2"
+              letterSpacing={isMobile ? '-1' : '-2'}
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               MOHANAKRISHNAN
@@ -326,12 +339,12 @@ export default function KeynoteReveal() {
             <text
               ref={gradSubRef}
               x="500"
-              y={isMobile ? '598' : '612'}
+              y={isMobile ? '575' : '612'}
               textAnchor="middle"
-              fontSize={isMobile ? '11' : '14'}
+              fontSize={isMobile ? '10' : '14'}
               fontWeight="700"
               fill="#F58232"
-              letterSpacing={isMobile ? '4' : '7'}
+              letterSpacing={isMobile ? '3' : '7'}
               style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
             >
               KEYNOTE SPEAKER
