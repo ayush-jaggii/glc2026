@@ -239,6 +239,12 @@ export default function KeynoteReveal() {
                 </p>
               </div>
 
+              {/* Inaugural Session Timing */}
+              <p className="text-xs sm:text-sm font-medium text-cream-300 font-sans flex items-center justify-center lg:justify-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-glc-orange shrink-0" />
+                <span>Addressing at the inaugural session 9:30 - 10:30</span>
+              </p>
+
               {/* Clean, Impactful Executive Bio (Crisp and Focused) */}
               <p className="text-xs sm:text-sm lg:text-base text-cream-200/85 leading-relaxed max-w-xl font-normal font-sans pt-0.5 sm:pt-1 mx-auto lg:mx-0">
                 Driving strategic bilateral education partnerships and transnational initiatives between Queensland, Australia, and South Asia.
