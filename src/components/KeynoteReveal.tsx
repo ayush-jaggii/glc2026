@@ -240,10 +240,11 @@ export default function KeynoteReveal() {
               </div>
 
               {/* Inaugural Session Timing */}
-              <p className="text-xs sm:text-sm font-medium text-cream-300 font-sans flex items-center justify-center lg:justify-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-glc-orange shrink-0" />
-                <span>Addressing at the inaugural session 9:30 - 10:30</span>
-              </p>
+              <div className="self-center lg:self-start pt-0.5">
+                <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-cream-100 font-sans text-xs sm:text-sm font-medium tracking-wide shadow-sm">
+                  Addressing at the inaugural session 9:30 - 10:30
+                </span>
+              </div>
 
               {/* Clean, Impactful Executive Bio (Crisp and Focused) */}
               <p className="text-xs sm:text-sm lg:text-base text-cream-200/85 leading-relaxed max-w-xl font-normal font-sans pt-0.5 sm:pt-1 mx-auto lg:mx-0">
