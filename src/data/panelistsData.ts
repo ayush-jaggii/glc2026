@@ -268,6 +268,17 @@ export const PANELISTS_DATA: Panelist[] = [
     photo: '/images/panelists/BFSI/RajeshKumarS_BFSI.png',
     tags: ['Market Infrastructure', 'Securities Ecosystem', 'Fintech Rail'],
   },
+  {
+    id: 'bfsi-5',
+    name: 'Devasmita Jena',
+    company: 'TAPMI Bengaluru',
+    designation: 'Associate Professor',
+    linkedin: 'https://www.linkedin.com/in/devasmita-jena-007314a7',
+    trackCode: 'BFSI',
+    trackName: 'BFSI & Fintech Architecture',
+    photo: '/images/panelists/BFSI/DevasmitaJena_BFSI.png',
+    tags: ['Financial Economics', 'Academic Leadership', 'Banking & Finance'],
+  },
 
   // Media & Marketing Panel
   {
