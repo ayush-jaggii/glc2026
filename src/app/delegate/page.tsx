@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import {
   User,
   Mail,
@@ -12,10 +11,9 @@ import {
   CheckCircle2,
   Loader2,
   RotateCcw,
-  Sparkles,
-  BadgeCheck,
   ArrowRight,
-  ShieldCheck
+  Maximize,
+  Minimize
 } from 'lucide-react'
 
 export default function DelegateRegistrationKioskPage() {
@@ -35,9 +33,71 @@ export default function DelegateRegistrationKioskPage() {
     registrationId?: string
   } | null>(null)
 
-  // Auto-reset timer for iPad kiosk (resets after 20 seconds so next delegate has fresh screen)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  // Auto-reset timer for iPad kiosk
   const [countdown, setCountdown] = useState(20)
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Track fullscreen state
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const fsElement =
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      setIsFullscreen(Boolean(fsElement))
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange)
+    }
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      const doc = document as any
+      const docEl = document.documentElement as any
+
+      if (
+        !doc.fullscreenElement &&
+        !doc.webkitFullscreenElement &&
+        !doc.mozFullScreenElement &&
+        !doc.msFullscreenElement
+      ) {
+        if (docEl.requestFullscreen) {
+          await docEl.requestFullscreen()
+        } else if (docEl.webkitRequestFullscreen) {
+          await docEl.webkitRequestFullscreen()
+        } else if (docEl.mozRequestFullScreen) {
+          await docEl.mozRequestFullScreen()
+        } else if (docEl.msRequestFullscreen) {
+          await docEl.msRequestFullscreen()
+        }
+      } else {
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen()
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen()
+        } else if (doc.mozCancelFullScreen) {
+          await doc.mozCancelFullScreen()
+        } else if (doc.msExitFullscreen) {
+          await doc.msExitFullscreen()
+        }
+      }
+    } catch (err) {
+      console.warn('Fullscreen toggle request was prevented:', err)
+    }
+  }
 
   useEffect(() => {
     if (successData) {
@@ -126,7 +186,7 @@ export default function DelegateRegistrationKioskPage() {
         setErrorMsg(data.error || 'Failed to submit registration. Please try again.')
       }
     } catch {
-      setErrorMsg('Network connectivity error. Please check internet connection and try again.')
+      setErrorMsg('Network connectivity error. Please check your internet connection.')
     } finally {
       setLoading(false)
     }
@@ -134,72 +194,62 @@ export default function DelegateRegistrationKioskPage() {
 
   return (
     <div className="min-h-screen bg-wine-950 text-cream-50 font-sans flex flex-col justify-between selection:bg-glc-magenta selection:text-white">
-      {/* Top Header / Kiosk Branding */}
-      <header className="w-full border-b border-wine-800/80 bg-wine-950/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-        <div className="flex items-center gap-4">
+      {/* Header */}
+      <header className="w-full border-b border-wine-800/60 bg-wine-950/90 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <div className="flex items-center gap-3">
           <Image
             src="/logos/tapmi-logo.svg"
             alt="TAPMI"
-            width={110}
-            height={34}
+            width={100}
+            height={32}
             priority
-            className="brightness-0 invert h-7 sm:h-8 w-auto"
+            className="brightness-0 invert h-7 w-auto"
           />
-          <div className="h-5 w-[1px] bg-wine-700/80 hidden sm:block" />
-          <div className="hidden sm:flex flex-col">
-            <span className="text-xs font-black tracking-widest text-glc-magenta uppercase">
-              GLC 2026 • 4TH EDITION
-            </span>
-            <span className="text-[10px] text-cream-400 uppercase tracking-wider">
-              Global Leadership Conference
-            </span>
-          </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-500/40 text-[11px] font-bold text-emerald-300 uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Delegate Desk</span>
-          </div>
-          <Link
-            href="/"
-            className="text-[11px] text-cream-400 hover:text-white transition-colors underline"
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-wine-900/70 hover:bg-wine-900 text-cream-200 hover:text-white border border-wine-700/70 text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
           >
-            Portal
-          </Link>
+            {isFullscreen ? (
+              <>
+                <Minimize className="w-3.5 h-3.5 text-glc-orange" />
+                <span>Exit Full Screen</span>
+              </>
+            ) : (
+              <>
+                <Maximize className="w-3.5 h-3.5 text-glc-orange" />
+                <span>Full Screen</span>
+              </>
+            )}
+          </button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative overflow-hidden">
-        {/* Ambient Gradient Glows */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-glc-magenta/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-glc-orange/10 blur-3xl pointer-events-none" />
-
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative">
         <div className="w-full max-w-2xl relative z-10">
           {successData ? (
             /* ========================================== */
-            /* SUCCESS CONFIRMATION STATE (KIOSK READY)   */
+            /* SUCCESS CONFIRMATION STATE                 */
             /* ========================================== */
             <div className="bg-[#13030F] rounded-3xl p-8 sm:p-12 border border-wine-800 shadow-2xl text-center animate-fadeIn">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-400/50 flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(52,211,153,0.3)]">
-                <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+              <div className="w-16 h-16 rounded-full bg-emerald-950/90 border border-emerald-500/50 flex items-center justify-center mx-auto mb-5 shadow-lg">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400" />
               </div>
 
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-wine-900/80 text-emerald-300 border border-emerald-500/40 mb-4">
-                <BadgeCheck className="w-4 h-4 text-emerald-400" />
-                <span>On-Spot Registration Confirmed</span>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-                Welcome to GLC 2026!
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-1 uppercase">
+                Registration Confirmed
               </h2>
 
-              <p className="text-lg text-glc-orange font-semibold mb-6">
-                {successData.name}
+              <p className="text-base sm:text-lg text-glc-orange font-semibold mb-6">
+                Welcome, {successData.name}
               </p>
 
-              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-wine-800/80 text-left space-y-3 mb-8 text-sm">
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-wine-800/80 text-left space-y-3 mb-8 text-sm">
                 <div className="text-[11px] font-mono uppercase tracking-wider text-cream-400 font-semibold border-b border-wine-800/80 pb-2 flex items-center justify-between">
                   <span>Delegate Details</span>
                   {successData.registrationId && (
@@ -243,14 +293,11 @@ export default function DelegateRegistrationKioskPage() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 text-emerald-200 text-xs sm:text-sm leading-relaxed mb-8 flex items-start gap-3 text-left">
-                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="block text-emerald-300 font-bold mb-0.5">
-                    Next Step: Collect Your Badge
-                  </strong>
-                  Please proceed to the registration desk right in front to collect your official physical conference badge and kit.
-                </div>
+              <div className="p-4 rounded-2xl bg-wine-900/30 border border-wine-800/80 text-cream-200 text-xs sm:text-sm leading-relaxed mb-8 text-left">
+                <strong className="block text-white font-semibold mb-0.5">
+                  Next Step:
+                </strong>
+                Please collect your official delegate badge and kit at the registration desk.
               </div>
 
               {/* Action Buttons & Countdown */}
@@ -265,25 +312,21 @@ export default function DelegateRegistrationKioskPage() {
                 </button>
 
                 <p className="text-xs text-cream-400">
-                  Screen will automatically reset in <strong className="text-glc-orange font-mono font-bold text-sm">{countdown}s</strong> for the next delegate.
+                  Screen will reset in <strong className="text-white font-mono font-bold">{countdown}s</strong> for the next delegate.
                 </p>
               </div>
             </div>
           ) : (
             /* ========================================== */
-            /* REGISTRATION FORM (IPAD OPTIMIZED)         */
+            /* REGISTRATION FORM                          */
             /* ========================================== */
             <div className="bg-[#13030F] rounded-3xl p-6 sm:p-10 border border-wine-800 shadow-2xl relative">
-              <div className="mb-8 text-center sm:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-wine-900/80 border border-wine-700/80 text-[11px] font-bold text-glc-orange uppercase tracking-wider mb-3">
-                  <Sparkles className="w-3.5 h-3.5 text-glc-magenta" />
-                  <span>On-Spot Registration</span>
-                </div>
-                <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white uppercase leading-tight">
-                  Delegate Check-In
+              <div className="mb-8">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white uppercase">
+                  Delegate Registration
                 </h1>
-                <p className="text-xs sm:text-sm text-cream-300/80 mt-1.5 leading-relaxed">
-                  Please enter your details below for instant conference access and badging.
+                <p className="text-xs sm:text-sm text-cream-300/80 mt-1.5">
+                  Please enter your details to receive your conference pass.
                 </p>
               </div>
 
@@ -308,7 +351,7 @@ export default function DelegateRegistrationKioskPage() {
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. Dr. Rajesh Kumar"
                       autoComplete="name"
-                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta focus:ring-2 focus:ring-glc-magenta/20 transition-all"
+                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-all"
                     />
                   </div>
                 </div>
@@ -327,7 +370,7 @@ export default function DelegateRegistrationKioskPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. rajesh.kumar@company.com"
                       autoComplete="email"
-                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta focus:ring-2 focus:ring-glc-magenta/20 transition-all"
+                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-all"
                     />
                   </div>
                 </div>
@@ -346,7 +389,7 @@ export default function DelegateRegistrationKioskPage() {
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. +91 98765 43210"
                       autoComplete="tel"
-                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta focus:ring-2 focus:ring-glc-magenta/20 transition-all"
+                      className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-all"
                     />
                   </div>
                 </div>
@@ -367,7 +410,7 @@ export default function DelegateRegistrationKioskPage() {
                         onChange={(e) => setOrganization(e.target.value)}
                         placeholder="e.g. Infosys, TCS, IIM..."
                         autoComplete="organization"
-                        className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta focus:ring-2 focus:ring-glc-magenta/20 transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-all"
                       />
                     </div>
                   </div>
@@ -384,7 +427,7 @@ export default function DelegateRegistrationKioskPage() {
                         value={designation}
                         onChange={(e) => setDesignation(e.target.value)}
                         placeholder="e.g. Vice President, Director..."
-                        className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta focus:ring-2 focus:ring-glc-magenta/20 transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-wine-950 border border-wine-800 text-base text-cream-100 placeholder:text-cream-500 focus:outline-none focus:border-glc-magenta transition-all"
                       />
                     </div>
                   </div>
@@ -400,11 +443,11 @@ export default function DelegateRegistrationKioskPage() {
                     {loading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Confirming Registration...</span>
+                        <span>Submitting...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit & Confirm Registration</span>
+                        <span>Submit Registration</span>
                         <ArrowRight className="w-5 h-5" />
                       </>
                     )}
@@ -416,9 +459,9 @@ export default function DelegateRegistrationKioskPage() {
         </div>
       </main>
 
-      {/* Footer info for Kiosk */}
+      {/* Footer */}
       <footer className="w-full py-4 px-6 border-t border-wine-900/60 text-center text-xs text-cream-400/80 bg-wine-950/60">
-        GLC 2026 Registration Desk • TAPMI Bengaluru, MAHE • Need help? Ask the registration team volunteer
+        GLC 2026 • TAPMI Bengaluru
       </footer>
     </div>
   )
