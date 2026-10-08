@@ -7,15 +7,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function SpeakerReveal() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const isInteractingRef = useRef(false)
-  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-
   // Constants
   const TARGET_CRUISE_SPEED = 0.14 // ~140px/s (~2.3px per frame at 60Hz, ~1.15px at 120Hz ProMotion)
 
   // Interaction & momentum tracking refs
+  const isVisibleRef = useRef(false)
   const isTouchingRef = useRef(false)
   const isHoveredRef = useRef(false)
   const isButtonNavigatingRef = useRef(false)
@@ -25,6 +21,7 @@ export default function SpeakerReveal() {
 
   const lastFrameTimeRef = useRef(0)
   const lastScrollLeftRef = useRef(0)
+  const subpixelPosRef = useRef(0) // Precise floating-point accumulator to prevent sub-pixel rounding jitter
   const measuredVelocityRef = useRef(0) // px/ms
   const currentAutoSpeedRef = useRef(0) // px/ms
   const lastTouchEndTimeRef = useRef(0)
@@ -32,14 +29,6 @@ export default function SpeakerReveal() {
 
   // Duplicate list for infinite loop feel
   const allSpeakers = [...SHUFFLED_PANELISTS, ...SHUFFLED_PANELISTS]
-
-  // Update button visibility based on scroll position
-  const checkScrollState = useCallback(() => {
-    const el = scrollContainerRef.current
-    if (!el) return
-    setCanScrollLeft(el.scrollLeft > 20)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 20)
-  }, [])
 
   // Manual scroll handler for desktop buttons
   const handleScroll = (direction: 'left' | 'right') => {
@@ -53,6 +42,7 @@ export default function SpeakerReveal() {
     buttonNavTimerRef.current = setTimeout(() => {
       isButtonNavigatingRef.current = false
       if (scrollContainerRef.current) {
+        subpixelPosRef.current = scrollContainerRef.current.scrollLeft
         lastScrollLeftRef.current = scrollContainerRef.current.scrollLeft
         lastTouchEndTimeRef.current = performance.now()
       }
@@ -72,7 +62,20 @@ export default function SpeakerReveal() {
     const el = scrollContainerRef.current
     if (!el) return
 
+    // Initialize subpixel accumulator
+    subpixelPosRef.current = el.scrollLeft
+    lastScrollLeftRef.current = el.scrollLeft
+
     let animationFrameId: number
+
+    // IntersectionObserver: Pause completely when off-screen to eliminate CPU/GPU overhead during page scroll
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting
+      },
+      { rootMargin: '150px 0px' } // Pre-activate 150px before entering viewport
+    )
+    observer.observe(el)
 
     const autoScrollLoop = (now: DOMHighResTimeStamp) => {
       if (!el) {
@@ -80,8 +83,16 @@ export default function SpeakerReveal() {
         return
       }
 
+      // If off-screen, skip DOM writes entirely to prevent main thread layout contention with page scroll
+      if (!isVisibleRef.current) {
+        lastFrameTimeRef.current = now
+        animationFrameId = requestAnimationFrame(autoScrollLoop)
+        return
+      }
+
       if (!lastFrameTimeRef.current) {
         lastFrameTimeRef.current = now
+        subpixelPosRef.current = el.scrollLeft
         lastScrollLeftRef.current = el.scrollLeft
         animationFrameId = requestAnimationFrame(autoScrollLoop)
         return
@@ -108,6 +119,7 @@ export default function SpeakerReveal() {
         } else if (el.scrollLeft < 0) {
           el.scrollLeft += halfScroll
         }
+        subpixelPosRef.current = el.scrollLeft
         lastScrollLeftRef.current = el.scrollLeft
         animationFrameId = requestAnimationFrame(autoScrollLoop)
         return
@@ -118,6 +130,7 @@ export default function SpeakerReveal() {
         isAutoScrollingRef.current = false
         currentAutoSpeedRef.current = 0
         measuredVelocityRef.current = 0
+        subpixelPosRef.current = currentScroll
         lastScrollLeftRef.current = currentScroll
         animationFrameId = requestAnimationFrame(autoScrollLoop)
         return
@@ -139,6 +152,7 @@ export default function SpeakerReveal() {
         } else if (el.scrollLeft < 0) {
           el.scrollLeft += halfScroll
         }
+        subpixelPosRef.current = el.scrollLeft
         lastScrollLeftRef.current = el.scrollLeft
 
         const timeSinceRelease = now - lastTouchEndTimeRef.current
@@ -166,6 +180,7 @@ export default function SpeakerReveal() {
           isAutoScrollingRef.current = true
           // Match the current glide velocity for a 100% seamless transition
           currentAutoSpeedRef.current = Math.max(0.02, Math.min(TARGET_CRUISE_SPEED, v))
+          subpixelPosRef.current = el.scrollLeft
         } else {
           animationFrameId = requestAnimationFrame(autoScrollLoop)
           return
@@ -182,22 +197,22 @@ export default function SpeakerReveal() {
       }
 
       const moveAmount = currentAutoSpeedRef.current * dt
-      el.scrollLeft += moveAmount
+      subpixelPosRef.current += moveAmount
 
-      // Seamless infinite wrap
-      if (el.scrollLeft >= halfScroll) {
-        el.scrollLeft -= halfScroll
+      // Seamless infinite wrap using floating-point subpixel accumulator
+      if (subpixelPosRef.current >= halfScroll) {
+        subpixelPosRef.current -= halfScroll
+      } else if (subpixelPosRef.current < 0) {
+        subpixelPosRef.current += halfScroll
       }
 
-      lastScrollLeftRef.current = el.scrollLeft
+      el.scrollLeft = subpixelPosRef.current
+      lastScrollLeftRef.current = subpixelPosRef.current
+
       animationFrameId = requestAnimationFrame(autoScrollLoop)
     }
 
     animationFrameId = requestAnimationFrame(autoScrollLoop)
-
-    const onScroll = () => {
-      checkScrollState()
-    }
 
     // Touch events for mobile
     const onTouchStart = () => {
@@ -206,6 +221,7 @@ export default function SpeakerReveal() {
       currentAutoSpeedRef.current = 0
       measuredVelocityRef.current = 0
       if (scrollContainerRef.current) {
+        subpixelPosRef.current = scrollContainerRef.current.scrollLeft
         lastScrollLeftRef.current = scrollContainerRef.current.scrollLeft
       }
     }
@@ -242,7 +258,6 @@ export default function SpeakerReveal() {
       }, 400)
     }
 
-    el.addEventListener('scroll', onScroll, { passive: true })
     el.addEventListener('touchstart', onTouchStart, { passive: true })
     el.addEventListener('touchend', onTouchEnd, { passive: true })
     el.addEventListener('touchcancel', onTouchCancel, { passive: true })
@@ -250,13 +265,11 @@ export default function SpeakerReveal() {
     el.addEventListener('mouseleave', onMouseLeave, { passive: true })
     el.addEventListener('wheel', onWheel, { passive: true })
 
-    checkScrollState()
-
     return () => {
       cancelAnimationFrame(animationFrameId)
+      observer.disconnect()
       if (buttonNavTimerRef.current) clearTimeout(buttonNavTimerRef.current)
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current)
-      el.removeEventListener('scroll', onScroll)
       el.removeEventListener('touchstart', onTouchStart)
       el.removeEventListener('touchend', onTouchEnd)
       el.removeEventListener('touchcancel', onTouchCancel)
@@ -264,7 +277,7 @@ export default function SpeakerReveal() {
       el.removeEventListener('mouseleave', onMouseLeave)
       el.removeEventListener('wheel', onWheel)
     }
-  }, [checkScrollState])
+  }, [])
 
   return (
     <div id="speakers" className="relative space-y-8 sm:space-y-10 scroll-mt-24">
@@ -310,9 +323,10 @@ export default function SpeakerReveal() {
         {/* Scrollable Container - Touch drag enabled with momentum on iOS & Android (no CSS scroll-smooth conflict) */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 px-6 sm:px-10 lg:px-12 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden touch-pan-x cursor-grab active:cursor-grabbing"
+          className="flex gap-4 sm:gap-6 px-6 sm:px-10 lg:px-12 py-4 overflow-x-auto overflow-y-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden touch-pan-x cursor-grab active:cursor-grabbing transform-gpu will-change-scroll [contain:layout_paint]"
           style={{
             WebkitOverflowScrolling: 'touch',
+            transform: 'translateZ(0)',
           }}
         >
           {allSpeakers.map((panelist, idx) => (

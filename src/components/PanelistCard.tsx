@@ -67,22 +67,22 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
 
   return (
     <article
-      className={`group relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#180415] to-[#0A0207] border border-wine-800/80 hover:border-glc-magenta transition-all duration-500 shadow-xl hover:shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)] flex flex-col justify-end text-left hover:scale-[1.03] hover:z-30 cursor-pointer ${
+      className={`group relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#180415] to-[#0A0207] border border-wine-800/80 hover:border-glc-magenta transition-all duration-500 shadow-xl hover:shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)] flex flex-col justify-end text-left hover:scale-[1.03] hover:z-30 cursor-pointer transform-gpu [backface-visibility:hidden] [transform:translateZ(0)] ${
         isCarousel
-          ? 'w-[250px] sm:w-[300px] h-[370px] sm:h-[440px] flex-shrink-0 snap-start'
+          ? 'w-[250px] sm:w-[300px] h-[370px] sm:h-[440px] flex-shrink-0'
           : 'h-[370px] sm:h-[440px] w-full'
       }`}
     >
       {/* 1. Background Speaker Portrait or Monogram Avatar */}
-      <div className="absolute inset-0 bg-wine-950 overflow-hidden">
+      <div className="absolute inset-0 bg-wine-950 overflow-hidden transform-gpu [backface-visibility:hidden]">
         {panelist.photo ? (
           <Image
             src={panelist.photo}
             alt={panelist.name}
             fill
-            priority
+            priority={!isCarousel}
             sizes="(max-width: 640px) 280px, 300px"
-            className="object-cover object-top filter grayscale contrast-[1.18] brightness-[0.85] group-hover:grayscale-0 group-hover:contrast-[1.05] group-hover:brightness-100 group-hover:scale-105 transition-all duration-500 ease-out"
+            className="object-cover object-top filter grayscale contrast-[1.18] brightness-[0.85] group-hover:grayscale-0 group-hover:contrast-[1.05] group-hover:brightness-100 group-hover:scale-105 transition-all duration-500 ease-out transform-gpu [backface-visibility:hidden] [transform:translateZ(0)]"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-wine-900/60 via-wine-950 to-black">
