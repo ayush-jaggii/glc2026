@@ -44,6 +44,9 @@ export async function POST(request: Request) {
 
     // 2. Reject unauthorized requests (e.g. student camera scanning their pass)
     if (!isAuthenticated) {
+      let studentRoll: string | null = null
+      let studentName: string | null = null
+
       // Record failed self-scan attempt asynchronously
       try {
         const userAgent = request.headers.get('user-agent') || ''
@@ -51,10 +54,6 @@ export async function POST(request: Request) {
           request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
           request.headers.get('x-real-ip') ||
           ''
-
-        // Look up student roll and name from token if valid
-        let studentRoll: string | null = null
-        let studentName: string | null = null
 
         if (token && token !== 'PING_CHECK') {
           const sRes = await fetch(
@@ -95,12 +94,22 @@ export async function POST(request: Request) {
         console.warn('Failed to record unauthorized scan attempt:', logErr)
       }
 
+      const formattedName = studentName
+        ? studentName
+            .toLowerCase()
+            .split(' ')
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ')
+        : ''
+
       return NextResponse.json(
         {
           success: false,
           code: 'UNAUTHORIZED_SELF_SCAN',
-          error: "Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance.",
-          message: "Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance."
+          studentName: formattedName || null,
+          studentRoll: studentRoll || null,
+          error: `Turns out Nexora outsmarts you, again. Nice try${formattedName ? `, ${formattedName}` : ''}. Marking attendance isn't that easy — you cannot mark your own attendance.`,
+          message: `Turns out Nexora outsmarts you, again. Nice try${formattedName ? `, ${formattedName}` : ''}. Marking attendance isn't that easy — you cannot mark your own attendance.`
         },
         { status: 401 }
       )

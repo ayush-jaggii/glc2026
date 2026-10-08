@@ -18,6 +18,15 @@ import {
   ChevronLeft
 } from 'lucide-react'
 
+function formatName(name: string) {
+  if (!name) return ''
+  return name
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
 function VerifyContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token') || searchParams.get('id') || ''
@@ -31,6 +40,7 @@ function VerifyContent() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [authError, setAuthError] = useState('')
+  const [studentName, setStudentName] = useState<string | null>(null)
 
   useEffect(() => {
     const savedToken = localStorage.getItem('glc_volunteer_session')
@@ -41,12 +51,23 @@ function VerifyContent() {
       setIsAuth(true)
       executeVerification(token, savedToken, savedName || 'Volunteer Desk')
     } else if (token) {
-      // Student opened page with token without volunteer session: log the self-scan attempt
+      // Student opened page with token without volunteer session: log the self-scan attempt & retrieve student name
+      setLoading(true)
       fetch('/api/volunteer/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
-      }).catch(() => {})
+      })
+        .then(async (res) => {
+          const data = await res.json().catch(() => null)
+          if (data?.studentName) {
+            setStudentName(data.studentName)
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          setLoading(false)
+        })
     }
   }, [token])
 
@@ -67,6 +88,9 @@ function VerifyContent() {
       })
 
       const data = await res.json()
+      if (data?.studentName) {
+        setStudentName(data.studentName)
+      }
       setResult(data)
     } catch {
       setResult({
@@ -162,6 +186,11 @@ function VerifyContent() {
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
                 Turns out Nexora outsmarts you, again.
               </h2>
+
+              {/* Nice try, (their name) */}
+              <p className="text-base sm:text-lg font-bold text-glc-orange mb-3">
+                Nice try{studentName ? `, ${formatName(studentName)}` : ''}
+              </p>
 
               {/* Explanation */}
               <p className="text-sm font-medium text-cream-200 mb-3">
@@ -360,11 +389,14 @@ function VerifyContent() {
                 <h2 className="text-xl font-bold text-white mb-2 tracking-tight">
                   Turns out Nexora outsmarts you, again.
                 </h2>
+                <p className="text-base sm:text-lg font-bold text-glc-orange mb-3">
+                  Nice try{result?.studentName || studentName ? `, ${formatName(result?.studentName || studentName)}` : ''}
+                </p>
                 <p className="text-sm font-medium text-cream-200 mb-2">
                   Unfortunately, marking attendance isn't that easy.
                 </p>
                 <p className="text-xs text-cream-400 leading-relaxed mb-5 max-w-sm mx-auto">
-                  You cannot mark your own attendance. Only designated gate volunteers can verify and record attendance at the venue entrance.
+                  You cannot mark your own attendance. Attendance can only be recorded by designated gate volunteers at the auditorium entry.
                 </p>
                 <div className="p-3.5 rounded-xl bg-white/[0.02] border border-wine-800 text-[11px] text-cream-300 space-y-1 mb-5 text-left">
                   <div className="font-semibold text-cream-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
@@ -372,7 +404,7 @@ function VerifyContent() {
                     Official Entry Procedure
                   </div>
                   <div className="text-cream-300 leading-relaxed">
-                    Show your official digital pass to a gate volunteer at the auditorium entrance to record your attendance.
+                    Present your digital pass with QR code at the registration gate. An authorized volunteer will scan and confirm your check-in.
                   </div>
                 </div>
                 <button
