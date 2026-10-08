@@ -8,6 +8,7 @@ import { Linkedin, ExternalLink, Layers } from 'lucide-react'
 interface PanelistCardProps {
   panelist: Panelist
   isCarousel?: boolean
+  onToggleExpand?: (expanded: boolean) => void
 }
 
 const TRACK_PANEL_MAP: Record<string, { number: string; title: string; subtitle: string }> = {
@@ -43,7 +44,15 @@ const TRACK_PANEL_MAP: Record<string, { number: string; title: string; subtitle:
   },
 }
 
-export default function PanelistCard({ panelist, isCarousel = false }: PanelistCardProps) {
+export default function PanelistCard({ panelist, isCarousel = false, onToggleExpand }: PanelistCardProps) {
+  const [isExpanded, setIsExpanded] = React.useState(false)
+
+  const handleCardClick = () => {
+    const nextState = !isExpanded
+    setIsExpanded(nextState)
+    onToggleExpand?.(nextState)
+  }
+
   const track = PANEL_TRACKS.find((t) => t.code === panelist.trackCode)
   const badgeBg = track?.badgeBg || 'bg-wine-900/80'
   const badgeBorder = track?.badgeBorder || 'border-wine-700/60'
@@ -67,7 +76,12 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
 
   return (
     <article
-      className={`group relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#180415] to-[#0A0207] border border-wine-800/80 hover:border-glc-magenta transition-all duration-500 shadow-xl hover:shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)] flex flex-col justify-end text-left hover:scale-[1.03] hover:z-30 cursor-pointer transform-gpu [backface-visibility:hidden] [transform:translateZ(0)] ${
+      onClick={handleCardClick}
+      className={`group relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#180415] to-[#0A0207] border ${
+        isExpanded
+          ? 'border-glc-magenta ring-1 ring-glc-magenta/50 shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)]'
+          : 'border-wine-800/80 hover:border-glc-magenta'
+      } transition-all duration-500 shadow-xl hover:shadow-[0_20px_45px_-10px_rgba(244,81,151,0.4)] flex flex-col justify-end text-left hover:scale-[1.03] hover:z-30 cursor-pointer transform-gpu [backface-visibility:hidden] [transform:translateZ(0)] ${
         isCarousel
           ? 'w-[250px] sm:w-[300px] h-[370px] sm:h-[440px] flex-shrink-0'
           : 'h-[370px] sm:h-[440px] w-full'
@@ -126,8 +140,10 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Open ${panelist.name}'s LinkedIn profile`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-cream-400 hover:text-[#0077B5] hover:scale-110 transition-all p-1 -mr-1 shrink-0"
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              className="text-cream-400 hover:text-[#0077B5] hover:scale-110 transition-all p-1.5 -mr-1 shrink-0 relative z-30 cursor-pointer"
             >
               <Linkedin className="w-4 h-4 shrink-0" />
             </a>
@@ -142,13 +158,18 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
         )}
 
         {/* Corporate Designation */}
-        <div className="text-xs text-cream-200/90 mt-1 leading-relaxed font-normal group-hover:line-clamp-none line-clamp-1 transition-all">
+        <div className={`text-xs text-cream-200/90 mt-1 leading-relaxed font-normal ${isExpanded ? 'line-clamp-none' : 'group-hover:line-clamp-none line-clamp-1'} transition-all`}>
           {panelist.designation}
         </div>
 
-        {/* Expanded Panel Details - Reveals on Hover */}
-        <div className="max-h-0 group-hover:max-h-48 opacity-0 group-hover:opacity-100 overflow-hidden transition-all duration-400 ease-out pt-0 group-hover:pt-3">
-          
+        {/* Expanded Panel Details - Reveals on Hover (Desktop) or Tap (Mobile/Desktop) */}
+        <div
+          className={`overflow-hidden transition-all duration-400 ease-out ${
+            isExpanded
+              ? 'max-h-60 opacity-100 pt-3'
+              : 'max-h-0 group-hover:max-h-48 opacity-0 group-hover:opacity-100 pt-0 group-hover:pt-3'
+          }`}
+        >
           {/* Panel Info Box */}
           <div className="rounded-xl p-3 bg-wine-950/95 border border-wine-700/80 shadow-inner mb-3">
             <div className="text-xs font-bold text-cream-100 leading-snug">
@@ -165,8 +186,10 @@ export default function PanelistCard({ panelist, isCarousel = false }: PanelistC
               href={panelist.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#0077B5] hover:bg-[#005E93] text-white text-xs font-semibold transition-all duration-200 shadow-md"
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#0077B5] hover:bg-[#005E93] text-white text-xs font-semibold transition-all duration-200 shadow-md cursor-pointer relative z-30"
             >
               <Linkedin className="w-3.5 h-3.5 shrink-0" />
               <span>Connect on LinkedIn</span>
