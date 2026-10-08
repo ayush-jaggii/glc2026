@@ -1,18 +1,15 @@
 'use client'
 
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { SHUFFLED_PANELISTS } from '@/data/panelistsData'
 import PanelistCard from './PanelistCard'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function SpeakerReveal() {
   const [navOffset, setNavOffset] = useState(0)
-  const [isCardExpanded, setIsCardExpanded] = useState(false)
-  const touchStartXRef = useRef(0)
-  const touchStartYRef = useRef(0)
-  const isTouchActiveRef = useRef(false)
+  const [expandedSpeakerId, setExpandedSpeakerId] = useState<string | null>(null)
 
-  // Step navigation (Desktop buttons & Mobile buttons/flicks)
+  // Step navigation (Left and Right buttons)
   const handlePrev = useCallback(() => {
     setNavOffset((prev) => prev + 340)
   }, [])
@@ -21,37 +18,9 @@ export default function SpeakerReveal() {
     setNavOffset((prev) => prev - 340)
   }, [])
 
-  // Touch flick detection for mobile:
-  // Does NOT hijack touchmove so vertical page scrolling stays 100% native and smooth.
-  // Tap (<30px movement) passes through cleanly to expand the card and open LinkedIn.
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartXRef.current = e.touches[0].clientX
-    touchStartYRef.current = e.touches[0].clientY
-    isTouchActiveRef.current = true
-  }
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isTouchActiveRef.current) return
-    isTouchActiveRef.current = false
-
-    const touchEndX = e.changedTouches[0].clientX
-    const touchEndY = e.changedTouches[0].clientY
-    const dx = touchEndX - touchStartXRef.current
-    const dy = touchEndY - touchStartYRef.current
-
-    // If gesture was predominantly vertical, allow native vertical scroll
-    if (Math.abs(dy) > Math.abs(dx)) return
-
-    // Clean horizontal swipe/flick threshold (35px)
-    if (dx < -35) {
-      handleNext()
-    } else if (dx > 35) {
-      handlePrev()
-    }
-  }
-
-  const handleToggleExpand = useCallback((expanded: boolean) => {
-    setIsCardExpanded(expanded)
+  // Toggle speaker expansion on click
+  const handleToggleExpand = useCallback((panelistId: string) => {
+    setExpandedSpeakerId((current) => (current === panelistId ? null : panelistId))
   }, [])
 
   return (
@@ -79,7 +48,7 @@ export default function SpeakerReveal() {
             handlePrev()
           }}
           aria-label="Scroll speakers left"
-          className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-50 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] active:bg-glc-magenta/30 border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+          className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] active:bg-glc-magenta/30 border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
         >
           <ChevronLeft className="w-5 sm:w-6 h-5 sm:h-6" />
         </button>
@@ -90,7 +59,7 @@ export default function SpeakerReveal() {
             handleNext()
           }}
           aria-label="Scroll speakers right"
-          className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-50 w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] active:bg-glc-magenta/30 border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+          className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#180415]/90 hover:bg-[#250620] active:bg-glc-magenta/30 border border-wine-600/80 hover:border-glc-magenta text-white items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
         >
           <ChevronRight className="w-5 sm:w-6 h-5 sm:h-6" />
         </button>
@@ -105,15 +74,14 @@ export default function SpeakerReveal() {
           style={{
             transform: `translate3d(${navOffset}px, 0, 0)`,
           }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
           {/* 100% GPU Hardware-Accelerated Marquee Loop running on Compositor Thread */}
+          {/* Pauses whenever mouse hovers on desktop OR when a speaker is clicked on mobile/desktop */}
           <div
             className="flex gap-4 sm:gap-6 py-4 animate-marquee group-hover:[animation-play-state:paused]"
             style={{
               animationDuration: '38s',
-              animationPlayState: isCardExpanded ? 'paused' : undefined,
+              animationPlayState: expandedSpeakerId ? 'paused' : undefined,
             }}
           >
             {/* Track 1 */}
@@ -123,6 +91,7 @@ export default function SpeakerReveal() {
                   key={`track1-${panelist.id}-${idx}`}
                   panelist={panelist}
                   isCarousel
+                  isExpanded={expandedSpeakerId === panelist.id}
                   onToggleExpand={handleToggleExpand}
                 />
               ))}
@@ -135,6 +104,7 @@ export default function SpeakerReveal() {
                   key={`track2-${panelist.id}-${idx}`}
                   panelist={panelist}
                   isCarousel
+                  isExpanded={expandedSpeakerId === panelist.id}
                   onToggleExpand={handleToggleExpand}
                 />
               ))}
