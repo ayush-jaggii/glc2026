@@ -271,17 +271,6 @@ export const PANELISTS_DATA: Panelist[] = [
 
   // Media & Marketing Panel
   {
-    id: 'media-1',
-    name: 'Sunder Madaakshira',
-    company: 'Sinch',
-    designation: 'Chief Marketing Officer (CMO)',
-    linkedin: 'https://www.linkedin.com/in/sunder-madaakshira-4612235/',
-    trackCode: 'Media',
-    trackName: 'Media, Content & Brand Strategy',
-    photo: '/images/panelists/Media/SunderMadaakshira_Media.jpeg',
-    tags: ['Brand Governance', 'Conversational AI', 'Enterprise Marketing'],
-  },
-  {
     id: 'media-2',
     name: 'Bhavna Lalchandani',
     company: 'Condé Nast India',
@@ -453,15 +442,15 @@ export const FEATURED_ACCORDION_ITEMS = [
     tags: ['Automotive Leadership', 'Mobility Platforms', 'Global Scale'],
   },
   {
-    id: 'media-1',
-    url: '/images/panelists/Media/SunderMadaakshira_Media.jpeg',
-    title: 'Sunder Madaakshira',
-    description: 'Sinch · Chief Marketing Officer',
-    company: 'Sinch',
-    designation: 'Chief Marketing Officer (CMO)',
-    linkedin: 'https://www.linkedin.com/in/sunder-madaakshira-4612235/',
+    id: 'media-2',
+    url: '/images/panelists/Media/BhavnaLalchandani_Media.jpeg',
+    title: 'Bhavna Lalchandani',
+    description: 'Condé Nast India · Chief Content & Innovation Strategy Officer',
+    company: 'Condé Nast India',
+    designation: 'Chief Content and Innovation Strategy Officer',
+    linkedin: 'https://www.linkedin.com/in/bhavnalalchandani/',
     track: 'Media & Brand Strategy',
-    tags: ['Brand Governance', 'Conversational AI', 'Enterprise Marketing'],
+    tags: ['Luxury Media', 'Content Architecture', 'Cultural Storytelling'],
   },
   {
     id: 'bfsi-4',
