@@ -124,7 +124,32 @@ export default function PartnersSection() {
         <div className="rounded-2xl sm:rounded-3xl bg-[#13030F] border border-wine-800/80 p-3 sm:p-6 lg:p-8 shadow-2xl relative backdrop-blur-md">
           
           {/* 1. Featured Main Partners (Top Grid) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 max-w-4xl mx-auto mb-8 sm:mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 max-w-5xl mx-auto mb-8 sm:mb-12">
+            {/* Branding Partner */}
+            <div className="flex flex-col items-center justify-center w-full">
+              <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] sm:tracking-[0.22em] uppercase text-cream-400 mb-2 sm:mb-3">
+                Branding Partner
+              </span>
+              <a
+                href="https://iocl.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Indian Oil Corporation"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-6 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-24 sm:h-32 group cursor-pointer"
+              >
+                <div className="relative w-36 sm:w-44 h-16 sm:h-22">
+                  <Image
+                    src="/sponsors/indianoil.svg"
+                    alt="Indian Oil Corporation"
+                    fill
+                    sizes="(max-width: 640px) 144px, 176px"
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </a>
+            </div>
+
             {/* Digital Media Partner */}
             <div className="flex flex-col items-center justify-center w-full">
               <span className="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] sm:tracking-[0.22em] uppercase text-cream-400 mb-2 sm:mb-3">
@@ -135,14 +160,14 @@ export default function PartnersSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Bharat 24 - Vision of New India"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-8 sm:py-5 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-3 sm:px-6 sm:py-4 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-44 sm:w-60 h-14 sm:h-16">
+                <div className="relative w-40 sm:w-48 h-14 sm:h-16">
                   <Image
                     src="/sponsors/bharat24.png"
                     alt="Bharat 24 - Vision of New India"
                     fill
-                    sizes="(max-width: 640px) 176px, 240px"
+                    sizes="(max-width: 640px) 160px, 192px"
                     className="object-contain"
                     priority
                   />
@@ -160,14 +185,14 @@ export default function PartnersSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Vanya Luxury Boutique Resort"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-8 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[340px] h-24 sm:h-32 group cursor-pointer"
+                className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-6 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-44 sm:w-60 h-16 sm:h-24">
+                <div className="relative w-40 sm:w-48 h-16 sm:h-24">
                   <Image
                     src="/sponsors/vanya.png"
                     alt="Vanya Luxury Boutique Resort"
                     fill
-                    sizes="(max-width: 640px) 176px, 240px"
+                    sizes="(max-width: 640px) 160px, 192px"
                     className="object-contain"
                     priority
                   />
