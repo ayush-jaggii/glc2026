@@ -135,14 +135,14 @@ export default function PartnersSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Indian Oil Corporation"
-                className="bg-white rounded-xl sm:rounded-2xl px-5 py-2 sm:px-6 sm:py-3 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-24 sm:h-32 group cursor-pointer"
+                className="bg-white rounded-xl sm:rounded-2xl px-4 py-1.5 sm:px-6 sm:py-2 shadow-lg border border-white/90 flex items-center justify-center transition-transform duration-300 hover:scale-105 w-full max-w-[280px] sm:max-w-[320px] h-24 sm:h-32 group cursor-pointer"
               >
-                <div className="relative w-36 sm:w-44 h-16 sm:h-22">
+                <div className="relative w-44 sm:w-52 h-20 sm:h-28">
                   <Image
                     src="/sponsors/indianoil.svg"
                     alt="Indian Oil Corporation"
                     fill
-                    sizes="(max-width: 640px) 144px, 176px"
+                    sizes="(max-width: 640px) 176px, 208px"
                     className="object-contain"
                     priority
                   />
