@@ -108,8 +108,8 @@ export async function POST(request: Request) {
           code: 'UNAUTHORIZED_SELF_SCAN',
           studentName: formattedName || null,
           studentRoll: studentRoll || null,
-          error: `Turns out Nexora outsmarts you, again. Nice try${formattedName ? `, ${formattedName}` : ''}. Marking attendance isn't that easy — you cannot mark your own attendance.`,
-          message: `Turns out Nexora outsmarts you, again. Nice try${formattedName ? `, ${formattedName}` : ''}. Marking attendance isn't that easy — you cannot mark your own attendance.`
+          error: `Nice try${formattedName ? `, ${formattedName}` : ''}. Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance.`,
+          message: `Nice try${formattedName ? `, ${formattedName}` : ''}. Turns out Nexora outsmarts you, again. Marking attendance isn't that easy — you cannot mark your own attendance.`
         },
         { status: 401 }
       )

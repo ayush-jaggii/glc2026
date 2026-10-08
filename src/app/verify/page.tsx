@@ -182,14 +182,14 @@ function VerifyContent() {
                 HA!
               </div>
 
-              {/* Bold Title */}
+              {/* Nice try, (their name) */}
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
-                Turns out Nexora outsmarts you, again.
+                Nice try{studentName ? `, ${formatName(studentName)}` : ''}
               </h2>
 
-              {/* Nice try, (their name) */}
+              {/* Bold Title */}
               <p className="text-base sm:text-lg font-bold text-glc-orange mb-3">
-                Nice try{studentName ? `, ${formatName(studentName)}` : ''}
+                Turns out Nexora outsmarts you, again.
               </p>
 
               {/* Explanation */}
@@ -387,10 +387,10 @@ function VerifyContent() {
                   HA!
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2 tracking-tight">
-                  Turns out Nexora outsmarts you, again.
+                  Nice try{result?.studentName || studentName ? `, ${formatName(result?.studentName || studentName)}` : ''}
                 </h2>
                 <p className="text-base sm:text-lg font-bold text-glc-orange mb-3">
-                  Nice try{result?.studentName || studentName ? `, ${formatName(result?.studentName || studentName)}` : ''}
+                  Turns out Nexora outsmarts you, again.
                 </p>
                 <p className="text-sm font-medium text-cream-200 mb-2">
                   Unfortunately, marking attendance isn't that easy.
