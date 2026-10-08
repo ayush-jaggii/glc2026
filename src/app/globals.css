@@ -87,19 +87,19 @@ body {
 /* Continuous Marquee Ticker */
 @keyframes marquee {
   0% {
-    transform: translateX(0%);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 @keyframes marquee-reverse {
   0% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
   100% {
-    transform: translateX(0%);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -108,6 +108,9 @@ body {
   width: max-content;
   animation: marquee 50s linear infinite;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .animate-marquee-reverse {
@@ -115,10 +118,15 @@ body {
   width: max-content;
   animation: marquee-reverse 50s linear infinite;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .animate-marquee:hover,
-.animate-marquee-reverse:hover {
+.animate-marquee:active,
+.animate-marquee-reverse:hover,
+.animate-marquee-reverse:active {
   animation-play-state: paused;
 }
 
