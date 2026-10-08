@@ -102,7 +102,14 @@ export async function GET(request: Request) {
     let filtered = allStudents
 
     if (statusFilter === 'DOWNLOADED') {
-      filtered = filtered.filter((s: any) => Boolean(s.has_downloaded_pass))
+      filtered = filtered
+        .filter((s: any) => Boolean(s.has_downloaded_pass))
+        .sort((a: any, b: any) => {
+          const timeA = new Date(a.first_downloaded_at || a.last_downloaded_at || 0).getTime()
+          const timeB = new Date(b.first_downloaded_at || b.last_downloaded_at || 0).getTime()
+          if (timeB !== timeA) return timeB - timeA
+          return (a.roll_number || '').localeCompare(b.roll_number || '')
+        })
     } else if (statusFilter === 'NOT_DOWNLOADED') {
       filtered = filtered.filter((s: any) => !s.has_downloaded_pass)
     } else if (statusFilter === 'PRESENT' || statusFilter === 'PRESENT_AM') {

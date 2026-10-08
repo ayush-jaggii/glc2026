@@ -130,6 +130,42 @@ export default function AdminDashboardPage() {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'DOWNLOADED' | 'NOT_DOWNLOADED' | 'PRESENT_AM' | 'PRESENT_PM' | 'PRESENT_BOTH' | 'ABSENT'>('ALL')
   const [loadingStudents, setLoadingStudents] = useState(false)
 
+  // Table Sorting State
+  const [sortField, setSortField] = useState<'roll_number' | 'claimed' | 'name'>('roll_number')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+
+  // Automatically default to newest-to-oldest when viewing Passes Claimed!
+  useEffect(() => {
+    if (statusFilter === 'DOWNLOADED') {
+      setSortField('claimed')
+      setSortDirection('desc')
+    } else {
+      setSortField('roll_number')
+      setSortDirection('asc')
+    }
+  }, [statusFilter])
+
+  const displayedStudents = React.useMemo(() => {
+    return [...students].sort((a, b) => {
+      if (sortField === 'claimed') {
+        const timeA = new Date(a.first_downloaded_at || a.last_downloaded_at || 0).getTime()
+        const timeB = new Date(b.first_downloaded_at || b.last_downloaded_at || 0).getTime()
+        if (timeB !== timeA) {
+          return sortDirection === 'desc' ? timeB - timeA : timeA - timeB
+        }
+        return (a.roll_number || '').localeCompare(b.roll_number || '')
+      }
+      if (sortField === 'name') {
+        return sortDirection === 'desc'
+          ? (b.full_name || '').localeCompare(a.full_name || '')
+          : (a.full_name || '').localeCompare(b.full_name || '')
+      }
+      return sortDirection === 'desc'
+        ? (b.roll_number || '').localeCompare(a.roll_number || '')
+        : (a.roll_number || '').localeCompare(b.roll_number || '')
+    })
+  }, [students, sortField, sortDirection])
+
   // Volunteers State
   const [volunteers, setVolunteers] = useState<Volunteer[]>([])
   const [loadingVolunteers, setLoadingVolunteers] = useState(false)
@@ -702,7 +738,17 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Card 2: Passes Claimed / Downloaded */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#13030F] border border-wine-800/90 shadow-xl relative overflow-hidden group">
+              <div
+                onClick={() => setStatusFilter('DOWNLOADED')}
+                role="button"
+                tabIndex={0}
+                title="Click to view claimed passes sorted newest to oldest"
+                className={`p-4 sm:p-5 rounded-2xl bg-[#13030F] border shadow-xl relative overflow-hidden group cursor-pointer transition-all ${
+                  statusFilter === 'DOWNLOADED'
+                    ? 'border-emerald-500 ring-2 ring-emerald-500/30'
+                    : 'border-wine-800/90 hover:border-emerald-500/60'
+                }`}
+              >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-cream-400">
                     Passes Claimed
@@ -922,19 +968,76 @@ export default function AdminDashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-wine-800/80 bg-wine-950/60 text-cream-400 font-semibold uppercase tracking-wider">
-                      <th className="py-3 px-4">Roll Number</th>
-                      <th className="py-3 px-4">Student Name</th>
+                    <tr className="border-b border-wine-800/80 bg-wine-950/60 text-cream-400 font-semibold uppercase tracking-wider select-none">
+                      <th
+                        className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
+                        onClick={() => {
+                          if (sortField === 'roll_number') {
+                            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+                          } else {
+                            setSortField('roll_number')
+                            setSortDirection('asc')
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Roll Number</span>
+                          {sortField === 'roll_number' && (
+                            <span className="text-glc-magenta text-xs font-bold">
+                              {sortDirection === 'asc' ? '↑' : '↓'}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                      <th
+                        className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
+                        onClick={() => {
+                          if (sortField === 'name') {
+                            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+                          } else {
+                            setSortField('name')
+                            setSortDirection('asc')
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Student Name</span>
+                          {sortField === 'name' && (
+                            <span className="text-glc-magenta text-xs font-bold">
+                              {sortDirection === 'asc' ? '↑' : '↓'}
+                            </span>
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3 px-4">Email</th>
                       <th className="py-3 px-4">Pass Status</th>
-                      <th className="py-3 px-4">First Claimed</th>
+                      <th
+                        className="py-3 px-4 cursor-pointer hover:text-emerald-400 transition-colors"
+                        onClick={() => {
+                          if (sortField === 'claimed') {
+                            setSortDirection((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+                          } else {
+                            setSortField('claimed')
+                            setSortDirection('desc')
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>First Claimed</span>
+                          {sortField === 'claimed' && (
+                            <span className="text-emerald-400 text-xs font-bold">
+                              {sortDirection === 'desc' ? '↓ (Newest)' : '↑ (Oldest)'}
+                            </span>
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3 px-4 text-center">Downloads</th>
                       <th className="py-3 px-4">Morning (AM)</th>
                       <th className="py-3 px-4">Post-Lunch (PM)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-wine-800/50 text-cream-200">
-                    {students.length === 0 ? (
+                    {displayedStudents.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-cream-400">
                           {loadingStudents ? (
@@ -948,7 +1051,7 @@ export default function AdminDashboardPage() {
                         </td>
                       </tr>
                     ) : (
-                      students.map((student) => {
+                      displayedStudents.map((student) => {
                         const isAmPresent = student.status === 'PRESENT'
                         const isPmPresent = student.status_pm === 'PRESENT'
                         const hasClaimed = student.has_downloaded_pass
@@ -1062,7 +1165,7 @@ export default function AdminDashboardPage() {
               {/* Table Footer Summary */}
               <div className="p-4 border-t border-wine-800/80 bg-wine-950/80 text-xs text-cream-400 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <div>
-                  Showing <strong className="text-white">{students.length}</strong> of{' '}
+                  Showing <strong className="text-white">{displayedStudents.length}</strong> of{' '}
                   <strong className="text-white">{stats.total}</strong> students in official roster
                 </div>
                 <div className="flex items-center gap-4 text-[11px]">
