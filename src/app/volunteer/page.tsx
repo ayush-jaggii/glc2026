@@ -37,6 +37,8 @@ export default function VolunteerScannerPage() {
   const [loginError, setLoginError] = useState('')
   const [validating, setValidating] = useState(false)
 
+  const [manualRoll, setManualRoll] = useState('')
+
   // Scanner state
   const [scannerActive, setScannerActive] = useState(false)
   const [scanResult, setScanResult] = useState<{
@@ -495,6 +497,33 @@ export default function VolunteerScannerPage() {
               </div>
             )}
           </div>
+
+          {/* Manual Entry Fallback (Screen Glare / Low Brightness / Battery Dead) */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (manualRoll.trim()) {
+                processToken(manualRoll.trim().toUpperCase())
+                setManualRoll('')
+              }
+            }}
+            className="flex items-center gap-2"
+          >
+            <input
+              type="text"
+              value={manualRoll}
+              onChange={(e) => setManualRoll(e.target.value.toUpperCase())}
+              placeholder="Or enter Roll Number manually..."
+              className="flex-1 px-4 py-2.5 rounded-xl bg-wine-950 border border-wine-800 text-xs text-cream-100 placeholder:text-cream-500 font-mono focus:outline-none focus:border-glc-magenta uppercase tracking-wider"
+            />
+            <button
+              type="submit"
+              disabled={isProcessing || !manualRoll.trim()}
+              className="px-4 py-2.5 rounded-xl bg-wine-900 hover:bg-wine-800 text-white text-xs font-bold uppercase tracking-wider border border-wine-700 transition-colors disabled:opacity-40 cursor-pointer shrink-0"
+            >
+              Check In
+            </button>
+          </form>
 
           {/* Verification Result Card */}
           {scanResult && (
