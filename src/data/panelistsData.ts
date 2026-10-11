@@ -329,7 +329,7 @@ export const PANELISTS_DATA: Panelist[] = [
   },
   {
     id: 'cgd-3',
-    name: 'Sindhu Biswas',
+    name: 'Sindhu Biswal',
     company: 'Buzzlabs',
     designation: 'Founder',
     linkedin: 'https://www.linkedin.com/in/sindhubiswal/',
