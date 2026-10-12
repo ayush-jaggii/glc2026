@@ -34,7 +34,7 @@ export async function GET(request: Request) {
 
     while (true) {
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,has_downloaded_pass,first_downloaded_at,last_downloaded_at,download_count,status,marked_at,marked_by,status_pm,marked_at_pm,marked_by_pm&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
+        `${supabaseUrl}/rest/v1/students?select=roll_number,full_name,email,qr_token,status,marked_at,status_pm,marked_at_pm&order=roll_number.asc&offset=${offset}&limit=${pageSize}`,
         {
           headers: {
             apikey: supabaseAnonKey,
@@ -60,58 +60,89 @@ export async function GET(request: Request) {
       try {
         return new Date(isoStr).toLocaleString('en-IN', {
           timeZone: 'Asia/Kolkata',
-          dateStyle: 'medium',
-          timeStyle: 'medium'
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
         })
       } catch {
         return isoStr
       }
     }
 
+    // 3-Tier Categorization & Sorting:
+    // 1. Both Sessions Present
+    // 2. One Session Present (Morning or Afternoon)
+    // 3. Both Sessions Absent
+    const group1Both: any[] = []
+    const group2One: any[] = []
+    const group3None: any[] = []
+
+    for (const s of students) {
+      const isAm = s.status === 'PRESENT'
+      const isPm = s.status_pm === 'PRESENT'
+
+      if (isAm && isPm) {
+        group1Both.push({ ...s, category: 'Both Sessions Present' })
+      } else if (isAm || isPm) {
+        group2One.push({
+          ...s,
+          category: isAm ? 'Morning Only Present' : 'Afternoon Only Present'
+        })
+      } else {
+        group3None.push({ ...s, category: 'Both Sessions Absent' })
+      }
+    }
+
+    const rollSort = (a: any, b: any) =>
+      (a.roll_number || '').localeCompare(b.roll_number || '', undefined, { numeric: true })
+
+    group1Both.sort(rollSort)
+    group2One.sort(rollSort)
+    group3None.sort(rollSort)
+
+    const sortedStudents = [...group1Both, ...group2One, ...group3None]
+
     const headers = [
       'Roll Number',
-      'Full Name',
+      'Name',
       'Email',
-      'Pass Downloaded',
-      'First Downloaded At (IST)',
-      'Last Downloaded At (IST)',
-      'Total Downloads',
-      'Morning Status (AM)',
-      'Morning Marked At (IST)',
-      'Morning Marked By',
-      'Afternoon Status (PM)',
-      'Afternoon Marked At (IST)',
-      'Afternoon Marked By',
-      'Attended Full Day (Both AM & PM)'
+      'QR Token',
+      'Morning Status',
+      'Morning Marked At',
+      'Afternoon Status',
+      'Afternoon Marked At',
+      'Overall Attendance'
     ]
 
-    const escape = (val: any) => `"${String(val ?? '').replace(/"/g, '""')}"`
+    const escape = (val: any) => {
+      if (val === null || val === undefined) return ''
+      const str = String(val)
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
 
-    const rows = (students || []).map((s: any) => {
-      const isAmPresent = s.status === 'PRESENT'
-      const isPmPresent = s.status_pm === 'PRESENT'
-      const attendedBoth = isAmPresent && isPmPresent ? 'YES' : 'NO'
-
+    const rows = sortedStudents.map((s: any) => {
       return [
         escape(s.roll_number),
         escape(s.full_name),
         escape(s.email),
-        escape(s.has_downloaded_pass ? 'YES' : 'NO'),
-        escape(formatIst(s.first_downloaded_at)),
-        escape(formatIst(s.last_downloaded_at)),
-        escape(s.download_count || 0),
+        escape(s.qr_token),
         escape(s.status || 'ABSENT'),
         escape(formatIst(s.marked_at)),
-        escape(s.marked_by || ''),
         escape(s.status_pm || 'ABSENT'),
         escape(formatIst(s.marked_at_pm)),
-        escape(s.marked_by_pm || ''),
-        escape(attendedBoth)
+        escape(s.category)
       ].join(',')
     })
 
-    const csvContent = [headers.join(','), ...rows].join('\r\n')
-    const filename = `GLC_2026_Student_Roster_Status_${new Date().toISOString().slice(0, 10)}.csv`
+    const csvContent = '\uFEFF' + [headers.map(escape).join(','), ...rows].join('\r\n')
+    const filename = `GLC_2026_Final_Attendance_Report_${new Date().toISOString().slice(0, 10)}.csv`
 
     return new NextResponse(csvContent, {
       status: 200,
